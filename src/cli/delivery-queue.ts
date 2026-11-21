@@ -6,6 +6,7 @@ import { DeliveryQueue } from '../delivery/queue.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function deliveryQueueCommand(
   command: string,
@@ -46,20 +47,19 @@ export function deliveryQueueCommand(
       })
     }
     const state = queue.lifecycle.journal.get(run)
-    io.out(
-      JSON.stringify(
-        {
-          schema: 'wholeloop/delivery-queue-status@1',
-          run,
-          state: state.state,
-          plan: state.basis.digest,
-          entries: queue.inspect(run),
-          workers: 'not-started-by-this-command',
-          effects: 'not-performed',
-        },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      command,
+      {
+        schema: 'wholeloop/delivery-queue-status@1',
+        run,
+        state: state.state,
+        plan: state.basis.digest,
+        entries: queue.inspect(run),
+        workers: 'not-started-by-this-command',
+        effects: 'not-performed',
+      },
+      io,
+      json,
     )
     return EXIT.ok
   } catch (error) {

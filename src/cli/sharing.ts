@@ -6,6 +6,7 @@ import { SharingWorkflow } from '../sharing/workflow.js'
 import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 import { sharedRead } from './sharing-read.js'
 
 export async function sharingCommand(
@@ -84,6 +85,6 @@ export async function sharingCommand(
       )
     }
   }
-  io.out(JSON.stringify(result, null, json ? undefined : 2))
+  emitCommand(command, result, io, json)
   return code
 }

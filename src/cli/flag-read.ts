@@ -7,6 +7,7 @@ import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import type { Io } from './io.js'
 import { readClientInventory } from './mcp-inventory.js'
+import { emitCommand } from './presentation.js'
 
 const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/
 
@@ -56,31 +57,30 @@ export async function flagReadCommand(
   if (!call) throw new CliError('Flag read did not produce a validated call')
   const status =
     route.transport === 'mcp' ? 'planned' : route.transport === 'native' ? 'local' : 'open-question'
-  io.out(
-    JSON.stringify(
-      {
-        schema: 'wholeloop/flag-read@2',
-        provider: provider.manifest.id,
-        flag,
-        environment,
-        status,
-        transport: route.transport,
-        ...(route.server ? { server: route.server } : {}),
-        tool: route.tool,
-        args: call.args,
-        degrade: route.degrade,
-        reason: route.reason,
-        ...(status === 'open-question'
-          ? {
-              question: `What is the current state of flag ${flag} in ${environment}? Its exposure is unknown until a person or a client tool reports it.`,
-            }
-          : {}),
-        effects: 'not-performed',
-        authentication: route.authentication,
-      },
-      null,
-      json ? undefined : 2,
-    ),
+  emitCommand(
+    'provider read-flags',
+    {
+      schema: 'wholeloop/flag-read@2',
+      provider: provider.manifest.id,
+      flag,
+      environment,
+      status,
+      transport: route.transport,
+      ...(route.server ? { server: route.server } : {}),
+      tool: route.tool,
+      args: call.args,
+      degrade: route.degrade,
+      reason: route.reason,
+      ...(status === 'open-question'
+        ? {
+            question: `What is the current state of flag ${flag} in ${environment}? Its exposure is unknown until a person or a client tool reports it.`,
+          }
+        : {}),
+      effects: 'not-performed',
+      authentication: route.authentication,
+    },
+    io,
+    json,
   )
   return 0
 }

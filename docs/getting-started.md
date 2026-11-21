@@ -59,7 +59,7 @@ Pick the client you already use. This example uses Claude Code; the other target
 ```console
 $ wl install --target claude --scope user --dry-run
 Dry run for claude at user scope: nothing was written.
-  188 files to write
+  203 files to write
 Run the same command without --dry-run to apply it.
 …
 ```
@@ -69,7 +69,8 @@ Run the same command without --dry-run to apply it.
 ```console
 $ wl install --target claude --scope user
 Installed claude at user scope.
-Receipt: ~/.local/state/wholeloop/installations/22d5c1ca…/receipt.json
+Installation record:
+~/.local/state/wholeloop/installations/22d5c1ca…/receipt.json
 Restart the client and check that the skills appear.
 Git guards are installed per repository: node ~/.local/state/wholeloop/distributions/22d5c1ca…/claude/bin/wl.mjs guard hooks install --repo '<repository>' --store ~/.local/state/wholeloop --json
 Add --json for the full result.
@@ -101,21 +102,12 @@ For project scope, change into the application first and use `--scope project`. 
 
 ```console
 $ wl doctor --target claude
-Doctor: every required check passed.
+Doctor: no failed checks.
+Observed: 6 passing checks.
+Optional checks: 1 observed, 2 unknown, 0 skipped.
 
-  pass     node                  24.22.0
-  pass     git                   2.49.0
-  pass     cli.claude            2.1.326
-  pass     store
-  pass     providers
-  unknown  artifacts
-           No explicit standalone artifact directory was checked; see managed scope checks when available. Native discovery remains unverified.
-           …
-  pass     installation.user
-  unknown  installation.project
-           No owned receipt at this scope; existing unmanaged native components remain unverified.
-
-Doctor cannot see whether the client loads the skills, is signed in or grants permissions.
+Doctor cannot see whether the client loads the skills, is signed in or grants
+permissions.
 Add --json for the full report.
 ```
 
@@ -186,6 +178,8 @@ init-3cf1140a  initiative  open  Find tasks by title in a fictional task app
 | `wl resume <id>` | Prints the compact context a new conversation needs. Only reads |
 | `wl next <id>` | Begins the next step. It changes state, so do not use it just to look around |
 
+`wl open <id>` shows a readable document header, content, notes and links. Use `--raw` for the complete Markdown projection, including metadata, or `--json` for its existing machine contract. These two output modes are separate.
+
 State lives under `~/.local/state/wholeloop`, or `$XDG_STATE_HOME/wholeloop` when that variable is set. Every session must see **the same store** to find the same work.
 
 If you put the idea on hold or dropped it, status shows `closed` with no next step. The outcome, the reason and what would reopen it are kept; a new session does not reopen it on its own. [Recovery checks](./tutorials/first-framing.md#recover-in-a-new-session).
@@ -196,22 +190,25 @@ You do not need a Jira, Notion, analytics or feature-flag account for local work
 
 ```console
 $ wl setup --profile pair --docs local-docs --tracker local-tracker --scope user
-{
-  "schema": "wholeloop/setup@1",
-  "scope": "user",
-  "applied": true,
-  …
-}
-$ wl profile show
-{
-  "preset": "pair",
-  "verbosity": "standard",
-  …
-}
-
-Style for this run:
-- Give enough reasoning and context to assess each action.
+Preferences
+Saved              yes
+Scope              user
+File               ~/config/wholeloop/config.yml
+Profile / Preset   pair
+Profile / Verbosity
 …
+$ wl profile show
+Interaction preferences
+Preset             pair
+Verbosity          standard
+Depth              balanced
+Challenge          balanced
+Pace               guided
+Stops              decisions
+Teaching           off
+Language           auto
+Artifact language
+  en
 ```
 
 The **profile** changes how the harness talks to you, never which approvals it needs:

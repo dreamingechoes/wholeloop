@@ -25,6 +25,7 @@ import { deliveryQueueCommand } from './delivery-queue.js'
 import { deliveryRecoveryCommand } from './delivery-recovery.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function deliveryCommand(
   command: string,
@@ -63,8 +64,9 @@ export function deliveryCommand(
   if (command.startsWith('delivery private-'))
     return deliveryPrivateCommand(command, { options, positional: [] }, root, json, io)
   if (command === 'delivery browser-schema') {
-    io.out(
-      JSON.stringify({
+    emitCommand(
+      command,
+      {
         schema: 'wholeloop/browser-schema@1',
         input: BROWSER_INPUT_SCHEMA,
         reference: BROWSER_REFERENCE,
@@ -72,17 +74,22 @@ export function deliveryCommand(
         operation: browserOperationSchema,
         release: browserReleaseSchema,
         executed: false,
-      }),
+      },
+      io,
+      json,
     )
     return EXIT.ok
   }
   if (command === 'delivery behavior-schema') {
-    io.out(
-      JSON.stringify({
+    emitCommand(
+      command,
+      {
         schema: 'wholeloop/behavior-schema@1',
         input: BEHAVIOR_INPUT_SCHEMA,
         executed: false,
-      }),
+      },
+      io,
+      json,
     )
     return EXIT.ok
   }
@@ -91,34 +98,32 @@ export function deliveryCommand(
   if (command.startsWith('delivery environment-'))
     return deliveryEnvironmentCommand(command, { options, positional: [] }, root, json, io)
   if (command === 'delivery native-schema') {
-    io.out(
-      JSON.stringify(
-        {
-          schema: 'wholeloop/delivery-native-schema@1',
-          observationSchema: NATIVE_OBSERVATION_SCHEMA,
-          runSchema: nativeRunSchema,
-          targets: NATIVE_DELIVERY_TARGETS,
-          referenceVersions: REFERENCE_NATIVE_VERSIONS,
-          dispatch: 'not-performed',
-        },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      command,
+      {
+        schema: 'wholeloop/delivery-native-schema@1',
+        observationSchema: NATIVE_OBSERVATION_SCHEMA,
+        runSchema: nativeRunSchema,
+        targets: NATIVE_DELIVERY_TARGETS,
+        referenceVersions: REFERENCE_NATIVE_VERSIONS,
+        dispatch: 'not-performed',
+      },
+      io,
+      json,
     )
     return EXIT.ok
   }
   if (command === 'delivery worker-schema') {
-    io.out(
-      JSON.stringify(
-        {
-          schema: 'wholeloop/delivery-worker-schema@1',
-          assignmentSchema: WORKER_SCHEMAS.assignment,
-          resultSchema: WORKER_SCHEMAS.result,
-          executionSchema: WORKER_SCHEMAS.execution,
-        },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      command,
+      {
+        schema: 'wholeloop/delivery-worker-schema@1',
+        assignmentSchema: WORKER_SCHEMAS.assignment,
+        resultSchema: WORKER_SCHEMAS.result,
+        executionSchema: WORKER_SCHEMAS.execution,
+      },
+      io,
+      json,
     )
     return EXIT.ok
   }
@@ -180,12 +185,11 @@ export function deliveryCommand(
   if (!['delivery source', 'delivery source-schema'].includes(command))
     return deliveryPlanningCommand(command, { options, positional: [] }, root, json, io)
   if (command === 'delivery source-schema') {
-    io.out(
-      JSON.stringify(
-        { schema: 'wholeloop/delivery-source-schema@1', requestSchema: SOURCE_REQUEST_SCHEMA },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      command,
+      { schema: 'wholeloop/delivery-source-schema@1', requestSchema: SOURCE_REQUEST_SCHEMA },
+      io,
+      json,
     )
     return EXIT.ok
   }

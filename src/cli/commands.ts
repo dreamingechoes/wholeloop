@@ -1969,9 +1969,9 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'open',
     arguments: '<id>',
-    options: [],
+    options: ['--raw'],
     schema: 'wholeloop/open@1',
-    summary: 'Print the item as Markdown',
+    summary: 'Read an item; add --raw for its complete Markdown and metadata',
   },
   {
     path: 'config show',

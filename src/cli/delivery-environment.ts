@@ -15,6 +15,7 @@ import runtimeSchema from '../environment/schemas/runtime-v1.json' with { type: 
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function deliveryEnvironmentCommand(
   command: string,
@@ -65,7 +66,7 @@ export function deliveryEnvironmentCommand(
         )
       }
     }
-    io.out(JSON.stringify(receipt, null, json ? undefined : 2))
+    emitCommand(command, receipt, io, json)
     return EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error

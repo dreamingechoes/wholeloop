@@ -17,6 +17,7 @@ import { storePath } from '../state/paths.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 const EFFECTS = { code: 'not-changed', tracker: 'not-written' } as const
 
@@ -28,7 +29,7 @@ export function maintenanceCommand(
   json: boolean,
   io: Io,
 ): number {
-  const emit = (value: unknown) => io.out(JSON.stringify(value, null, json ? undefined : 2)),
+  const emit = (value: unknown) => emitCommand(command, value, io, json),
     text = (name: string, hint: string) => {
       const value = options[name]
       if (typeof value !== 'string' || !value.trim())

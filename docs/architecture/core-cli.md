@@ -326,7 +326,7 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | `wl state rebuild` | `wholeloop/state-rebuild@1` | Rebuild projections from the journal |
 | `wl note <id> <text>` | `wholeloop/note@1` | Append a durable note |
 | `wl link <id> <url>` | `wholeloop/link@1` | Record an external reference |
-| `wl open <id>` | `wholeloop/open@1` | Print the item as Markdown |
+| `wl open <id>` | `wholeloop/open@1` | Read an item; add --raw for its complete Markdown and metadata |
 | `wl config show` | `wholeloop/config-show@1` | Resolve layered configuration and optionally explain every value |
 | `wl config schema` | `wholeloop/config-schema@1` | Print the configuration JSON Schema |
 | `wl docs nav` | `wholeloop/docs-nav@1` | Rewrite docnav footers from docs/nav.yml |

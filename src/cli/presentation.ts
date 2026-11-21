@@ -1,5 +1,6 @@
 // Renders structured step results before serialization, preserving one output and no extra reads.
 import { isObject } from '../config/schema.js'
+import { commandText } from '../display/commands.js'
 import { isStepCommand, stepDisplay } from '../display/step.js'
 import type { parseArguments } from './arguments.js'
 import type { Io } from './io.js'
@@ -29,7 +30,18 @@ export function emitStep(
   args: readonly string[] = [],
 ): void {
   if (!isStepCommand(command)) {
-    io.out(JSON.stringify(payload, null, json ? undefined : 2))
+    if (command === 'next' && isObject(payload) && isObject(payload.contract)) {
+      const display = stepDisplay('step begin', payload.contract, [
+        String(payload.contract.step ?? ''),
+      ])
+      io.out(
+        json
+          ? JSON.stringify({ ...payload, contract: { ...payload.contract, display } })
+          : display.text,
+      )
+      return
+    }
+    io.out(json ? JSON.stringify(payload) : commandText(command, payload))
     return
   }
   if (
@@ -41,3 +53,5 @@ export function emitStep(
   const display = stepDisplay(command, payload, args)
   io.out(json ? JSON.stringify({ ...payload, display }) : display.text)
 }
+
+export const emitCommand = emitStep

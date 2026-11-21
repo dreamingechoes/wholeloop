@@ -4,6 +4,7 @@ import { groundingEval, groundingInputs } from '../grounding/eval.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export async function groundingCommand(
   { positional, options }: ReturnType<typeof parseArguments>,
@@ -13,7 +14,7 @@ export async function groundingCommand(
   if (positional.length !== 1) throw new CliError('Provide one grounding corpus JSON file')
   if (options['--inputs'] === true) {
     if (options['--predictions']) throw new CliError('Choose blind inputs or scoring, not both')
-    io.out(JSON.stringify(groundingInputs(positional[0] ?? ''), null, json ? undefined : 2))
+    emitCommand('eval grounding', groundingInputs(positional[0] ?? ''), io, json)
     return EXIT.ok
   }
   let predictions: unknown
@@ -25,6 +26,6 @@ export async function groundingCommand(
     }
   }
   const report = await groundingEval(positional[0] ?? '', predictions)
-  io.out(JSON.stringify(report, null, json ? undefined : 2))
+  emitCommand('eval grounding', report, io, json)
   return report.passed ? EXIT.ok : EXIT.shape
 }

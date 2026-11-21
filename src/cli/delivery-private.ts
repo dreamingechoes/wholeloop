@@ -21,6 +21,7 @@ import { readSourceFile } from '../delivery/input.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 type Options = ReturnType<typeof parseArguments>['options']
 function required(options: Options, name: string) {
@@ -94,7 +95,7 @@ export function deliveryPrivateCommand(
         publication: 'not-performed',
       }
     }
-    io.out(JSON.stringify(receipt, null, json ? undefined : 2))
+    emitCommand(command, receipt, io, json)
     return EXIT.ok
   } catch (error) {
     return failure(error)
@@ -110,7 +111,7 @@ export async function deliveryPrivateAsyncCommand(
     const { acceptance, boundary } = context(options, root),
       request = JSON.parse(readSourceFile(boundary, required(options, '--file'), 65536))
     const receipt = await acceptanceSensitivity(acceptance, request)
-    io.out(JSON.stringify(receipt, null, json ? undefined : 2))
+    emitCommand('delivery private-sensitivity', receipt, io, json)
     return ['proven', 'not-applicable'].includes(receipt.status) ? EXIT.ok : EXIT.precondition
   } catch (error) {
     return failure(error)

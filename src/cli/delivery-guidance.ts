@@ -8,6 +8,7 @@ import { readSourceFile } from '../delivery/input.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 const read = (root: string, file: string) => {
   try {
@@ -100,6 +101,6 @@ export function deliveryGuidanceCommand(
       EXIT.precondition,
     )
   }
-  io.out(JSON.stringify(result, null, json ? undefined : 2))
+  emitCommand('delivery guidance', result, io, json)
   return result.status === 'proposed' ? EXIT.ok : EXIT.precondition
 }

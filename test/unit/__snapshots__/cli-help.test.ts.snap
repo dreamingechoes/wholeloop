@@ -1,0 +1,48 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`default help > hides repository tools from everyday help and bounds every human help line 1`] = `
+"wholeloop 1.1.0 — define, build, roll out and learn
+
+Usage: wl <command> [options]
+
+Get started:
+  install                        Install wholeloop in your coding client.
+  doctor                         Find installation problems.
+  setup                          Choose how you want to work.
+  uninstall                      Remove an owned installation.
+
+Your work:
+  status [<id>]                  See work and pending decisions.
+  next [<idea|id|URL>]           Continue work or start an idea.
+  resume [<id>]                  Pick up an item with its recent context.
+  overview                       See what needs attention across work.
+  watch                          Follow changes without starting work.
+
+Preferences:
+  profile show                   See your interaction preferences.
+  profile preset <name>          Choose an interaction preset.
+  config show                    See the effective settings.
+
+More commands, by group:
+  Define
+    research frame spec scopes challenge
+  Build
+    slices worktree build verify review gate pr fanout
+  Rollout and learn
+    launch ramp env measure learn
+  Items and messages
+    state step answer msg handoff note link open sync share adopt
+  Configuration
+    config profile provider template lens mcp discover resolve
+  Autonomous delivery (experimental)
+    delivery maintenance eval
+
+Options:
+  -v, --version   Print the version
+  -h, --help      Print help; after a command or group, print help for it
+  --json          Print a versioned JSON payload
+
+Run 'wl <command> --help' for one command, 'wl <group> --help' for a group,
+or 'wl --help --all' for every command, including repository and maintainer
+tools."
+`;

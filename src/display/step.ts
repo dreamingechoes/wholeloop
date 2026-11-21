@@ -45,7 +45,20 @@ const phrases = (input: unknown): string[] =>
     const question = value(detail.prompt) || value(detail.question)
     const reason = value(detail.reason) || value(detail.missing)
     const text = value(entry) || [question, reason].filter(Boolean).join(' — ')
-    return text ? [text] : []
+    const options = list(detail.options)
+      .map((option) => {
+        const choice = record(option),
+          label = value(choice.label) || value(choice.value)
+        return `${label}${choice.value !== undefined && choice.value !== choice.label ? ` (${value(choice.value)})` : ''}`
+      })
+      .filter(Boolean)
+    return text
+      ? [
+          text,
+          ...(options.length ? [`Choices: ${options.join(' · ')}`] : []),
+          ...(detail.freeText === true ? ['You can also enter your own answer.'] : []),
+        ]
+      : []
   })
 const choices: Record<string, string> = {
   'approve-spec': 'Approve the specification',
@@ -116,6 +129,7 @@ export function stepDisplay(
     const text = value(input)
     if (text) rows.push({ label, value: text })
   }
+  if (command === 'spec check' && args[0]) row('File', args[0])
   const open = [
     ...phrases(payload.questions),
     ...phrases(payload.unknowns),
@@ -235,7 +249,11 @@ export function stepDisplay(
     if (payload.message) open.push(value(payload.message))
     const details = displayDetails(payload, plan, report)
     rows.push(...details.rows)
-    open.push(...details.open)
+    open.push(
+      ...details.open.map((problem) =>
+        command === 'spec check' && args[0] ? `${args[0]}: ${problem}` : problem,
+      ),
+    )
     produced.push(...details.produced)
     if (command.startsWith('env ')) {
       const entries = payload.write ? [{ write: payload.write }] : list(payload.entries)

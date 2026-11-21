@@ -1,0 +1,16 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`doctor summary > names each check, explains the others and quotes the repair command 1`] = `
+"Doctor: 1 check failed.
+Observed: 1 passing check.
+Optional checks: 0 observed, 0 unknown, 1 skipped.
+
+  Failed: installation.user (0.9.0)
+    Owned installation was written by wholeloop 0.9.0.
+    Run this command to update the installation.
+    Command: wl install --target claude --store '/tmp/my store'\\''s' --json
+
+Doctor cannot see whether the client loads the skills, is signed in or grants
+permissions.
+Add --json for the full report."
+`;

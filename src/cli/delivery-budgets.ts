@@ -6,6 +6,7 @@ import { readSourceBytes, readSourceFile } from '../delivery/input.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function deliveryBudgetCommand(
   command: string,
@@ -14,7 +15,7 @@ export function deliveryBudgetCommand(
   json: boolean,
   io: Io,
 ): number {
-  const emit = (value: unknown) => io.out(JSON.stringify(value, null, json ? undefined : 2))
+  const emit = (value: unknown) => emitCommand(command, value, io, json)
   if (command === 'delivery budget-schema') {
     emit({
       schema: 'wholeloop/delivery-budget-schema@1',

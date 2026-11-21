@@ -1,0 +1,154 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`config show has a bounded human view 1`] = `
+"Configuration
+Profile / Preset   pair
+Profile / Pace     guided
+Providers / Sources
+  None
+Source / Profile.pace
+  project"
+`;
+
+exports[`delivery runner-status has a bounded human view 1`] = `
+"Delivery Runner status
+Status             blocked
+Unknowns           Provider read unavailable.
+Effects / Applied
+  no
+Budget / Remaining
+  0"
+`;
+
+exports[`delivery worker-schema has a bounded human view 1`] = `
+"Delivery Worker schema
+Format   Use --json for the complete machine-readable schema."
+`;
+
+exports[`keeps ordinary prose between horizontal rules and removes actual metadata only 1`] = `
+"Open · Search records
+Item     init-01234567
+Owner    Owner
+Status   open
+
+# Search records
+
+Readable document.
+
+Notes
+
+Use the saved criteria.
+
+Links
+
+https://example.invalid/source"
+`;
+
+exports[`next has a bounded human view 1`] = `
+"Next step
+
+Open questions
+  Which item should continue?
+  Search (init-01234567)
+  Browse (init-89abcdef)"
+`;
+
+exports[`next has a bounded human view 2`] = `
+"Next step
+Item           slice-01234567
+Dependencies   slice-89abcdef
+
+Open questions
+  Complete the recorded dependencies before continuing this work."
+`;
+
+exports[`overview has a bounded human view 1`] = `
+"Work overview
+Health            healthy
+Attention         waiting-input
+Unread messages   0
+Items             1
+init-01234567     open
+Needs attention   init-01234567: Item decision
+
+Next
+  wl step plan --for init-01234567"
+`;
+
+exports[`overview has a bounded human view 2`] = `
+"Work overview
+Health            unavailable
+Attention         unavailable
+Unread messages   unknown
+
+Open questions
+  The store is unavailable; totals are unknown.
+  store-unreadable"
+`;
+
+exports[`profile show has a bounded human view 1`] = `
+"Interaction preferences
+Preset      pair
+Pace        guided
+Verbosity   balanced"
+`;
+
+exports[`provider list has a bounded human view 1`] = `
+"Provider List
+Entries            1
+Code               Read the selected repository. · source.code
+Identifier         code
+Connection checks
+  Not performed; verify availability and authentication in the client."
+`;
+
+exports[`resume has a bounded human view 1`] = `
+"Resume · Search records
+Item              init-01234567
+Owner             Owner
+Status            open
+Related work      3
+Unread messages   2
+Browse            open
+Note              Use the saved criteria.
+
+Produced
+  items/init-01234567/spec.md
+
+Open questions
+  This view is shortened; open the item for its full history.
+
+Next
+  wl open init-01234567"
+`;
+
+exports[`setup has a bounded human view 1`] = `
+"Preferences
+
+Open questions
+  Where should these choices be remembered?
+  This run (run)
+  This project (project)"
+`;
+
+exports[`setup has a bounded human view 2`] = `
+"Preferences
+Saved              This run only; no file written
+Scope              run
+File               not set
+Profile / Preset   pair
+Providers / Docs   local-docs"
+`;
+
+exports[`worktree open has a bounded human view 1`] = `
+"Worktree Open
+Workspace          /tmp/workspace
+Branch             feat/search
+Status             active
+Tested             no
+Environment / PORT
+  4300
+Commands           None
+Stop               Opening does not record human testing.
+Human testing      Not recorded by opening the workspace"
+`;

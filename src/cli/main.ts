@@ -348,7 +348,7 @@ export async function runAsync(
     )
     presentationArgs = displayArguments(parsed)
     return await withCommandAttribution(command.path, parsed, root, async () => {
-      if (command.path === 'watch') return await watchCommand(parsed, root, io)
+      if (command.path === 'watch') return await watchCommand(parsed, root, io, json)
       if (command.path.startsWith('guard '))
         return await guardCommand(command.path, parsed, root, json, io)
       if (

@@ -10,6 +10,7 @@ import { VERSION } from '../version.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function generateCommand(
   { positional, options }: ReturnType<typeof parseArguments>,
@@ -41,12 +42,11 @@ export function generateCommand(
       native && typeof pin === 'string' ? pin : undefined,
     )
     const result = writeAdapter(resolve(root, output), generated, options['--dry-run'] === true)
-    io.out(
-      JSON.stringify(
-        { schema: 'wholeloop/adapter-build@1', ...result, manifest: generated.manifest },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      native ? 'adapter build-native' : 'build',
+      { schema: 'wholeloop/adapter-build@1', ...result, manifest: generated.manifest },
+      io,
+      json,
     )
     return EXIT.ok
   } catch (error) {

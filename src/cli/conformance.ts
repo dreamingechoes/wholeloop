@@ -17,6 +17,7 @@ import { VERSION } from '../version.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import type { Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export async function conformanceCommand(
   command: string,
@@ -37,7 +38,7 @@ export async function conformanceCommand(
         'Provide a regular downloads JSON file of at most 64 KiB; contents omitted',
       )
     }
-    io.out(JSON.stringify(conformanceAcquisition(input), null, json ? undefined : 2))
+    emitCommand(command, conformanceAcquisition(input), io, json)
     return 0
   }
   if (command === 'conformance matrix' || command === 'conformance issues') {
@@ -67,7 +68,7 @@ export async function conformanceCommand(
     const asOf = String(options['--at'] ?? new Date().toISOString())
     if (command === 'conformance issues') {
       const result = conformanceIssues(input, asOf)
-      io.out(JSON.stringify(result, null, json ? undefined : 2))
+      emitCommand(command, result, io, json)
       return result.issues.length ? 4 : 0
     }
     const matrix = conformanceMatrix(input, asOf)
@@ -76,7 +77,7 @@ export async function conformanceCommand(
         ? conformancePage(resolve(root, docs), matrix, options['--write'] === true)
         : undefined
     io.out(
-      options['--markdown'] === true
+      options['--markdown'] === true || !json
         ? conformanceMatrixMarkdown(matrix)
         : JSON.stringify(
             { ...matrix, ...(documentation ? { documentation } : {}) },
@@ -131,7 +132,7 @@ export async function conformanceCommand(
             : {}),
         },
       )
-      io.out(JSON.stringify(result, null, json ? undefined : 2))
+      emitCommand(command, result, io, json)
       return result.status === 'cancelled'
         ? 3
         : result.runs.some((run) => run.report.status === 'FAIL')
@@ -149,12 +150,11 @@ export async function conformanceCommand(
       typeof options['--pin'] !== 'string'
     )
       throw new CliError('Use conformance prepare --target <cli> --pin <exact-version>')
-    io.out(
-      JSON.stringify(
-        prepareConformance(context, options['--target'], options['--pin']),
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      command,
+      prepareConformance(context, options['--target'], options['--pin']),
+      io,
+      json,
     )
     return 0
   }
@@ -162,12 +162,12 @@ export async function conformanceCommand(
   if (!id || positional.length !== 1)
     throw new CliError('Provide exactly one prepared conformance run ID')
   if (command === 'conformance diagnose') {
-    io.out(JSON.stringify(conformanceDiagnostics(context, id), null, json ? undefined : 2))
+    emitCommand(command, conformanceDiagnostics(context, id), io, json)
     return 0
   }
   if (command === 'conformance report') {
     const report = reportConformance(context, id)
-    io.out(JSON.stringify(report, null, json ? undefined : 2))
+    emitCommand(command, report, io, json)
     return report.status === 'FAIL' ? 4 : report.status === 'UNRUN' ? 3 : 0
   }
   if ((options['--fixture'] === true) === (options['--live'] === true))
@@ -189,7 +189,7 @@ export async function conformanceCommand(
         ...(typeof timeout === 'string' ? { timeoutMs: Number(timeout) } : {}),
       },
     )
-    io.out(JSON.stringify(report, null, json ? undefined : 2))
+    emitCommand(command, report, io, json)
     return report.status === 'FAIL' ? 4 : 0
   } finally {
     process.off('SIGINT', cancel)

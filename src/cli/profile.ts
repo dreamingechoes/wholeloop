@@ -9,6 +9,7 @@ import { renderProfile } from '../profile/render.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function profileCommand(
   command: string,
@@ -83,9 +84,7 @@ export function profileCommand(
         : {}),
       ...(scope === 'run' && override ? { override: { profile: override } } : {}),
     }
-    io.out(
-      json ? JSON.stringify(payload) : `${JSON.stringify(profile, null, 2)}\n\n${payload.style}`,
-    )
+    emitCommand(command, payload, io, json)
     return EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error

@@ -6,6 +6,7 @@ import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import type { Io } from './io.js'
 import { readClientInventory } from './mcp-inventory.js'
+import { emitCommand } from './presentation.js'
 
 /** A client inventory is metadata, not authentication or authority to call any service. */
 export function providerPlanCommand(
@@ -27,6 +28,6 @@ export function providerPlanCommand(
     ...(inventory ? { inventory } : {}),
     ...(typeof transport === 'string' ? { transport: transport as ProviderTransport } : {}),
   })
-  io.out(JSON.stringify(plan, null, json ? undefined : 2))
+  emitCommand('provider plan', plan, io, json)
   return plan.status === 'unavailable' ? 3 : 0
 }

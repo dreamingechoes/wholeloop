@@ -5,6 +5,7 @@ import { providerFixtures } from '../providers/fixtures.js'
 import { loadProviders } from '../providers/load.js'
 import type { parseArguments } from './arguments.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 import { providerCommand } from './provider.js'
 
 export async function providerFixtureCommand(
@@ -28,6 +29,6 @@ export async function providerFixtureCommand(
   const provider = registry.providers.find((entry) => entry.manifest.id === parsed.positional[0])
   if (!provider) throw new Error('Unknown provider fixture target')
   const result = await providerFixtures(provider, input)
-  io.out(JSON.stringify(result, null, json ? undefined : 2))
+  emitCommand('provider test', result, io, json)
   return result.passed ? EXIT.ok : EXIT.shape
 }

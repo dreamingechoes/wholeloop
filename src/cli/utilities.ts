@@ -11,6 +11,7 @@ import { worktreeRecords } from '../worktrees/contracts.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 import { sharedRead } from './sharing-read.js'
 import { statusSummary } from './summary.js'
 
@@ -103,13 +104,9 @@ export function utilityCommand(
         }
       }
     }
-    io.out(
-      json
-        ? JSON.stringify(result.payload)
-        : command === 'status'
-          ? statusSummary(result.payload as Parameters<typeof statusSummary>[0])
-          : JSON.stringify(result.payload, null, 2),
-    )
+    if (!json && command === 'status')
+      io.out(statusSummary(result.payload as Parameters<typeof statusSummary>[0]))
+    else emitCommand(command, result.payload, io, json)
     return result.code
   } catch (error) {
     if (error instanceof CliError) throw error

@@ -42,7 +42,7 @@ function cells(value: string): number {
   )
 }
 
-function wrap(value: string, prefix = '', continuation = prefix): string[] {
+export function wrapText(value: string, prefix = '', continuation = prefix): string[] {
   const lines: string[] = []
   let line = prefix
   let filled = false
@@ -70,6 +70,24 @@ function wrap(value: string, prefix = '', continuation = prefix): string[] {
   }
   if (line.trim()) lines.push(line.trimEnd())
   return lines
+}
+
+/** Preserve authored line boundaries while applying the same terminal-cell limit. */
+export function humanLines(value: string): string {
+  return value
+    .split('\n')
+    .flatMap((line) => {
+      if (!line.trim()) return ['']
+      // Authored indentation cannot consume the full content width or emit terminal tabs.
+      const prefix = ' '.repeat(
+        Math.min(16, (/^\s*/.exec(line)?.[0] ?? '').replaceAll('\t', '  ').length),
+      )
+      const literal = stripVTControlCharacters(line.trimStart())
+        .replace(/[\p{Cc}\p{Cf}\p{Cs}]/gu, ' ')
+        .trimEnd()
+      return cells(prefix + literal) <= 80 ? [prefix + literal] : wrapText(literal, prefix, prefix)
+    })
+    .join('\n')
 }
 
 export function progressText(progress: DisplayProgress): string {
@@ -111,12 +129,12 @@ export function renderDisplay(input: Omit<Display, 'schema' | 'text'>): Display 
     label: displayValue(entry.label),
   }))
   const width = Math.min(18, Math.max(8, ...rows.map(({ label }) => cells(label) + 2)))
-  const lines = wrap(header)
+  const lines = wrapText(header)
   for (const { label, value } of rows) {
-    if (cells(label) > 16) lines.push(...wrap(label))
+    if (cells(label) > 16) lines.push(...wrapText(label))
     const prefix =
       cells(label) > 16 ? '  ' : `${label}${' '.repeat(Math.max(0, width - cells(label)))} `
-    lines.push(...wrap(value, prefix, ' '.repeat(width + 1)))
+    lines.push(...wrapText(value, prefix, ' '.repeat(width + 1)))
   }
   if (progress?.length) {
     if (lines.length) lines.push('')
@@ -129,7 +147,7 @@ export function renderDisplay(input: Omit<Display, 'schema' | 'text'>): Display 
   ] as const)
     if (values.length) {
       lines.push('', label)
-      for (const value of values) lines.push(...wrap(value, '  ', '  '))
+      for (const value of values) lines.push(...wrapText(value, '  ', '  '))
     }
   return {
     schema: 'wholeloop/display@1',

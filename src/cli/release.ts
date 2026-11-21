@@ -13,6 +13,7 @@ import { VERSION } from '../version.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function releasePreflightCommand(
   { positional, options }: ReturnType<typeof parseArguments>,
@@ -61,7 +62,7 @@ export function releasePreflightCommand(
     if (error instanceof CliError) throw error
     throw new CliError(error instanceof Error ? error.message : 'Invalid release metadata')
   }
-  io.out(JSON.stringify(result, null, json ? undefined : 2))
+  emitCommand('release preflight', result, io, json)
   return result.status === 'ready' ? EXIT.ok : EXIT.precondition
 }
 
@@ -100,7 +101,7 @@ export function releaseNotesCommand(
       previous ? { previous } : {},
     )
     io.out(
-      options['--markdown'] === true
+      options['--markdown'] === true || !json
         ? notes.markdown
         : JSON.stringify(
             { ...notes, from: history.from, to: history.to },
@@ -138,12 +139,11 @@ export function releaseArtifacts(
       generated,
       options['--dry-run'] === true,
     )
-    io.out(
-      JSON.stringify(
-        { schema: 'wholeloop/distribution-build@1', ...result, manifest: generated.manifest },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      'release artifacts',
+      { schema: 'wholeloop/distribution-build@1', ...result, manifest: generated.manifest },
+      io,
+      json,
     )
     return EXIT.ok
   } catch (error) {

@@ -24,6 +24,7 @@ import { DeliveryRunnerError } from '../runner/route.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function deliveryJournalCommand(
   command: string,
@@ -32,7 +33,7 @@ export function deliveryJournalCommand(
   json: boolean,
   io: Io,
 ): number {
-  const emit = (value: unknown) => io.out(JSON.stringify(value, null, json ? undefined : 2))
+  const emit = (value: unknown) => emitCommand(command, value, io, json)
   if (command === 'delivery state-schema') {
     emit({
       schema: 'wholeloop/delivery-state-schema@1',
