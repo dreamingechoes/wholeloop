@@ -70,6 +70,7 @@ export function statusSummary(payload: {
 }
 
 interface InstallationSummary {
+  storeAccess?: { file: string; snippet: string }
   schema: string
   status: string
   scope: string
@@ -119,6 +120,13 @@ export function installationSummary(result: InstallationSummary): string {
     ...(result.backup ? [`Backups: ${result.backup}`] : []),
     `Receipt: ${result.receipt}`,
     ...next,
+    ...(result.storeAccess
+      ? [
+          `Codex store access — review only; no client settings were changed: ${result.storeAccess.file}`,
+          result.storeAccess.snippet,
+          'Merge this with your existing settings only after choosing to allow the store; keep other writable roots you still need.',
+        ]
+      : []),
     'Add --json for the full result.',
   ].join('\n')
 }

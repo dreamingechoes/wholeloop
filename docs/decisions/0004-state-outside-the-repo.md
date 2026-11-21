@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-21 (P9-01).** A sandbox may refuse the external store even when ordinary filesystem permissions allow it. Permission failures now identify that store and the client setting to review, with exit 3. Installation prints the Codex writable-root snippet without applying it; doctor separates declared configuration from an actual write probe and from effective native policy. Moving runtime state into the repository or changing client permissions automatically was rejected.
+
 The harness has to remember a lot between sessions: the initiatives in progress, every artifact produced, questions asked and answered, gate rounds and verdicts, messages between agents, decisions and who made them. That memory must:
 
 - survive compaction, crashes and switching from one CLI to another;
@@ -22,6 +24,8 @@ The harness has to remember a lot between sessions: the initiatives in progress,
 5. **Single writer.** Only `wl` writes the store: validated, write-then-rename, appends under a lock.
 6. **Sharing goes through providers.** Steps publish to the configured `docs` and `tracker` destinations; another person adopts the work into their own store from those artifacts. External trackers are **sync adapters**, never the source of truth.
 7. The only harness file a repository holds is **configuration** (`.wholeloop/config.yml`), written by people on purpose. Git worktrees used for builds also live under the store ([ADR-0013](./0013-git-worktrees-for-parallel-builds.md)).
+
+8. **Store access stays explicit.** `EACCES` and `EPERM` on the store are precondition failures with the resolved path and client-specific recovery guidance. Codex settings are inspected and printed for review only; no command expands writable roots automatically or treats declared configuration as proof of effective native access. The optional install metadata uses the existing permissive output envelope; its frozen schema declaration is unchanged.
 
 ## Consequences
 
@@ -46,7 +50,12 @@ The harness has to remember a lot between sessions: the initiatives in progress,
 | beads or another task-graph tool as the store | Couples the harness to one tool and its install; kept as a possible sync adapter |
 | An external tracker as the store | Network on every write, vendor lock-in, slow for agent chatter |
 | SQLite | Fast queries, but binary and opaque to people; rejected for now — may return as a rebuildable index next to the journal |
+| Automatically allow the store or move it inside the checkout | Widens client authority or breaks the external-state boundary instead of asking for the necessary directory allowance |
 | Keep state in the agent session | Lost on compaction or crash; invisible to other agents and CLIs |
+
+## Verification
+
+`test/unit/diagnostics/store-access.test.ts` exercises permission errors, wrapped failures, all seven client hints, real CLI exit 3, declared Codex roots, project overrides and review-only installation. `test/unit/diagnostics/doctor.test.ts` retains the ordinary filesystem and containment checks. Live client policies remain part of per-client manual verification.
 
 ## Links
 

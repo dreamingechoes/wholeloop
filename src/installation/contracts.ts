@@ -10,6 +10,7 @@ export interface InstallationResult {
   scope: 'user' | 'project'
   targets: readonly string[]
   receipt: string
+  storeAccess?: { target: 'codex'; store: string; file: string; snippet: string; applied: false }
   conformance: 'unverified'
   authenticated: false
   status: 'installed' | 'uninstalled' | 'already-correct' | 'already-absent' | 'planned'

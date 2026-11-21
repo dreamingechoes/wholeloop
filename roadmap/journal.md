@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-21 · P9-01 ✅ · Recoverable external-store permission failures
+
+- **Changed:** store `EACCES` and `EPERM` failures now return exit 3 with the resolved path and a targeted hint for the declared client. Both CLI dispatchers preserve that diagnosis when handlers wrap filesystem errors. All seven clients have bounded recovery wording.
+- **Codex:** install adds a review-only configuration snippet to human and JSON output; doctor checks declared user/project writable roots separately from its actual write probe. Missing or unreadable settings stay unknown, and active overrides may still refuse access. No client settings are changed.
+- **Decision:** [ADR-0004](../docs/decisions/0004-state-outside-the-repo.md) is amended. Automatic writable-root changes and putting state inside the checkout were rejected; the person chooses the directory allowance. Troubleshooting includes observed exit-3 output from a disposable home.
+- **Compatibility:** the first full gate found three failures after an optional field definition changed the frozen install declaration. The declaration is restored unchanged; the additive payload metadata remains valid under its existing permissive contract. No baseline fingerprint is refreshed.
+- **Verified:** `CHECK PASS in 773s`, 4815 tests in 341 files; `CHECK PASS (fast) in 102s` for the initial change and `CHECK PASS (fast) in 47s` after restoring the frozen declaration. All 444 compatibility cases passed. The 45 focused permission and existing doctor tests passed, including human/JSON CLI refusals, both permission error codes, seven client hints, configuration precedence and installation without configuration writes. macOS arm64 locally; Linux remains for required CI. Unix mode-bit refusal cases skip for root, which bypasses those bits.
+
+---
+
 ## 2026-11-21 · P9-20 ✅ · Observed experience budgets
 
 - **Changed:** a six-step external fixture evaluation for Codex and Claude Code, native transcript parsers, worker overlap and visible-output measurements, absolute budgets, offline replay and baseline calibration. The entry point refuses live work before launch without explicit quota confirmation; no live experience run was made.

@@ -17,6 +17,7 @@ Work from left to right: each part depends on the ones before it. These checks s
 | --- | --- |
 | `wl` is not found, or the bundle path disappeared | [Executable path](#the-shell-cannot-find-wholeloop) |
 | Installed files exist but no skill appears | [Native discovery](#files-installed-but-the-skill-is-missing) |
+| `EACCES` or `EPERM` names the store | [Store permissions](#a-sandboxed-client-cannot-write-the-store) |
 | Doctor returns exit 3 | [Doctor findings](#doctor-reports-a-failure-or-unknown) |
 | The client cannot run a tool or model | [Native access](#the-client-denies-a-tool-or-cannot-use-a-model) |
 | An install or update refuses to overwrite files | [Ownership](#installation-reports-changed-unowned-or-pending-files) |
@@ -75,6 +76,23 @@ Each failed check names **what it saw**, **what to do** and often **the command 
 - A failed required check exits with **code 3**.
 
 [Doctor checks](./getting-started.md#check-the-installation).
+
+## A sandboxed client cannot write the store
+
+**Exit 3** names the store directory and the setting to review for the detected client. The directory stays outside the repository: moving it into the checkout would mix personal work records with project history.
+
+This example exits with 3. The home directory in its observed output is shortened to `~`:
+
+```console
+$ wl step begin research --input "How are titles normalized?" --owner "Example Owner"
+wl: Cannot write the wholeloop store at "~/.local/state/wholeloop"; allow this directory in sandbox_workspace_write.writable_roots for a workspace-write run, or restore filesystem write access.
+```
+
+For **Codex**, a workspace-write run needs the store in `sandbox_workspace_write.writable_roots`. The install dry run prints a snippet for review, including the exact resolved store path. Merge it with your existing configuration only after choosing to allow that directory; preserve other roots you still need. Installation never changes this setting for you.
+
+Doctor's `store.codex` check reads the user and project configuration. A declared root can pass that check while an active command-line override or client policy still refuses the write; an undeclared mode or unreadable configuration stays unknown. The ordinary store check separately attempts an actual write from the process running doctor.
+
+For other clients, follow the setting named in the error and approve only the store directory. Filesystem access also matters: a client allowance does not repair a directory your operating-system account cannot write, and changing file modes does not grant sandbox access.
 
 ## The client denies a tool or cannot use a model
 
