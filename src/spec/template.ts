@@ -18,7 +18,7 @@ export function specTemplate(
   configuration: Record<string, unknown>,
   binding?: { ref: string; origin: string } | null,
 ): SpecTemplate {
-  if (binding && binding.origin !== 'harness')
+  if (binding && binding.ref !== 'default')
     return { kind: 'repository', ref: binding.ref, sections: [...SPEC_SECTIONS] }
   const catalog = loadCatalog(templateAdapter, loadExtensionOptions({ root, userFile }))
   if (catalog.problems.length)

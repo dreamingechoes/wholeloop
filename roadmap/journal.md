@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-21 · P9-02 ✅ · Explicit personal guidance and run preferences
+
+- **Changed:** description-only matches are excluded; personal names match complete method aliases or explicit tags and remain optional offers. Wholeloop’s default is first, equivalent content is deduplicated and shared physical folders are walked once. Repository guidance remains automatic within its declared precedence.
+- **Client scope:** personal discovery uses the executing client or an explicit client choice, including native directory overrides. Unknown clients scan no personal skills. Other-client locations are listed without loading their files until requested; the repository scan still covers every client.
+- **Decision:** [ADR-0009](../docs/decisions/0009-repo-first-capability-resolution.md) is amended. Run choices are versioned external preference configuration, not a reinterpretation of frozen journal events. Anonymous questions return a run ID for the answer and repeated begin; existing run identities cannot be reassigned. Every answer validates the offered value before writing and names its destination.
+- **Consumers:** build, review, verification and Rollout/Learn guidance read the selected run’s preferences. An explicit default remains the built-in method. Remembered personal content is readable only inside a declared skill location, never by granting arbitrary home-file access.
+- **Regression found:** the first affected-test gate exposed an autonomous planner that appended its own default after the resolver’s options. It now preserves the resolver’s single, default-first list; configured defaults also bypass file pinning. The 13 autonomous guidance tests passed after the correction.
+- **Verified:** `CHECK PASS in 679s`, 4834 tests in 342 files; `CHECK PASS (fast) in 617s`. All 444 compatibility cases passed. The focused suites passed 277 affected-workflow tests in 22 files, 19 personal-guidance cases and 13 autonomous guidance tests, with overlapping coverage. Generated references were current. Renaming a discovery test also required removing its obsolete snapshot key; its expected contents were unchanged. macOS arm64 locally; Linux and actual native policies remain for required CI and the existing manual checks. The experience baseline instructions now name the pre-fix P9-20 revision explicitly.
+
+---
+
 ## 2026-11-21 · P9-01 ✅ · Recoverable external-store permission failures
 
 - **Changed:** store `EACCES` and `EPERM` failures now return exit 3 with the resolved path and a targeted hint for the declared client. Both CLI dispatchers preserve that diagnosis when handlers wrap filesystem errors. All seven clients have bounded recovery wording.

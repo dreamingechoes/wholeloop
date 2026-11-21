@@ -1,6 +1,6 @@
 # Repo skills and slots — follow what your repository already knows
 
-> **TL;DR** — Each step declares named **slots**: places where your repository's own guidance should take over, such as `build.frontend`, `verify.suite` or `review.rubric`. Before acting, `wl discover` scans your repository for the skills, agents, rules and commands it already has, for every major client and not just the one you are using, and binds each slot to the most specific match. The harness's own defaults are the last resort, never the first.
+> **TL;DR** — Each step declares named **slots**: places where your repository's own guidance should take over, such as `build.frontend`, `verify.suite` or `review.rubric`. Before acting, `wl discover` scans your repository for the skills, agents, rules and commands it already has, for every major client and not just the one you are using, and binds each slot to the most specific match. Personal skills are offered only when relevant and never selected for you; the initial choice is your repository's guidance or wholeloop's default.
 
 > [!NOTE]
 > **Partial.** Discovery, cached capability maps, slot resolution, explicit choices and step bindings work. Discovering a design system's MCP server and richer language-specific rules are planned.
@@ -25,7 +25,8 @@ The result is a **capability map**, cached in your store and refreshed when the 
 
 - **Commands** carry their exact arguments and working directory. Nested packages inherit the workspace's declared package manager. Go, Rust, pytest, RSpec, Make, just and Taskfile runners are found from their declarations, which does not prove they are installed or that their tests pass.
 - **Skipped:** dependency and build directories, files over 1 MiB, and symlinks that leave the repository or are broken, each with a warning. Symlinks inside the repository are followed once.
-- **Your own skills**, outside the repository, are scanned only in skill directories and rank below the repository's.
+- **Your own skills** are scanned only in the current client’s skill locations, including its native directory overrides. An ordinary terminal without a declared client scans none; use `--client <name>` to choose the client. Other detected locations are labelled **configured for another client**. `--include-other-clients` explicitly includes their personal skills; it never changes the repository scan.
+- **Copies with identical content** count once, with the repository’s copy preferred. Description-only matches never become candidates. A personal name must match the whole method name, so an unrelated `medical-research` skill does not become research guidance.
 - **Invalid metadata or runner configuration stops resolution** instead of choosing from a partial map.
 
 Two kinds of files never compete for a slot:
@@ -61,8 +62,8 @@ Codex TOML agents are listed by path; their format and read-only behaviour still
 flowchart LR
   a["1 · explicit binding<br/>.wholeloop/config.yml"] --> b["2 · repo skill tagged<br/>metadata.wholeloop.slot"]
   b --> c["3 · repo asset matched<br/>by deterministic rules"]
-  c --> d["4 · skill installed<br/>by the user"]
-  d --> e["5 · harness default"]:::core
+  c --> e["4 · wholeloop default"]:::core
+  p["Personal skill offered"] -. "only when chosen" .-> a
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
 ```
 
@@ -78,11 +79,10 @@ flowchart LR
    ---
    ```
 
-3. **Rule match**: deterministic keyword and path rules over names, descriptions and file types. Rules are data, versioned and tested against fixture repositories.
-4. **User skill**: something you installed for yourself.
-5. **Harness default**: wholeloop's own minimal guidance.
+3. **Rule match**: deterministic name and file-type rules. A description alone is never a match.
+4. **Wholeloop default**: the built-in guidance. A personal name match or explicit personal tag is offered with this default first; it does not replace the default until you choose it.
 
-**Ambiguity is a question, not a coin toss.** Two equally good matches, or a match with low confidence, produce one question; the answer is remembered as an explicit binding.
+**Distinct repository ties need a choice.** Identical copies count once. Personal offers are optional and keep the default available, so a collection of unrelated personal skills never blocks a step.
 
 ## Transparency
 
@@ -133,11 +133,12 @@ $ wl resolve verify.suite
     …
 ```
 
-- **A tie, or a match on the description only**, returns a question and exit code 2.
+- **A tie between distinct repository matches** returns a question and exit code 2. Its first option is wholeloop’s default. A description-only match contributes no candidate or question.
 - **No match** returns the harness default. Binding a slot to `default` explicitly opts out of repository guidance for it.
-- **Remember a choice** with `wl answer slot:build.frontend=.agents/skills/ui-kit/SKILL.md --remember project --json`, or `--remember user` for yourself.
+- **Remember a choice** with an answer using `--remember project`, `--remember user` or `--remember run`. The returned `file` says where the choice was written. Unoffered values are rejected before writing. A run choice uses external configuration and never edits the project or user configuration.
+- **Before an item exists**, answer with the `--run` returned by the question and repeat `step begin --run` with that ID. After a step starts, `--for` selects its active run. The choice applies only to that run; reusing a started run for another item is refused.
 
-Every `wl step begin` payload includes its slot resolutions, and unresolved choices appear among its questions.
+Every `wl step begin` payload includes its resolved guidance and any optional personal offers. Only unresolved required repository choices block the step. Other-client locations remain a listing until you request their inspection.
 
 ## In autonomous runs
 

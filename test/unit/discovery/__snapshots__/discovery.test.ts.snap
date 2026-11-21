@@ -1,10 +1,11 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`repository capability maps > prefers explicit bindings, then repo tags, repo rules, user skills and defaults 1`] = `
+exports[`repository capability maps > prefers explicit bindings, then repo tags and rules, with personal choices optional 1`] = `
 {
   "candidates": [
     {
       "confident": true,
+      "contentHash": "6b195ec12b48b6ed66477e7c8fd7a9d02382ee46c0c1ce94bdad4fce361ee9c1",
       "origin": "repo",
       "outcome": "Selected by precedence and confidence",
       "reason": "Explicit metadata.wholeloop.slot tag for build.frontend",
@@ -14,6 +15,7 @@ exports[`repository capability maps > prefers explicit bindings, then repo tags,
     },
     {
       "confident": true,
+      "contentHash": "ff2a7e8e14b307c9b02f6bd97f420c2f75ec974a31a5e2b5ae0d98d484a7162b",
       "origin": "repo",
       "outcome": "Lost to a higher-precedence or stronger candidate",
       "reason": "Name matches the versioned build.frontend rule",
@@ -22,7 +24,8 @@ exports[`repository capability maps > prefers explicit bindings, then repo tags,
       "selected": false,
     },
     {
-      "confident": true,
+      "confident": false,
+      "contentHash": "8d7c10095395c9f9bc20a28b957926c4e963931221c65106c9c40873e2e172d1",
       "origin": "user",
       "outcome": "Lost to a higher-precedence or stronger candidate",
       "reason": "Explicit metadata.wholeloop.slot tag for build.frontend",
@@ -55,6 +58,7 @@ exports[`repository capability maps > scans go deterministically 1`] = `
 {
   "assets": [
     {
+      "contentHash": "17d19e9aa0d9ada470d7bc73b8348375ca6436aeebb928337df3526bde8ed1f0",
       "description": "",
       "kind": "quality",
       "name": ".golangci",
@@ -62,6 +66,7 @@ exports[`repository capability maps > scans go deterministically 1`] = `
       "slots": [],
     },
     {
+      "contentHash": "d1943ffaf9f2231fe0ff2b3094968ca920ae8e9462c20b6e33f73e43a50bf704",
       "description": "",
       "kind": "instruction",
       "name": "AGENTS",
@@ -101,6 +106,7 @@ exports[`repository capability maps > scans js-monorepo deterministically 1`] = 
 {
   "assets": [
     {
+      "contentHash": "7022f0d09a9a9203be1134a8da51086756b5e87c50c18267ad92eea68b386a9f",
       "description": "Use our UI primitives.",
       "kind": "skill",
       "name": "ui-kit",
@@ -111,6 +117,7 @@ exports[`repository capability maps > scans js-monorepo deterministically 1`] = 
       ],
     },
     {
+      "contentHash": "4be9e1c9847ae4e969212f41c8bbe4da39ea8ef15eb7526b4bff9c02039ea1ea",
       "description": "",
       "kind": "instruction",
       "name": "AGENTS",
@@ -118,6 +125,7 @@ exports[`repository capability maps > scans js-monorepo deterministically 1`] = 
       "slots": [],
     },
     {
+      "contentHash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
       "description": "",
       "kind": "quality",
       "name": "biome",
@@ -125,6 +133,7 @@ exports[`repository capability maps > scans js-monorepo deterministically 1`] = 
       "slots": [],
     },
     {
+      "contentHash": "9aeb8d59b4d483ca6298e9a450fbf37dfd2b4c63990135ab1d040d76314087ec",
       "description": "",
       "kind": "design",
       "name": "main",
@@ -187,6 +196,7 @@ exports[`repository capability maps > scans mixed deterministically 1`] = `
 {
   "assets": [
     {
+      "contentHash": "6b195ec12b48b6ed66477e7c8fd7a9d02382ee46c0c1ce94bdad4fce361ee9c1",
       "description": "Guide for our frontend.",
       "kind": "skill",
       "name": "web-guide",
@@ -196,6 +206,7 @@ exports[`repository capability maps > scans mixed deterministically 1`] = `
       ],
     },
     {
+      "contentHash": "ff2a7e8e14b307c9b02f6bd97f420c2f75ec974a31a5e2b5ae0d98d484a7162b",
       "description": "Build frontend components.",
       "kind": "skill",
       "name": "ui-kit",
@@ -203,6 +214,7 @@ exports[`repository capability maps > scans mixed deterministically 1`] = `
       "slots": [],
     },
     {
+      "contentHash": "60b548dacc1306b480ad961cc8b5c92b53a4ddf69024156c5a9f17686bfadffd",
       "description": "",
       "kind": "agent",
       "name": "reviewer",
@@ -210,6 +222,7 @@ exports[`repository capability maps > scans mixed deterministically 1`] = `
       "slots": [],
     },
     {
+      "contentHash": "3717c3c8027c526d5bc5af9adf27c8ecde05ce3cb7de2ad9058fcd54ca3212db",
       "description": "",
       "kind": "instruction",
       "name": "style",
@@ -217,6 +230,7 @@ exports[`repository capability maps > scans mixed deterministically 1`] = `
       "slots": [],
     },
     {
+      "contentHash": "18fc3ce1c007131c5f7a9b98ec72236f516cf542ea25b3bb7d81526246c792b9",
       "description": "",
       "kind": "instruction",
       "name": "copilot-instructions",
@@ -224,6 +238,7 @@ exports[`repository capability maps > scans mixed deterministically 1`] = `
       "slots": [],
     },
     {
+      "contentHash": "bac9ec6ef369c7499ca84a665246ce2d5f769a740f09d008c735ae582fd4a8db",
       "description": "Review code.",
       "kind": "agent",
       "name": "reviewer",
@@ -252,6 +267,7 @@ exports[`repository capability maps > scans python deterministically 1`] = `
 {
   "assets": [
     {
+      "contentHash": "f2d2c62f5a68f9aece311b9cd450cb054020dfecda656ac6087080bd8da10b43",
       "description": "",
       "kind": "instruction",
       "name": "AGENTS",
@@ -259,6 +275,7 @@ exports[`repository capability maps > scans python deterministically 1`] = `
       "slots": [],
     },
     {
+      "contentHash": "719557362456a2848728ec234781934fb2961387d45acb3c590a8067d1a115db",
       "description": "",
       "kind": "quality",
       "name": "ruff",
@@ -288,6 +305,7 @@ exports[`repository capability maps > scans ruby deterministically 1`] = `
 {
   "assets": [
     {
+      "contentHash": "f4329c86ae0be9014bf84aae8e22edb245b0d326ed5bbc9f31626c2b09bc604c",
       "description": "",
       "kind": "convention",
       "name": "pull_request_template",
@@ -295,6 +313,7 @@ exports[`repository capability maps > scans ruby deterministically 1`] = `
       "slots": [],
     },
     {
+      "contentHash": "03681081b17a6335be218c17cdd0f74f0b1a6e9094b5e3057329aa3d62070740",
       "description": "",
       "kind": "quality",
       "name": ".rubocop",

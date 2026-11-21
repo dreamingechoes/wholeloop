@@ -65,16 +65,18 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-02 · Guidance discovery that never picks unrelated skills
 
-**Status:** ⬜ · **Size:** M · **Depends on:** — · **Release:** 1.2.0 · **Decision:** amends [ADR-0009](../docs/decisions/0009-repo-first-capability-resolution.md)
+**Status:** ✅ · **Size:** M · **Depends on:** — · **Release:** 1.2.0 · **Decision:** amends [ADR-0009](../docs/decisions/0009-repo-first-capability-resolution.md)
 
 **Goal** — A step uses the repository's guidance or wholeloop's default unless the person chose a personal skill.
 
 **Acceptance criteria:**
 
-- [ ] A description-only match is never a candidate; a name match from a personal skill is offered, never selected automatically.
-- [ ] By default only the current client's personal skill folders are scanned; others are offered as "configured for another client".
-- [ ] Candidates are de-duplicated by content; "use wholeloop's default" is always the first option; answers are validated against the offered values; a run scope exists, and the answer says where a remembered choice is written.
-- [ ] In a fresh repository with a home holding unrelated skills (one mentions "backend", one "commits", one is named `*-research`), every build and research slot resolves to the default with no question.
+- [x] A description-only match is never a candidate; a name match from a personal skill is offered, never selected automatically.
+- [x] By default only the current client's personal skill folders are scanned; others are offered as "configured for another client".
+- [x] Candidates are de-duplicated by content; "use wholeloop's default" is always the first option; answers are validated against the offered values; a run scope exists, and the answer says where a remembered choice is written.
+- [x] In a fresh repository with a home holding unrelated skills (one mentions "backend", one "commits", one is named `*-research`), every build and research slot resolves to the default with no question.
+
+**Evidence** — `CHECK PASS in 679s`, 4834 tests in 342 files; `CHECK PASS (fast) in 617s`. The focused affected-workflow suite passed 277 tests in 22 files; the completed personal-guidance suite passed 19 cases, including seven client identities, native/configured folders, opt-in other-client reads, duplicate contents and shared physical folders. A fresh fixture home with unrelated backend/commit descriptions and a research suffix leaves every build and research binding at the default without questions. Built-CLI tests validate offered values and anonymous run choices without project configuration writes. Consumer tests verify actual personal review content and the explicit default. The 13 autonomous guidance tests cover the same default-first choices without duplication. All 444 compatibility cases passed. ADR-0009 records whole-name personal matching, optional offers, external run configuration and preserved run identity. Native client startup evidence remains in the existing per-client manual checks.
 
 **Tests** — Table-driven resolution cases for the fixture home above, duplicates and answer validation.
 

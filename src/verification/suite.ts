@@ -23,7 +23,7 @@ export function suitePlan(
   if (!Number.isInteger(timeoutMs) || timeoutMs < 100 || timeoutMs > 600000)
     throw new Error('Suite timeout must be 100–600000 milliseconds')
   const inventory = discover(gate.repository, engine.store.files, engine.home)
-  const config = engine.config()
+  const config = engine.config(gate.subject, 'verify-works', gate.run)
   const binding =
     isObject(config.slots) && typeof config.slots['verify.suite'] === 'string'
       ? config.slots['verify.suite']
@@ -32,8 +32,7 @@ export function suitePlan(
     user: inventory.user,
     ...(binding ? { binding } : {}),
   })
-  if (resolution.questions.length)
-    throw new Error('Resolve the verify.suite choice before execution')
+  if (!resolution.selected) throw new Error('Resolve the verify.suite choice before execution')
   let selected = refs
   if (!selected) {
     const command = inventory.repo.commands.find(

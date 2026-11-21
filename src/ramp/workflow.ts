@@ -1,18 +1,18 @@
 // The ramp-exposure workflow: stages, evidence, decisions and receipts.
-import { isAbsolute, join } from 'node:path'
+
 import { BuildWorkflow } from '../build/workflow.js'
 import { loadExtensionOptions } from '../config/load.js'
 import { isObject } from '../config/schema.js'
+import { guidanceText } from '../discovery/content.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { discover } from '../discovery/tree.js'
 import type { FlowEngine } from '../flow/engine.js'
-import { readRegularText } from '../fs/regular-file.js'
 import { launchRuns } from '../launch/contracts.js'
 import { measurementDigest } from '../launch/measurement.js'
 import { loadProviders } from '../providers/load.js'
 import type { ProviderHost } from '../providers/operations.js'
 import type { StateEvent } from '../state/events.js'
-import { canonicalPath, inside } from '../state/paths.js'
+import { canonicalPath } from '../state/paths.js'
 import {
   bindRampControl,
   observedTarget,
@@ -38,9 +38,9 @@ export function defaultRampStages(internalAudience = '<confirm-internal-audience
     { key: 'all', audience: 'all', enabled: true, exposure: 100 },
   ]
 }
-function criteriaGuidance(engine: FlowEngine) {
+function criteriaGuidance(engine: FlowEngine, subject?: string, run?: string) {
   const inventory = discover(engine.root, engine.store.files, engine.home)
-  const slots = engine.config().slots
+  const slots = engine.config(subject, 'ramp-exposure', run).slots
   const binding = resolveSlot('ramp.criteria', inventory.repo, {
     user: inventory.user,
     ...(isObject(slots) && typeof slots['ramp.criteria'] === 'string'
@@ -48,16 +48,11 @@ function criteriaGuidance(engine: FlowEngine) {
       : {}),
   })
   const selected = binding.selected
-  if (!selected || binding.questions.length)
-    throw new Error('Resolve ramp.criteria before planning the stages')
+  if (!selected) throw new Error('Resolve ramp.criteria before planning the stages')
   let content =
     'Collect explicit error, observability and key-metric queries. Unknown required evidence blocks go; optional open signals need explicit acknowledgment. Every exposure change remains human.'
-  if (selected.origin !== 'harness') {
-    const base = selected.origin === 'user' ? engine.home : engine.root
-    const file = canonicalPath(isAbsolute(selected.ref) ? selected.ref : join(base, selected.ref))
-    // The canonical path is checked, then read through one descriptor that refuses a link
-    // swapped in after the check.
-    const text = inside(canonicalPath(base), file) ? readRegularText(file, 1024 * 1024) : undefined
+  if (selected.ref !== 'default') {
+    const text = guidanceText(engine.root, engine.home, selected)
     if (text === undefined)
       throw new Error('Ramp criteria guidance must be a local file under 1 MiB')
     content = text
@@ -104,7 +99,7 @@ export class RampWorkflow {
     validateRampPlan(options.plan)
     if (launch && options.plan.sourceDigest !== launch.plan.source.digest)
       throw new Error('The ramp must pin its prepared launch measurement digest')
-    const guidance = criteriaGuidance(engine)
+    const guidance = criteriaGuidance(engine, options.subject)
     const subject =
       item?.id ??
       engine.store.create({
@@ -149,7 +144,7 @@ export class RampWorkflow {
     const engine = new BuildWorkflow(this.engine).engineFor(subject)
     const record = latest(engine.store.events(), subject)
     if (!record) throw new Error('Begin ramp-exposure before observing or deciding stages')
-    const guidance = criteriaGuidance(engine)
+    const guidance = criteriaGuidance(engine, subject, record.run)
     const { content: _content, ...reference } = guidance
     if (JSON.stringify(reference) !== JSON.stringify(record.criteria))
       throw new Error('Ramp criteria guidance changed after planning')

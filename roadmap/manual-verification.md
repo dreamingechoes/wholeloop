@@ -10,7 +10,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 [Phase 9](./phase-9-user-experience.md) is built and tested with fixtures; these checks need signed-in clients and model quota.
 
-- [ ] Baseline: the experience check (P9-20) is run on the current behaviour in Claude Code and in Codex before P9-01–P9-05 land, and its numbers are recorded here.
+- [ ] Baseline: the experience check (P9-20) is run on its pre-fix revision in Claude Code and in Codex, and its numbers are recorded here. Use the pinned revision below even after later fixes have landed.
 - [ ] The experience check (P9-20) passes its budgets on Claude Code and on Codex.
 - [ ] OpenCode, Copilot, Gemini, Cursor and Antigravity: the experience check is run and its results are recorded here, with any gap filed as a Phase 9 task (P9-21).
 - [ ] Repeat the 2026-11-17 research question in Codex after P9-02–P9-07: one question about sources, read-only workers started together, no unrelated source, the answer first.
@@ -18,7 +18,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 ### P9-20 baseline capture
 
-- [ ] On the P9-20 commit, before the UX fixes, run the six-step evaluation on Codex and Claude Code using dedicated signed-in homes; retain native traces, client versions and the source revision outside repositories. No live experience run has been performed. See [evaluation instructions](../test/evals/experience/README.md).
+- [ ] On P9-20 revision `2927dc0d329ed60ef931ff2c5174066a334378a9`, before the UX fixes, run the six-step evaluation on Codex and Claude Code using dedicated signed-in homes; retain native traces, client versions and the source revision outside repositories. No live experience run has been performed. See [evaluation instructions](../test/evals/experience/README.md).
 - [ ] Calibrate token, first-question, call-count and build-gate time budgets from those twelve live traces. Until then, these checks fail explicitly as pending; synthetic fixtures do not establish a baseline.
 - [ ] Inspect native-stream coverage of nested worker usage, sources and permission decisions during each client pass; streams cannot prove actions they do not expose.
 

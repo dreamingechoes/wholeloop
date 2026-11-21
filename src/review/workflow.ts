@@ -67,7 +67,7 @@ export class ReviewWorkflow {
     const branch = options.branch ?? git(engine.root, ['branch', '--show-current']).trim()
     if (!allocation) namedBase(engine.root, branch)
     namedBase(engine.root, base ?? '')
-    reviewRubric(engine, allocation?.path ?? engine.root)
+    reviewRubric(engine, allocation?.path ?? engine.root, options.subject)
     const subject =
       options.subject ??
       engine.store.transaction((_events, append) => {

@@ -1,4 +1,5 @@
 // Scans a repository for skills, agents, rules and commands without executing anything.
+import { createHash } from 'node:crypto'
 import { posix } from 'node:path'
 import { parse } from 'yaml'
 import { isObject } from '../config/schema.js'
@@ -79,7 +80,10 @@ export function fileKind(path: string): Asset['kind'] | 'runner' | undefined {
 }
 
 /** The scan reports declarations; it never executes repository commands or code. */
-export function scan(files: ReadonlyMap<string, string>): CapabilityMap {
+export function scan(
+  files: ReadonlyMap<string, string>,
+  options: { personal?: boolean } = {},
+): CapabilityMap {
   const result: CapabilityMap = {
     schema: 'wholeloop/discover@1',
     assets: [],
@@ -87,7 +91,7 @@ export function scan(files: ReadonlyMap<string, string>): CapabilityMap {
     problems: [],
   }
   for (const [path, raw] of [...files].sort(([a], [b]) => a.localeCompare(b))) {
-    const kind = fileKind(path)
+    const kind = options.personal && path.endsWith('/SKILL.md') ? 'skill' : fileKind(path)
     if (!kind) continue
     const content = raw.replaceAll('\r\n', '\n')
     const name =
@@ -132,6 +136,7 @@ export function scan(files: ReadonlyMap<string, string>): CapabilityMap {
           name: typeof metadata?.name === 'string' ? metadata.name : name,
           description: typeof metadata?.description === 'string' ? metadata.description : '',
           slots,
+          contentHash: createHash('sha256').update(content).digest('hex'),
           ...(['skill', 'agent'].includes(kind) &&
           isEntrypoint(content, path.endsWith('.toml') ? 'toml' : 'md')
             ? { entrypoint: true as const }

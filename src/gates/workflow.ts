@@ -106,7 +106,11 @@ export class GateWorkflow {
       namedBase(repo.path, options.base).ref !== first.base.ref
     )
       throw new Error('Gate base is already pinned')
-    const config = this.engine.config()
+    const config = this.engine.config(
+      subject,
+      gate === 'verify' ? 'verify-works' : 'review-code',
+      first?.run,
+    )
     const settings = isObject(config.gates) ? config.gates : {}
     const gateSettings = isObject(settings[gate]) ? settings[gate] : {}
     const inventory = discover(repo.path, this.engine.store.files, this.engine.home)
@@ -123,7 +127,7 @@ export class GateWorkflow {
           user: inventory.user,
           ...(typeof configuredSlots[slot] === 'string' ? { binding: configuredSlots[slot] } : {}),
         }).selected
-        return selected && selected.origin !== 'harness'
+        return selected && selected.ref !== 'default'
       })
       .sort()
     const paths = changedPaths(repo.path, base.sha)

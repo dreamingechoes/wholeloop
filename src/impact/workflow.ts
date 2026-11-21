@@ -150,7 +150,7 @@ export class ImpactWorkflow {
           plan: measurement,
         }
       })()
-    const guidance = impactGuidance(engine)
+    const guidance = impactGuidance(engine, options.subject)
     const { content: _content, ...reference } = guidance
     const qualitative = options.qualitative ?? active?.plan.qualitative ?? []
     // Validate before creating an item/run, so malformed inputs leave no synthetic history.
@@ -201,7 +201,7 @@ export class ImpactWorkflow {
     const source = scopeMeasurement(engine.store.events(), subject, engine.store.get(subject).owner)
     if (source && source.digest !== record.plan.source.digest)
       throw new Error('Scope measurement revision changed during the checkpoint')
-    const guidance = impactGuidance(engine)
+    const guidance = impactGuidance(engine, subject, record.plan.run)
     const { content: _content, ...reference } = guidance
     if (measurementDigest(reference) !== measurementDigest(record.plan.guidance))
       throw new Error('Impact report guidance changed during the checkpoint')
@@ -249,7 +249,7 @@ export class ImpactWorkflow {
       .find((event) => event.type === 'step.completed' && event.data.run === record.plan.run)
     if (prior?.type === 'step.completed')
       return { artifact: prior.data.artifact.path, cached: true }
-    if (!record.layout && guidance.origin === 'harness')
+    if (!record.layout && guidance.ref === 'default')
       this.format(subject, [
         {
           title: 'Metrics',
