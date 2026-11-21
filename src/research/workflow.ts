@@ -6,6 +6,7 @@ import type { FlowEngine } from '../flow/engine.js'
 import { detectMcp } from '../providers/detect.js'
 import { loadProviders } from '../providers/load.js'
 import type { StateEvent } from '../state/events.js'
+import { researchAssignments } from './assignments.js'
 import {
   type AngleResult,
   type Refutation,
@@ -70,26 +71,9 @@ export class ResearchWorkflow {
         existing = events.at(-1)
       }
       const state = researchState(events, subject, run)
-      const report = researchReport(state.plan, state.results, state.votes)
       return {
         ...state.plan,
-        jobs: state.plan.angles
-          .filter((angle) => !state.results.some((result) => result.angle === angle.id))
-          .map((angle) => ({ role: 'researcher', angle })),
-        examinations: report.claims
-          .filter((claim) => claim.loadBearing)
-          .flatMap((claim) =>
-            Array.from({ length: state.plan.verifiers }, (_, index) => ({
-              role: 'challenger',
-              claim: claim.id,
-              verifier: index + 1,
-            })).filter(
-              (job) =>
-                !state.votes.some(
-                  (vote) => vote.claim === job.claim && vote.verifier === job.verifier,
-                ),
-            ),
-          ),
+        ...researchAssignments(state.plan, state.results, state.votes),
       }
     })
   }

@@ -7,6 +7,7 @@ import { isObject } from '../config/schema.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { discover } from '../discovery/tree.js'
 import type { FlowEngine } from '../flow/engine.js'
+import { gateAssignments } from '../gates/assignments.js'
 import type { GatePlan, GateResult } from '../gates/contracts.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { gateRuns } from '../gates/state.js'
@@ -235,23 +236,30 @@ export async function runSuite(
     )
   }
   const observed = suiteGateResult(result)
-  const submitted = gateRuns(engine.store.events())
+  const state = gateRuns(engine.store.events())
     .find((entry) => entry.run === run)
     ?.rounds.at(-1)
-    ?.results.find((entry) => entry.unit === 'suite')
+  const submitted = state?.results.find((entry) => entry.unit === 'suite')
   if (!submitted && result.unchanged) new GateWorkflow(engine).submit(subject, run, round, observed)
   else if (submitted && JSON.stringify(submitted) !== JSON.stringify(observed))
     throw new Error(
       'Suite was submitted with different observations; preserve the receipt and inspect the round',
     )
+  const current = workspaceSnapshot(gate.plan.repository).digest === gate.plan.snapshot.digest
+  const observation = { run, round, current, result, output }
   return {
     schema: 'wholeloop/verify-suite@1',
     subject,
     run,
     round,
     cached: !!cached,
-    current: workspaceSnapshot(gate.plan.repository).digest === gate.plan.snapshot.digest,
+    current,
     result,
     output,
+    ...gateAssignments(gate.plan, {
+      results: state?.results ?? [],
+      votes: state?.votes ?? [],
+      suite: observation,
+    }),
   }
 }

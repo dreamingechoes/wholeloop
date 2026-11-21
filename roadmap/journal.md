@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-21 · P9-04 ✅ · Concurrent read-only work and complete joins
+
+- **Changed:** pace stages decisions and writing work; independent read-only assignments launch together at every pace within host capacity. Canonical research, review, verification and measurement skills retain handles and use native joins, without fixed sleeps. Explicit sequential fallback preserves coverage.
+- **Assignments:** research plans, review begin/input and suite views return self-contained pending jobs with the question, exact allowed source, observed input, response schema and final-message destination. Refuters receive original claims/findings without other votes. Cached suite views never rerun commands and mark raw output unavailable. Existing public plan, journal and compatibility schemas are unchanged.
+- **Decision:** [ADR-0010](../docs/decisions/0010-interaction-profile-never-changes-coverage.md) is amended. Job-local schema refinements bind response identities without redefining public schema IDs. Serializing read-only work through guided pace, clock-based waits and copying full plans or votes into worker context were rejected. Every started job joins before an error is reported.
+- **Verified:** `CHECK PASS in 678s`, 4906 tests in 346 files; `CHECK PASS (fast) in 409s`, 1503 related tests in 115 files. The focused suites passed 122 tests in seven files; updated profile/begin snapshots and four new assignment snapshots were reviewed. The first fast gate failed on 13 outdated begin snapshots; after the intended style-only updates, its replacement passed. Promise barriers prove overlap and complete joins without timing assertions; all seven rendered clients preserve launch-before-join policy. Generated references remain current. macOS arm64 locally; Linux remains for required CI. Native overlap and actual wait primitives remain in manual verification; no native or model call ran.
+
+---
+
 ## 2026-11-21 · P9-03 ✅ · Usable named worker roles and direct startup
 
 - **Changed:** workers return structured final messages for conductor validation/submission. Read-only roles no longer request CLI commands or result-file writes. Canonical delegating skills name the role, supply only its assignment/protocol/schema and forbid copied conductor history. An unavailable fresh native context uses an explicitly selected checked route or remains unavailable.

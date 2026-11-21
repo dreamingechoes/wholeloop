@@ -132,10 +132,24 @@ describe('real once-per-round suite execution', () => {
       const first = await runSuite(engine, subject ?? '', plan.run, 1)
       expect(first.result.status).toBe('passed')
       expect(first.output[0]?.stdout).toContain('fixture: check passed')
+      expect(first.jobs.length).toBeGreaterThan(0)
+      expect(first.jobs[0]?.input.suite).toMatchObject({
+        result: first.result,
+        output: first.output,
+        rawOutputAvailable: true,
+      })
+      expect(first.jobs.every((job) => !['suite', 'testability'].includes(job.input.unit.id))).toBe(
+        true,
+      )
       expect(readFileSync(join(plan.repository, 'suite-count.txt'), 'utf8')).toBe('1')
       const repeated = await runSuite(engine, subject ?? '', plan.run, 1)
       expect(repeated.cached).toBe(true)
       expect(repeated.output).toEqual([])
+      expect(repeated.jobs[0]?.input.suite).toMatchObject({
+        result: first.result,
+        output: [],
+        rawOutputAvailable: false,
+      })
       expect(readFileSync(join(plan.repository, 'suite-count.txt'), 'utf8')).toBe('1')
       const gates = new GateWorkflow(engine)
       for (const unit of plan.units.filter((unit) => unit.id !== 'suite'))

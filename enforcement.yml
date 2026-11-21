@@ -15,6 +15,8 @@
 # enforced by test/unit/experience/experience.test.ts in the ordinary fixture suite.
 version: 1
 rules:
+  - id: read-only-fanout-joins
+    enforcers: [src/workers/schedule.ts#scheduleAssignments, src/workers/assignment.ts#workerAssignment, src/research/assignments.ts#researchAssignments, src/gates/assignments.ts#gateAssignments, harness/workflows/research.ts#runResearch, src/gates/execution.ts, test/unit/workers/schedule.test.ts, test/unit/workers/assignments.test.ts, test/unit/adapters/worker-roles.test.ts, test/unit/profile/profile.test.ts]
   - id: named-assignment-only-workers
     enforcers: [src/adapters/roles.ts#roleReferences, src/fanout/process.ts, src/fanout/host.ts, test/unit/adapters/worker-roles.test.ts, test/unit/fanout/fanout.test.ts]
   - id: worker-results-return-to-conductor

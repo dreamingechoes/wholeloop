@@ -18,7 +18,7 @@
 | `verbosity` | brief · **standard** · detailed | How much reasoning and context it writes around each action | *brief*: "Spec drafted — 4 stories, 11 criteria." |
 | `depth` | product · **balanced** · technical | Vocabulary and level of detail: outcomes vs. code paths, queries, trade-offs | *technical*: names the files, the query plan, the migration |
 | `challenge` | supportive · **balanced** · adversarial | How hard it questions your problem, spec and cuts; how many counter-questions; whether it argues the opposite case | *adversarial*: "What if the real issue is discoverability, not search?" |
-| `pace` | **guided** · staged · parallel | How many things run at once ([details](../architecture/orchestration-and-gates.md#pace--concurrency-nothing-else)) | *guided*: one builder at a time |
+| `pace` | **guided** · staged · parallel | Staging of decisions and writing work; independent read-only workers run concurrently ([details](../architecture/orchestration-and-gates.md#pace--concurrency-nothing-else)) | *guided*: one builder at a time |
 | `stops` | **decisions** · every-step | Pause only at decision points, or after every step in a chained run | *every-step*: "Slices ready. Continue to build?" |
 | `teaching` | **off** · on | Explains *why* the harness does what it does, as it does it — good for onboarding | *on*: "I am splitting this vertically because…" |
 | `language` | **auto** · any language code | The language it talks to you in | `es` |
@@ -108,7 +108,7 @@ Style for this run:
 - Give enough reasoning and context to assess each action.
 - Use technical vocabulary; name files, functions and queries.
 - Challenge assumptions and argue the opposite case at decisions.
-- Run independent workers in bounded stages.
+- Stage decisions and writing work in bounded groups; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Speak in language code es.

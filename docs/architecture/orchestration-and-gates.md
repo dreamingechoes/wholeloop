@@ -46,7 +46,7 @@ Optional criterion `assertion` metadata contains `subject`, `context`, `unit`, `
 ```mermaid
 flowchart LR
   W["workflow definition<br/>(lenses, inputs, schema)"]:::core --> E{"engine"}
-  E -- "CLI has parallel subagents" --> N["native<br/>skill spawns subagents,<br/>each calls wl gate submit"]
+  E -- "CLI has parallel subagents" --> N["native<br/>skill starts named roles,<br/>conductor submits results"]
   E -- "no subagents, or max isolation" --> H["headless<br/>wl fanout spawns<br/>headless CLI workers"]
   E -- "last resort" --> S["sequential<br/>same lenses, one by one"]
   N & H & S --> AGG["wl gate verdict<br/>deterministic aggregation"]:::core
@@ -216,15 +216,17 @@ Gates **never fix**. They route findings back to the builder through the mailbox
 
 ## Pace — concurrency, nothing else
 
-| Pace | Builders | Gates |
+| Pace | Decisions and writing work | Independent read-only work |
 | --- | --- | --- |
-| `guided` | One at a time, plan shown before code | Lenses one after another |
-| `staged` | In parallel | One slice's gates at a time, cost reported between slices |
-| `parallel` | In parallel | Fully fanned out |
+| `guided` | One at a time, plan shown before code | Concurrent within host capacity |
+| `staged` | Bounded groups | Concurrent within host capacity |
+| `parallel` | Concurrent when dependencies allow; decisions batched | Concurrent within host capacity |
 
 Parallel builders never collide because each one works in its **own git worktree** on its own branch; dependencies between slices (`blocked-by`) still decide what may start, and chained slices can stack their branches.
 
-Every pace runs the same lenses, the same verification, the same round budget and stops at the same decision points.
+Every pace runs the same lenses, the same verification, the same round budget and stops at the same decision points. Start all ready read-only assignments before joining their handles with the native wait primitive; elapsed time is never completion evidence. Dependency phases still join before dependent refutations start. When native fan-out is unavailable, an explicit sequential fallback preserves coverage.
+
+Research plans, review begin/input and verification suite views return transient `jobs` and `examinations`: each includes the question, assigned angle or unit, read-only source, exact observed input, inline result schema and final-message destination. The conductor validates and submits each result. These views leave pinned plans unchanged; a repeated suite view returns its cached receipt and explicitly marks raw output unavailable, without rerunning commands.
 
 ---
 

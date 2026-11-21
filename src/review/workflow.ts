@@ -1,6 +1,7 @@
 // The review-code workflow and its receipt.
 import { BuildWorkflow } from '../build/workflow.js'
 import type { FlowEngine } from '../flow/engine.js'
+import { gateAssignments } from '../gates/assignments.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
@@ -104,13 +105,22 @@ export class ReviewWorkflow {
       ...(options.rounds !== undefined ? { rounds: options.rounds } : {}),
       ...(prior?.decision?.report.verdict === 'PASS' && planned <= started ? { newRun: true } : {}),
     })
+    const review = prepareReviewInput(engine, result.plan)
+    const state = gateRuns(engine.store.events())
+      .find((run) => run.run === result.plan.run)
+      ?.rounds.at(-1)
     return {
       ...result,
       schema: 'wholeloop/review-begin@1',
       status: 'planned' as const,
       questions: [],
       subject,
-      review: prepareReviewInput(engine, result.plan),
+      review,
+      ...gateAssignments(result.plan, {
+        results: state?.results ?? [],
+        votes: state?.votes ?? [],
+        review,
+      }),
     }
   }
 
@@ -121,7 +131,20 @@ export class ReviewWorkflow {
       .at(-1)
       ?.rounds.at(-1)?.plan
     if (!plan) throw new Error('Plan a review round first')
-    return { schema: 'wholeloop/review-context@1', subject, ...prepareReviewInput(engine, plan) }
+    const review = prepareReviewInput(engine, plan)
+    const state = gateRuns(engine.store.events())
+      .find((run) => run.run === plan.run)
+      ?.rounds.at(-1)
+    return {
+      schema: 'wholeloop/review-context@1',
+      subject,
+      ...review,
+      ...gateAssignments(plan, {
+        results: state?.results ?? [],
+        votes: state?.votes ?? [],
+        review,
+      }),
+    }
   }
 
   complete(subject: string) {
