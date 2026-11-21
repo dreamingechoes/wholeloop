@@ -7,14 +7,15 @@
 
 ## Releases
 
-Proposal 0247 phases the work by dependency, one coherent capability per minor release. Autonomous delivery stays experimental until 1.4.0, so each phase is additive under the compatibility policy and none needs a major version; fixes ship as patches.
+Proposal 0247 phases the work by dependency, one coherent capability per minor release. On 2026-11-18 1.2.0 went to the user experience ([Phase 9](./phase-9-user-experience.md)) and the factory phases below moved one minor version later, keeping their order. Autonomous delivery stays experimental until 1.5.0, so each phase is additive under the compatibility policy and none needs a major version; fixes ship as patches.
 
 | Release | Capability | Tasks |
 | --- | --- | --- |
 | 1.1.0 | A run survives its own failures | P6-35, P6-41, P8-01 |
-| 1.2.0 | The factory runs without anyone starting runs | P8-02, P8-03, P8-04 |
-| 1.3.0 | It explains and asks without stopping | P8-05, P8-06, P8-07 |
-| 1.4.0 | Graduation: stable contracts for the rest of 1.x | P8-08 |
+| 1.2.0 | User experience (Phase 9, not part of the factory) | P9-01–P9-21 |
+| 1.3.0 | The factory runs without anyone starting runs | P8-02, P8-03, P8-04 |
+| 1.4.0 | It explains and asks without stopping | P8-05, P8-06, P8-07 |
+| 1.5.0 | Graduation: stable contracts for the rest of 1.x | P8-08 |
 
 The order follows the dependencies: a supervisor that admits work automatically is pointless while every run stops at its first repairable failure, and parking a question only helps when a supervisor keeps the other work moving. In every phase the factory never widens its own authority, never changes acceptance criteria to pass, never invents a missing fact, never declares a test flaky without repeated evidence and never retries an effect whose outcome is unknown.
 
@@ -39,7 +40,7 @@ The order follows the dependencies: a supervisor that admits work automatically 
 
 ## P8-02 · Delivery supervisor
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-35, P6-41, P8-01 · **Release:** 1.2.0 · **Decision:** proposal 0249
+**Status:** ⬜ · **Size:** L · **Depends on:** P6-35, P6-41, P8-01 · **Release:** 1.3.0 · **Decision:** proposal 0249
 
 **Goal** — Take queued work, resume runs after restarts and usage-window resets, with one supervisor per store under the operating system's service manager.
 
@@ -53,7 +54,7 @@ The order follows the dependencies: a supervisor that admits work automatically 
 
 ## P8-03 · Periodic budgets
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P8-02 · **Release:** 1.2.0 · **Decision:** proposal 0250
+**Status:** ⬜ · **Size:** M · **Depends on:** P8-02 · **Release:** 1.3.0 · **Decision:** proposal 0250
 
 **Goal** — Bound what all runs together may consume per day or week.
 
@@ -66,7 +67,7 @@ The order follows the dependencies: a supervisor that admits work automatically 
 
 ## P8-04 · Continuous intake
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P8-02 · **Release:** 1.2.0 · **Decision:** proposal 0251
+**Status:** ⬜ · **Size:** M · **Depends on:** P8-02 · **Release:** 1.3.0 · **Decision:** proposal 0251
 
 **Goal** — Admit labelled issues from the operator's code host through `gh` or `glab`, only within an active standing envelope.
 
@@ -79,7 +80,7 @@ The order follows the dependencies: a supervisor that admits work automatically 
 
 ## P8-05 · Failure diagnosis
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P8-02 · **Release:** 1.3.0 · **Decision:** proposal 0252
+**Status:** ⬜ · **Size:** M · **Depends on:** P8-02 · **Release:** 1.4.0 · **Decision:** proposal 0252
 
 **Goal** — Classify a failed integration, acceptance or CI observation with evidence and route each class to one action.
 
@@ -92,7 +93,7 @@ The order follows the dependencies: a supervisor that admits work automatically 
 
 ## P8-06 · Asynchronous escalation
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P8-02 · **Release:** 1.3.0 · **Decision:** proposal 0253
+**Status:** ⬜ · **Size:** M · **Depends on:** P8-02 · **Release:** 1.4.0 · **Decision:** proposal 0253
 
 **Goal** — Park a run on a question, keep the rest of the factory working and resume the run when a person answers.
 
@@ -105,7 +106,7 @@ The order follows the dependencies: a supervisor that admits work automatically 
 
 ## P8-07 · Review feedback
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P8-01 · **Release:** 1.3.0 · **Decision:** proposal 0254
+**Status:** ⬜ · **Size:** M · **Depends on:** P8-01 · **Release:** 1.4.0 · **Decision:** proposal 0254
 
 **Goal** — Turn comments from accounts with write access on the run's own pull request into bounded repairs.
 
@@ -118,18 +119,18 @@ The order follows the dependencies: a supervisor that admits work automatically 
 
 ## P8-08 · Graduation of autonomous delivery
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-27, P8-01–P8-07 · **Release:** 1.4.0 · **Decision:** proposal 0247
+**Status:** ⬜ · **Size:** M · **Depends on:** P6-27, P8-01–P8-07 · **Release:** 1.5.0 · **Decision:** proposal 0247
 
 **Goal** — Remove the experimental label once the capability is certified, and freeze its contracts for the rest of 1.x.
 
 **Acceptance criteria:**
 
 - [ ] The P6-27 campaign passes on both reference clients.
-- [ ] Each 1.1.0–1.3.0 capability passes its live scenario on at least one reference client.
+- [ ] Each 1.1.0, 1.3.0 and 1.4.0 capability passes its live scenario on at least one reference client.
 - [ ] The compatibility policy, README and architecture pages describe autonomous delivery as stable.
 
 **Tests** — The live scenarios above and the compatibility baseline.
 
 ---
 
-[◀ P7](./phase-7-release-readiness.md) · [Roadmap](./README.md) · [Journal](./journal.md)
+[◀ P7](./phase-7-release-readiness.md) · [Roadmap](./README.md) · [Journal](./journal.md) · [P9 ▶](./phase-9-user-experience.md)

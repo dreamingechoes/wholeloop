@@ -4,6 +4,42 @@
 
 ---
 
+## 2026-11-21 · Decision · Proportional depth and gate cost (ADR-0258)
+
+- **Decision:** [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md) is accepted in full and amends ADR-0010. Cost first falls without touching coverage (deterministic citation checks, cost shown before every fan-out, parallel read-only workers, a cheaper verifier model when mapped, applicability of optional lenses); findings carry `blocker`, `should` or `nit` and only blockers fail a round; and research and gates take an explicit rigor of `quick`, `standard` or `deep`, proposed by the step and confirmed by the person, never set by the profile. `standard` keeps today's coverage, reduced coverage is recorded and shown, and nothing drops below the refutation quorum.
+- **Naming:** the setting is rigor, not depth, because the profile's `depth` dial already sets vocabulary and level of detail.
+- **Why:** without explicit rigor, any research question costs one worker per source plus three verifiers per load-bearing claim; a question answerable from the repository in a few minutes should cost about one worker.
+- **Next:** no decision is open in [Phase 9](./phase-9-user-experience.md) except P9-18's implement-or-remove choices; the order starts with the baseline (P9-20) and P9-01–P9-05.
+
+---
+
+## 2026-11-21 · Decision · Person-facing display rendered by the core (ADR-0256)
+
+- **Decision:** [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md) is accepted. Every step command's payload gains a versioned `display` block and its text at 80 columns; the same renderer produces the CLI's human output; skills show `display.text` verbatim, add only what the person needs to decide and never narrate internal fields or raw JSON. ADR-0010's output contract still holds, with the preflight and receipt shown as the header and produced lines; while workers run, only one progress line per finished worker is shown.
+- **Why:** each model improvised the presentation from payloads full of internal fields, which was most of the noise in the 2026-11-17 trial; presentation has one right answer per payload, so it belongs in the core with snapshot tests.
+- **Next:** P9-07 is no longer waiting on a decision; P9-08 and P9-09 follow it. Proposal 0258 is the only open decision in [Phase 9](./phase-9-user-experience.md).
+
+---
+
+## 2026-11-21 · Decision · Where project code runs (ADR-0257)
+
+- **Decision:** [ADR-0257](../docs/decisions/0257-where-project-code-runs.md) is accepted and amends ADR-0245. Every execution of project code runs in Docker by default, supervised or autonomous, including the tests and scripts builder and verifier workers run, through a `wl` command in a per-slice environment kept warm. Steps that only read (research, framing, specification, scopes, slicing, review, Rollout and Learn) never check for Docker. A person may choose host execution for a supervised run or repository; it is shown before the step, recorded and displayed as not isolated. The autonomous runner never allows it.
+- **Why:** the supervised path ran project code on the host while the README promised Docker; reading steps should not pay for isolation they do not need.
+- **Found while deciding:** builder and verifier workers also run tests through the client's own shell, outside `wl`. P9-16 grows to cover them and now depends on P9-03; [Execution isolation](../docs/architecture/execution-isolation.md) lists both as known gaps until it lands.
+- **Next:** unchanged; P9-16 follows the order of [Phase 9](./phase-9-user-experience.md#order).
+
+---
+
+## 2026-11-18 · Roadmap · Phase 9, user experience for 1.2.0
+
+- **Why:** a first trial of `wl-research` in Codex 0.167.0, on a question about this repository's own code, took 14.6 minutes and about 9.3 million input tokens across nine workers, queried PostgreSQL and Notion without asking, and narrated internal terms to the person. The claims were correct; the experience was not ready to announce.
+- **Causes found:** the client's run logs, the code and a walk through every step in an isolated store located them. Workers ran one after another because the default profile says "Run one worker at a time", with 441 of 875 seconds spent in fixed 45-second sleeps. Codex read-only roles have no command tool but are told to run `wl`, so full-context copies of the conductor replaced them, spent the tokens and ran the repository's tests on the host. Every detected source becomes a research angle, including an executable on `PATH` and MCP servers declared for another client. Guidance discovery matches personal skills by one word of their description and blocks `build-slice` on that question. A metric's provider is free text first checked after launch. No display layout is defined and most commands print JSON without `--json`. Gates use three verifiers per finding as a schema floor, all six review lenses on any change, and fail a round on any finding.
+- **Guarantee gap:** supervised `wl verify suite` runs the project's suite on the host with the caller's environment, while the README and ADR-0245 say project code runs only in Docker; a fixture suite reported `platform=darwin` with Docker running. Proposal 0257 asks which of code or claim changes.
+- **Plan:** [Phase 9](./phase-9-user-experience.md) lists 22 tasks and stays open for more; 1.2.0 becomes the user-experience release and the factory phases move to 1.3.0–1.5.0 (ADR-0247 amended). Proposals 0256 (display rendered by the core), 0257 (project code in supervised verification) and 0258 (proportional depth and gate cost, against ADR-0010) wait for the maintainer.
+- **Next:** a recorded baseline of the current behaviour (P9-20), then P9-01–P9-05, which together address the trial's time, tokens and unasked sources.
+
+---
+
 ## 2026-11-17 · Docs · Readability pass before announcing the package
 
 - **Why:** the style guide asked for "concise and dense" pages with reasons linked to ADRs, and the pages followed it: 138 prose paragraphs over 80 words, 552 ADR references outside the decision records, and 3 of 106 terminal examples with their output. ADR-0016 is amended with the new rules: short paragraphs, terms defined on first use, real output after every command, diagrams where an idea has moving parts, and no ADR links on pages read to use wholeloop.

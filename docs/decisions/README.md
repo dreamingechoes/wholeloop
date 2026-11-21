@@ -257,6 +257,9 @@
 | [0247](./0247-software-factory-phasing-after-1-0-0.md) | Software factory phasing after 1.0.0 | Accepted | 2026-11-08 |
 | [0248](./0248-ci-correction-continuation-under-the-envelope-grant.md) | CI correction continuation under the envelope grant | Accepted | 2026-11-08 |
 | [0255](./0255-report-registry-signatures-without-requiring-them.md) | Report registry signatures without requiring them | Accepted | 2026-11-15 |
+| [0258](./0258-proportional-depth-and-gate-cost.md) | Proportional depth and gate cost | Accepted | 2026-11-21 |
+| [0256](./0256-person-facing-display-rendered-by-the-core.md) | Person-facing display rendered by the core | Accepted | 2026-11-21 |
+| [0257](./0257-where-project-code-runs.md) | Where project code runs | Accepted | 2026-11-21 |
 
 ## Lifecycle
 

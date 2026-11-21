@@ -6,6 +6,16 @@
 
 Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan, commands, passing results and who does each part. This page retains detailed regressions and limitations rather than assigning every item to the maintainer.
 
+## User experience (Phase 9, 2026-11-18)
+
+[Phase 9](./phase-9-user-experience.md) is built and tested with fixtures; these checks need signed-in clients and model quota.
+
+- [ ] Baseline: the experience check (P9-20) is run on the current behaviour in Claude Code and in Codex before P9-01–P9-05 land, and its numbers are recorded here.
+- [ ] The experience check (P9-20) passes its budgets on Claude Code and on Codex.
+- [ ] OpenCode, Copilot, Gemini, Cursor and Antigravity: the experience check is run and its results are recorded here, with any gap filed as a Phase 9 task (P9-21).
+- [ ] Repeat the 2026-11-17 research question in Codex after P9-02–P9-07: one question about sources, read-only workers started together, no unrelated source, the answer first.
+- [x] Decisions: [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md), [ADR-0257](../docs/decisions/0257-where-project-code-runs.md) and [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md) accepted by the maintainer on 2026-11-21.
+
 ## Per-client native checks (2026-11-08)
 
 `npm run native:check -- <client>` runs the low-quota checks for one installed client: the version (no model), the read-only probe (one short turn) and the standalone framing scenario (one scenario), each only with `--live`. See [V1 acceptance](../docs/v1-acceptance.md#4-let-the-automatic-runner-cover-the-other-clients) for the commands and verdicts. Fake-client tests cover every verdict; a plan-only run against the installed Codex 0.166.0 observed its version and called no model.

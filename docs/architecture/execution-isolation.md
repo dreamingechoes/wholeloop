@@ -3,7 +3,7 @@
 > **TL;DR** — Whenever `wholeloop` itself must run your project's code — its test suite, its services, its acceptance checks — it runs them in owned Docker containers, never on your machine. Docker is a deliberate, required dependency for those steps: it is what lets the runner trust observed results instead of a model's claims, without exposing your home directory, credentials or network. Steps that only read and write documents and the store do not need Docker.
 
 > [!NOTE]
-> **Partial.** Owned containers, volumes and networks, the refusals below and recovery are tested on macOS and Linux. Standalone headless gate workers still inherit the caller's environment; see [Known gaps](#known-gaps). Decision: [ADR-0245](../decisions/0245-require-docker-for-project-code-execution.md).
+> **Partial.** Owned containers, volumes and networks, the refusals below and recovery are tested on macOS and Linux. Standalone headless gate workers still inherit the caller's environment, and the supervised path still runs project code on the host until P9-16; see [Known gaps](#known-gaps). Decision: [ADR-0245](../decisions/0245-require-docker-for-project-code-execution.md).
 
 ---
 
@@ -60,10 +60,11 @@ Workspace snapshots hash the bytes of every tracked and non-ignored file to prov
 ## Known gaps
 
 - **Standalone headless gate workers** (`src/fanout/host.ts`) start the native client with the caller's complete environment. Delivery workers do not. Restricting gate workers needs each client's authentication variables declared and verified against signed-in clients, so it remains open in [manual verification](../../roadmap/manual-verification.md).
+- **Supervised verification and building** run project code on the host: `wl verify suite` spawns the suite with the caller's environment, and builder and verifier workers run tests through the client's own shell. [ADR-0257](../decisions/0257-where-project-code-runs.md) moves them into Docker, with host execution only as an explicit, recorded choice; [P9-16](../../roadmap/phase-9-user-experience.md#p9-16--project-code-runs-in-docker-unless-the-person-chooses-otherwise) implements it.
 
 ## Decisions
 
-[ADR-0102](../decisions/0102-inert-environment-recipes-and-pinned-setup-origins.md) (inert recipes and pinned origins), [ADR-0104](../decisions/0104-owned-environment-lifecycle-and-private-cancellation.md) (owned lifecycle and cancellation), [ADR-0243](../decisions/0243-single-writer-store-trust-model.md) (what the runner trusts and what it re-observes) and [ADR-0245](../decisions/0245-require-docker-for-project-code-execution.md).
+[ADR-0102](../decisions/0102-inert-environment-recipes-and-pinned-setup-origins.md) (inert recipes and pinned origins), [ADR-0104](../decisions/0104-owned-environment-lifecycle-and-private-cancellation.md) (owned lifecycle and cancellation), [ADR-0243](../decisions/0243-single-writer-store-trust-model.md) (what the runner trusts and what it re-observes) [ADR-0245](../decisions/0245-require-docker-for-project-code-execution.md) and [ADR-0257](../decisions/0257-where-project-code-runs.md) (where project code runs, by default and by choice).
 
 ---
 
