@@ -33,7 +33,7 @@ Inspecting the client's run logs and the code, and walking every step in an isol
 
 | Topic | Options | Record |
 | --- | --- | --- |
-| Project code in supervised verification | Run `wl verify suite` through Docker and refuse without it (conservative, recommended), or amend the README, ADR-0245 and execution isolation to say the supervised path runs on the host | proposal 0257 |
+| Where project code runs | Decided 2026-11-21: every execution of project code in Docker by default, supervised or autonomous; steps that only read never need Docker; host execution only as an explicit, recorded choice for supervised steps, never for the runner | [ADR-0257](../docs/decisions/0257-where-project-code-runs.md) |
 | Depth and cost against ADR-0010 | Three parts accepted separately: cost cuts that keep coverage (deterministic checks, cost preview, cheaper verifier model, applicability of optional lenses); severity of findings, so only blockers fail a round; and explicit depth levels whose reduced coverage is recorded and shown. Without the third part, the floor for any research question stays one worker per source plus three verifiers per load-bearing claim | proposal 0258 |
 | Documented interactions that do not exist | Implement them (setup detection, codehost and analytics; Define publication target; `next` path) or remove them from the documentation | P9-18 |
 
@@ -260,18 +260,21 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 **Tests** — Rendering tests per client; configuration schema tests.
 
-## P9-16 · Project code in supervised verification
+## P9-16 · Project code runs in Docker unless the person chooses otherwise
 
-**Status:** ⬜ · **Size:** M · **Depends on:** — · **Release:** 1.2.0 · **Decision:** proposal 0257
+**Status:** ⬜ · **Size:** L · **Depends on:** P9-03 · **Release:** 1.2.0 · **Decision:** [ADR-0257](../docs/decisions/0257-where-project-code-runs.md)
 
-**Goal** — What the README says about where project code runs is true.
+**Goal** — What the README says about where project code runs is true on every route, and steps that only read never wait for Docker.
 
 **Acceptance criteria:**
 
-- [ ] Per the accepted decision: `wl verify suite` runs through the observed Docker executor and refuses without Docker, or the README, ADR-0245 and execution isolation describe the supervised host path and what it exposes.
-- [ ] A test proves where the suite ran (platform and environment) for the supervised path.
+- [ ] `wl verify suite` runs through the observed Docker executor on the supervised path, as the runner does.
+- [ ] Builder and verifier workers run project commands through a `wl` command that executes them in the slice's environment, kept warm for the life of the slice; their instructions never run project code through the client's own shell.
+- [ ] Host execution is an explicit choice per run or per repository, shown before the step starts, recorded in the result and displayed as not isolated; the runner refuses it.
+- [ ] Without Docker and without that choice, a step that executes code refuses before doing anything and names both remedies; research, framing, specification, scopes, slicing, review and Rollout steps never check for Docker.
+- [ ] The README, execution isolation and ADR-0245 describe the default and the choice.
 
-**Tests** — A fixture suite that reports its platform; Docker rehearsal if Docker is chosen.
+**Tests** — A fixture suite that reports its platform, through `wl verify suite` and the worker command; refusal without a daemon; the host choice recorded and displayed; the runner refusing it; no Docker check in read-only steps; a Docker rehearsal.
 
 ## P9-17 · Proportional depth and gate cost
 

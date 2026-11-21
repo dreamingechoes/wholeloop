@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-21 · Decision · Where project code runs (ADR-0257)
+
+- **Decision:** [ADR-0257](../docs/decisions/0257-where-project-code-runs.md) is accepted and amends ADR-0245. Every execution of project code runs in Docker by default, supervised or autonomous, including the tests and scripts builder and verifier workers run, through a `wl` command in a per-slice environment kept warm. Steps that only read (research, framing, specification, scopes, slicing, review, Rollout and Learn) never check for Docker. A person may choose host execution for a supervised run or repository; it is shown before the step, recorded and displayed as not isolated. The autonomous runner never allows it.
+- **Why:** the supervised path ran project code on the host while the README promised Docker; reading steps should not pay for isolation they do not need.
+- **Found while deciding:** builder and verifier workers also run tests through the client's own shell, outside `wl`. P9-16 grows to cover them and now depends on P9-03; [Execution isolation](../docs/architecture/execution-isolation.md) lists both as known gaps until it lands.
+- **Next:** unchanged; P9-16 follows the order of [Phase 9](./phase-9-user-experience.md#order).
+
+---
+
 ## 2026-11-18 · Roadmap · Phase 9, user experience for 1.2.0
 
 - **Why:** a first trial of `wl-research` in Codex 0.167.0, on a question about this repository's own code, took 14.6 minutes and about 9.3 million input tokens across nine workers, queried PostgreSQL and Notion without asking, and narrated internal terms to the person. The claims were correct; the experience was not ready to announce.

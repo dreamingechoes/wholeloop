@@ -14,7 +14,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 - [ ] The experience check (P9-20) passes its budgets on Claude Code and on Codex.
 - [ ] OpenCode, Copilot, Gemini, Cursor and Antigravity: the experience check is run and its results are recorded here, with any gap filed as a Phase 9 task (P9-21).
 - [ ] Repeat the 2026-11-17 research question in Codex after P9-02–P9-07: one question about sources, read-only workers started together, no unrelated source, the answer first.
-- [ ] Decisions: proposals 0256, 0257 and 0258 accepted, amended or rejected by the maintainer before their tasks start.
+- [ ] Decisions: proposals 0256 and 0258 accepted, amended or rejected by the maintainer before their tasks start ([ADR-0257](../docs/decisions/0257-where-project-code-runs.md) accepted on 2026-11-21).
 
 ## Per-client native checks (2026-11-08)
 
