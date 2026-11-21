@@ -11,6 +11,7 @@ import {
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import type { DisplayProgress } from '../../../src/display/render.js'
 import { type HeadlessAdapter, headlessAdapter } from '../../../src/fanout/adapters.js'
 import { HeadlessHost } from '../../../src/fanout/host.js'
 import { runHeadless } from '../../../src/fanout/run.js'
@@ -223,13 +224,25 @@ describe('bounded headless gate processes', () => {
     'collects real isolated processes and caches a decided round without respawning',
     () =>
       fixture(async ({ dir, engine, plan, adapter, env }) => {
+        const progress: DisplayProgress[] = []
         const result = await runHeadless(engine, plan.subject, 'review', {
           adapter,
           env,
           concurrency: 2,
+          onProgress: (entry) => {
+            progress.push(entry)
+            throw new Error('An output observer cannot alter evidence')
+          },
         })
         expect(result.status).toBe('PASS')
         expect(result.workers).toHaveLength(plan.units.length)
+        expect(progress).toHaveLength(plan.units.length)
+        expect(progress.every((entry) => entry.status === 'finished' && entry.elapsedMs >= 0)).toBe(
+          true,
+        )
+        expect(progress.map((entry) => entry.label).sort()).toEqual(
+          plan.units.map((unit) => unit.id).sort(),
+        )
         const log = readFileSync(join(dir, 'workers.ndjson'), 'utf8')
         const starts = log
           .trim()
@@ -471,6 +484,7 @@ describe('bounded headless gate processes', () => {
             id,
             '--concurrency',
             '2',
+            ...(selected === 'claude' ? ['--progress'] : []),
             '--json',
           ],
           {
@@ -493,7 +507,11 @@ describe('bounded headless gate processes', () => {
             },
           },
         )
-        expect(result.stderr).toBe('')
+        if (selected === 'claude') {
+          const lines = result.stderr.trim().split('\n')
+          expect(lines).toHaveLength(plan.units.length)
+          expect(lines.every((line) => / — finished · \d+:\d{2}$/.test(line))).toBe(true)
+        } else expect(result.stderr).toBe('')
         expect(result.status).toBe(0)
         const payload = JSON.parse(result.stdout)
         expect(payload.status).toBe('PASS')

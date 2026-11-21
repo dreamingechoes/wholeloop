@@ -7,6 +7,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export async function pullRequestCommand(
   command: string,
@@ -44,7 +45,7 @@ export async function pullRequestCommand(
       payload = await workflow.reconcile(subject ?? '', value('--url') ?? '', host)
     } else payload = await workflow.publish(subject ?? '', host)
   }
-  io.out(JSON.stringify(payload, null, json ? undefined : 2))
+  emitStep(command, payload, io, json, positional)
   return payload &&
     typeof payload === 'object' &&
     'status' in payload &&

@@ -5,6 +5,7 @@ import { checkSpec, SPEC_SCHEMA, SPEC_SECTIONS } from '../spec/contract.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export function specCommand(
   command: string,
@@ -18,17 +19,17 @@ export function specCommand(
       EXIT.input,
     )
   if (command === 'spec schema') {
-    io.out(
-      JSON.stringify(
-        { schema: 'wholeloop/spec-schema@1', specSchema: SPEC_SCHEMA },
-        null,
-        json ? undefined : 2,
-      ),
+    emitStep(
+      command,
+      { schema: 'wholeloop/spec-schema@1', specSchema: SPEC_SCHEMA },
+      io,
+      json,
+      positional,
     )
     return EXIT.ok
   }
   const content = readFileSync(positional[0] ?? '', 'utf8')
   const problems = [...checkShape(content, SPEC_SECTIONS), ...checkSpec(content)]
-  io.out(JSON.stringify({ schema: 'wholeloop/spec-check@1', problems }, null, json ? undefined : 2))
+  emitStep(command, { schema: 'wholeloop/spec-check@1', problems }, io, json, positional)
   return problems.length ? EXIT.shape : EXIT.ok
 }

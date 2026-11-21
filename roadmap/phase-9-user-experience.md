@@ -149,16 +149,18 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-07 · Person-facing display rendered by the core
 
-**Status:** ⬜ · **Size:** L · **Depends on:** — · **Release:** 1.2.0 · **Decision:** [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md)
+**Status:** ✅ · **Size:** L · **Depends on:** — · **Release:** 1.2.0 · **Decision:** [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md)
 
 **Goal** — Every client shows the same short, readable text for every step, written by `wl`.
 
 **Acceptance criteria:**
 
-- [ ] Every step command's payload carries a versioned `display` block (header, rows, progress, produced, open questions, next) and its rendered text; the layout matches the documented sessions.
-- [ ] The output contract tells skills to show `display` verbatim and not to narrate internals; the preflight becomes one header line; the profile style block is never shown.
+- [x] Every step command's payload carries a versioned `display` block (header, rows, progress, produced, open questions, next) and its rendered text; the layout matches the documented sessions.
+- [x] The output contract tells skills to show `display` verbatim and not to narrate internals; the preflight becomes one header line; the profile style block is never shown.
 - [ ] Raw `wl` JSON is never shown to the person by a skill.
 - [ ] While workers run, the person sees one short line as each finishes and the time so far, and nothing else; a long step is never silent and never chatty.
+
+**Evidence** — `CHECK PASS in 705s`, 5119 tests in 349 files; `CHECK PASS (fast) in 12s`, 286 related tests in 7 files after the parsed-error repair. The earlier broad fast gate passed 1796 tests in 74 files in 248s. Focused suites passed 779 tests in 11 files, including actual local installation and Git-hook fixtures; 358 supplemental CLI tests checked error routing. Twenty-one display snapshots cover all thirteen steps using the core flow plan and valid synthetic events, completion states, evidence gaps and operational facts. All seven rendered clients load the same display policy; compiled terminal/JSON cases, single serialization and raw-JSON transcript detection pass. Only two new display identities were added; every previous compatibility fingerprint remains unchanged. The 3028603-byte core stays within the unchanged 4 MiB bound. Research and framing illustrative recordings were regenerated, matched to their pages and visually checked. Criteria 3 and 4 remain unchecked for actual native forwarding, JSON absence and completion timing in [manual verification](./manual-verification.md); fixtures prove the renderer and local process stream, not those client observations. No signed-in client, live evaluation or model call ran.
 
 **Tests** — Snapshot tests of `display` for every step, including progress; schema registration; the experience check lints transcripts for raw JSON.
 

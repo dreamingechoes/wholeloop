@@ -9,6 +9,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export function learningCommand(
   command: string,
@@ -28,8 +29,9 @@ export function learningCommand(
   if (positional.length > (['learn begin', 'learn decide'].includes(command) ? 1 : 0))
     throw new CliError('Unexpected learning argument')
   if (command === 'learn schema') {
-    io.out(
-      JSON.stringify({
+    emitStep(
+      command,
+      {
         schema: 'wholeloop/learning-schema@1',
         challenge: schema.properties['learn.challenged'].properties.challenge,
         reported: schema.properties['learn.planned'].properties.evidence.properties.reported,
@@ -37,7 +39,10 @@ export function learningCommand(
           ...schema.properties['learn.decided'].properties.iteration,
           required: ['title', 'problem', 'audience', 'impact'],
         },
-      }),
+      },
+      io,
+      json,
+      positional,
     )
     return EXIT.ok
   }
@@ -76,7 +81,7 @@ export function learningCommand(
   } else if (command === 'learn complete')
     payload = { schema: 'wholeloop/learning-complete@1', ...workflow.complete(subject ?? '') }
   else payload = workflow.report(subject ?? '')
-  io.out(JSON.stringify(payload, null, json ? undefined : 2))
+  emitStep(command, payload, io, json, positional)
   return payload &&
     typeof payload === 'object' &&
     'status' in payload &&

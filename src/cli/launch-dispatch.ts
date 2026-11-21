@@ -11,6 +11,7 @@ import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import type { Io } from './io.js'
 import { readClientInventory } from './mcp-inventory.js'
+import { emitStep } from './presentation.js'
 
 /**
  * Plan one metric-pinned dashboard creation without performing it (ADR-0085).
@@ -77,26 +78,26 @@ export async function launchDispatchCommand(
   )
   if (!call) throw new CliError('Dashboard dispatch did not produce a validated call')
   const planned = route.transport === 'mcp'
-  io.out(
-    JSON.stringify(
-      {
-        schema: 'wholeloop/dashboard-dispatch@2',
-        subject,
-        key,
-        provider: provider.manifest.id,
-        operation: target.operation,
-        status: planned ? 'planned' : 'handoff',
-        transport: route.transport,
-        ...(route.server ? { server: route.server } : {}),
-        tool: route.tool,
-        ...(planned ? { args: call.args } : { handoff: target.path }),
-        reason: route.reason,
-        effects: 'not-performed',
-        authentication: route.authentication,
-      },
-      null,
-      json ? undefined : 2,
-    ),
+  emitStep(
+    'launch dispatch',
+    {
+      schema: 'wholeloop/dashboard-dispatch@2',
+      subject,
+      key,
+      provider: provider.manifest.id,
+      operation: target.operation,
+      status: planned ? 'planned' : 'handoff',
+      transport: route.transport,
+      ...(route.server ? { server: route.server } : {}),
+      tool: route.tool,
+      ...(planned ? { args: call.args } : { handoff: target.path }),
+      reason: route.reason,
+      effects: 'not-performed',
+      authentication: route.authentication,
+    },
+    io,
+    json,
+    positional,
   )
   return 0
 }

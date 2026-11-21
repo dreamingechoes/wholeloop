@@ -7,6 +7,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export function flowCommand(
   command: string,
@@ -87,7 +88,7 @@ export function flowCommand(
             : undefined,
         )
     }
-    io.out(JSON.stringify(payload, null, json ? undefined : 2))
+    emitStep(command, payload, io, json, positional)
     return code
   } catch (error) {
     if (error instanceof CliError) throw error

@@ -21,6 +21,6 @@ Read worker-handoffs, headless-gates, ask-never-guess, output-contract, gate-rou
 For labelled regression evaluation read gate-evaluation; export blind inputs and collect actual independent observations before interpreting quality rates.
 
 When the conductor explicitly selects headless, use `wl fanout run review --for
-<id> --engine headless --adapter claude|codex|opencode|copilot|cursor --json` after the same planned inputs are pinned. The process host submits results/refutations and seals the same core verdict; continue with this skill's completion/handoff instead of dispatching workers twice.
+<id> --engine headless --progress --adapter claude|codex|opencode|copilot|cursor --json` after the same planned inputs are pinned. The process host submits results/refutations and seals the same core verdict; continue with this skill's completion/handoff instead of dispatching workers twice.
 
 Start only the named rendered role with its assignment, required protocol text and result schema. Never fork conversation history or copy the conductor as a worker. Validate each final-message result and submit it from the conductor; checked headless transports already own their submissions.

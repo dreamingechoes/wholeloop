@@ -7,6 +7,7 @@ import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { roundOverrides } from './gate.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export function reviewCommand(
   command: string,
@@ -52,7 +53,7 @@ export function reviewCommand(
                 receipt: workflow.complete(value('--for') ?? ''),
               }
     }
-    io.out(JSON.stringify(payload, null, json ? undefined : 2))
+    emitStep(command, payload, io, json, positional)
     return typeof payload === 'object' &&
       payload &&
       'status' in payload &&

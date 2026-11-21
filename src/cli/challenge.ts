@@ -10,6 +10,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export function challengeCommand(
   command: string,
@@ -20,12 +21,12 @@ export function challengeCommand(
 ): number {
   if (command === 'challenge schema') {
     if (positional.length) throw new CliError('challenge schema takes no arguments')
-    io.out(
-      JSON.stringify(
-        { schema: 'wholeloop/challenge-schema@1', criteriaSchema: CRITERIA_SCHEMA },
-        null,
-        json ? undefined : 2,
-      ),
+    emitStep(
+      command,
+      { schema: 'wholeloop/challenge-schema@1', criteriaSchema: CRITERIA_SCHEMA },
+      io,
+      json,
+      positional,
     )
     return EXIT.ok
   }
@@ -62,6 +63,6 @@ export function challengeCommand(
         : { context: scopeContext(engine.store.events(), subject) }
       : {}),
   })
-  io.out(JSON.stringify(plan, null, json ? undefined : 2))
+  emitStep(command, plan, io, json, positional)
   return plan.problems.length ? EXIT.shape : EXIT.ok
 }

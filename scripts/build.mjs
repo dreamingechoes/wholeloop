@@ -1,3 +1,4 @@
+// Keeps the copied public core within its existing bound while retaining the paired controller.
 import { createHash } from 'node:crypto'
 import { chmod, readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
@@ -13,6 +14,7 @@ const outfile = 'dist/wl.mjs'
 const controller = 'dist/wl-runner.mjs'
 const shared = {
   bundle: true,
+  minifyWhitespace: true,
   platform: 'node',
   format: 'esm',
   target: 'node20',
@@ -47,5 +49,7 @@ await build({
   banner: { js: banner },
   define: { ...defines, __WL_CONTROLLER_SHA256__: JSON.stringify(digest) },
 })
+if ((await readFile(outfile)).byteLength > 4 * 1024 * 1024)
+  throw new Error('The public core exceeds its existing 4 MiB copy bound')
 await chmod(outfile, 0o755)
 console.log(`built ${outfile} and ${controller} (wholeloop ${version})`)

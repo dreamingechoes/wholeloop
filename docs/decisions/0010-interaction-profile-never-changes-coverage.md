@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-21 (P9-07).** The output contract now uses the core-rendered display from [ADR-0256](./0256-person-facing-display-rendered-by-the-core.md). Preparation appears as one header and completion as produced artifacts and open questions. The style block remains private input; verbosity changes only necessary explanation around the verbatim display. Showing style instructions or restating internal fields was rejected because it changes presentation across clients without adding evidence.
+
 **Amended 2026-11-21 (P9-04).** Pace stages decisions and writing work only. Independent read-only assignments launch together within the host's capacity at every pace, then join through native handles or completion events. Each transient job carries its question, allowed source, observed input, bound response schema and final-message destination. Public plan and journal contracts stay unchanged; a job-local schema refinement omits the public schema identity rather than redefining it. Refuters receive the original claim or finding, without another worker's vote. Every started job is joined before a failure is reported, so a malformed response cannot strand other work.
 
 **Amended 2026-11-21 ([ADR-0258](./0258-proportional-depth-and-gate-cost.md)).** Coverage may now vary, but only through an explicit rigor choice (`quick`, `standard`, `deep`) for research and gates, made by the person or proposed by the step and confirmed for that run, never by a profile, preset or dial. `standard` keeps the coverage this record describes; reduced coverage is recorded in the artifact and shown in the result, and nothing drops below the refutation quorum. Finding severity changes what fails a round, not what is inspected. Rejected: letting a preset or the profile's `depth` dial choose rigor, which is the hidden quality setting this record exists to prevent.
@@ -57,6 +59,7 @@ The risk is that a style setting becomes a quiet way to lower the bar: "brief" t
 
 ## Verification
 
+- `test/unit/display/display.test.ts` checks unchanged display across JSON/terminal routes and the same verbatim/no-style policy rendered for all seven adapters.
 - `test/unit/profile/profile.test.ts` snapshots all presets and checks the same coverage over 324 dial combinations.
 - `test/unit/workers/assignments.test.ts` snapshots self-contained jobs and checks exact response identities, current observed input and independent refutations.
 - `test/unit/workers/schedule.test.ts` uses promise barriers to prove launch-before-join, ordered results, complete joins after failure and the explicit sequential fallback.

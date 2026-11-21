@@ -5,6 +5,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export function scopesCommand(
   command: string,
@@ -15,12 +16,12 @@ export function scopesCommand(
 ): number {
   if (positional.length) throw new CliError('Scope commands take options, not positional arguments')
   if (command === 'scopes schema') {
-    io.out(
-      JSON.stringify(
-        { schema: 'wholeloop/scopes-schema@1', scopeSchema: SCOPE_SCHEMA },
-        null,
-        json ? undefined : 2,
-      ),
+    emitStep(
+      command,
+      { schema: 'wholeloop/scopes-schema@1', scopeSchema: SCOPE_SCHEMA },
+      io,
+      json,
+      positional,
     )
     return EXIT.ok
   }
@@ -30,55 +31,55 @@ export function scopesCommand(
   const item = engine.store.get(id)
   if (item.kind !== 'initiative') throw new CliError('Scope planning expects an initiative')
   const context = scopeContext(engine.store.events(), id)
-  io.out(
-    JSON.stringify(
-      {
-        schema: 'wholeloop/scopes-plan@1',
-        subject: id,
-        ...context,
-        suggestedScopes: [
-          {
-            key: 'main',
-            title: item.title,
-            goal: context.impact ?? item.body,
-            metrics: context.metrics,
-            stories: context.stories,
-          },
-        ],
-        questions: [
-          {
-            id: 'scope:main:delivery',
-            prompt: 'Choose feature or proof-of-concept delivery.',
-            multi: false,
-            options: ['feature', 'proof-of-concept'].map((value) => ({ value, label: value })),
-          },
-          {
-            id: 'scope:main:flag',
-            prompt: 'Name the flag or explain its absence.',
-            multi: false,
-            options: [],
-          },
-          {
-            id: 'scope:main:complexity',
-            prompt: 'Choose simple or complex and explain why.',
-            multi: false,
-            options: ['simple', 'complex'].map((value) => ({ value, label: value })),
-          },
-          ...(!context.sourceSpec
-            ? [
-                {
-                  id: 'scope:metricIds',
-                  prompt: 'Provide the metric catalog or an explicit measurement exception.',
-                  multi: false,
-                  options: [],
-                },
-              ]
-            : []),
-        ],
-      },
-      null,
-      json ? undefined : 2,
-    ),
+  emitStep(
+    command,
+    {
+      schema: 'wholeloop/scopes-plan@1',
+      subject: id,
+      ...context,
+      suggestedScopes: [
+        {
+          key: 'main',
+          title: item.title,
+          goal: context.impact ?? item.body,
+          metrics: context.metrics,
+          stories: context.stories,
+        },
+      ],
+      questions: [
+        {
+          id: 'scope:main:delivery',
+          prompt: 'Choose feature or proof-of-concept delivery.',
+          multi: false,
+          options: ['feature', 'proof-of-concept'].map((value) => ({ value, label: value })),
+        },
+        {
+          id: 'scope:main:flag',
+          prompt: 'Name the flag or explain its absence.',
+          multi: false,
+          options: [],
+        },
+        {
+          id: 'scope:main:complexity',
+          prompt: 'Choose simple or complex and explain why.',
+          multi: false,
+          options: ['simple', 'complex'].map((value) => ({ value, label: value })),
+        },
+        ...(!context.sourceSpec
+          ? [
+              {
+                id: 'scope:metricIds',
+                prompt: 'Provide the metric catalog or an explicit measurement exception.',
+                multi: false,
+                options: [],
+              },
+            ]
+          : []),
+      ],
+    },
+    io,
+    json,
+    positional,
   )
   return EXIT.ok
 }

@@ -83,7 +83,6 @@ The same session as text:
 
 Frame — "Users struggle to find their past orders"
 Mode      new initiative · evidence from brief-7f3a
-Profile   pair (standard · balanced challenge)
 Publish   docs → not configured ↓
 
 Where should the framing live?

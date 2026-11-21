@@ -22,6 +22,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 - [ ] P9-05: in each signed-in native client, confirm that the source question precedes every unremembered research fan-out, code and web are suggested, a remembered list replaces detection, and only selected sources are queried. Confirm actual MCP tool availability and authentication separately from declaration labels. Seven-client configuration and rendered-skill fixtures pass; they do not establish live access.
 
 - [ ] P9-06: observe native researcher/challenger tools on all seven clients and confirm that no repository code executes. On inherited-permission clients, establish the actual read-only parent and external-tool set before delegation; otherwise the result must be unavailable. Confirm that the conductor authors the conclusion and shows the stored answer-first receipt, without a separate synthesis artifact. Static role denial, stale-basis checks, replay and built-CLI output pass with fixtures; native isolation remains unverified.
+- [ ] P9-07: in all seven clients, observe verbatim display.text, a single preparation header, no profile style block or raw command JSON, and one core-formatted line with actual elapsed time per native completion. Confirm no duplicate progress on a checked headless route with --progress and no invented completion during a long step. Synthetic rendering, CLI streams and local worker subprocesses establish the formatting only.
 
 ### P9-20 baseline capture
 

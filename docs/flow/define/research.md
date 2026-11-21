@@ -2,7 +2,9 @@
 
 > **TL;DR** — Splits a question into **angles**, investigates each one against a real source in parallel, lets a challenger try to refute the claims the conclusion rests on, and hands back a **brief**: claims with evidence and confidence, plus the open questions nothing could answer. Optional in the flow; useful on its own any day.
 
-Independent angles run concurrently at every interaction pace when the client supports native fan-out; otherwise the same assignments run sequentially. Actual native overlap, permission enforcement and authenticated sources still need live-client evidence. Research uses only read-only tools and never runs repository code; an unproven permission boundary leaves the evidence unavailable.
+Every step command returns the same core-rendered display for the terminal and coding clients; the profile style block stays private. Native hosts use the shared completion formatter with observed elapsed time.
+
+Independent angles run concurrently at every interaction pace when the client supports native fan-out; otherwise the same assignments run sequentially. Actual native forwarding, overlap, permission enforcement and authenticated sources still need live-client evidence. Research uses only read-only tools and never runs repository code; an unproven permission boundary leaves the evidence unavailable.
 
 ## At a glance
 
@@ -67,9 +69,9 @@ The same session as text:
 ```text
 > /wholeloop:research Do users struggle to find their past orders, and how do comparable products solve it?
 
-Research — "Do users struggle to find their past orders?"
-Mode      standalone · no initiative · brief stored outside the repo
-Profile   pair (standard · balanced challenge)
+Research — brief-7f3a "Do users struggle to find their past orders?"
+Mode     standalone
+Owner    Alex
 Sources   not configured for this repo yet ↓
 
 Which sources can I use?                                 (multi-select)
@@ -86,23 +88,37 @@ Selected sources (3) — remembered in .wholeloop/config.yml
  2  posthog   orders-page usage: searches, time to find, drop-off
  3  codebase  current orders list: filters, pagination, query limits
 
-▸ researcher:web started · researcher:posthog started · researcher:codebase started
-✓ codebase 3 claims · ✓ posthog 2 claims · ✓ web 4 claims
-▸ challenger cross-examining 4 load-bearing claims…
-✗ dropped 1 claim — 2 of 3 verifiers refuted it (single-week sample)
+This codebase — finished · 0:39
+PostHog — finished · 0:48
+Web — finished · 1:05
+Claim 1 check 1 — finished · 1:14
+Claim 1 check 2 — finished · 1:15
+Claim 1 check 3 — finished · 1:16
+Claim 2 check 1 — finished · 1:22
+Claim 2 check 2 — finished · 1:23
+Claim 2 check 3 — finished · 1:24
+Claim 3 check 1 — finished · 1:30
+Claim 3 check 2 — finished · 1:31
+Claim 3 check 3 — finished · 1:32
+Claim 4 check 1 — finished · 1:38
+Claim 4 check 2 — finished · 1:39
+Claim 4 check 3 — finished · 1:40
 
-Answer
-Returning customers need search and filters to find older orders.
-
-Recommendation
-Add search to the orders list, then measure time to find an order.
-
-Confidence: low.
-Not checked: no baseline for "time to find"; source claims not independently examined.
+Research — brief-7f3a
+Answer           Returning customers need search and filters to find older
+                 orders.
+Recommendation   Add search to the orders list, then measure time to find an
+                 order.
+Confidence       low
 
 Produced
-  Research brief   brief-7f3a    wl open brief-7f3a
-Next (optional)    /wholeloop:frame-problem --from brief-7f3a
+  artifacts/brief-7f3a/research.md · wl open brief-7f3a
+
+Open questions
+  No baseline for time to find; source claims not independently examined.
+
+Next
+  Frame
 ```
 
 | Client | Invoke | Parallel angles run as |

@@ -1,11 +1,13 @@
 // `wl fanout run`: runs a gate round through headless workers.
 import { openCodeVersionProbe } from '../diagnostics/doctor.js'
+import { progressText } from '../display/render.js'
 import { headlessAdapter } from '../fanout/adapters.js'
 import { runHeadless } from '../fanout/run.js'
 import { FlowEngine } from '../flow/engine.js'
 import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export async function fanoutCommand(
   { positional, options }: ReturnType<typeof parseArguments>,
@@ -35,6 +37,12 @@ export async function fanoutCommand(
     const result = await runHeadless(new FlowEngine(new StateStore(), root), subject, gate, {
       adapter: headlessAdapter(adapter, observed?.version),
       signal: controller.signal,
+      ...(!json || io.progress || options['--progress']
+        ? {
+            onProgress: (progress: Parameters<typeof progressText>[0]) =>
+              (io.progress ?? io.err)(progressText(progress)),
+          }
+        : {}),
       ...(options['--concurrency'] !== undefined
         ? { concurrency: Number(options['--concurrency']) }
         : {}),
@@ -42,7 +50,7 @@ export async function fanoutCommand(
         ? { timeoutMs: Number(options['--timeout']) * 1000 }
         : {}),
     })
-    io.out(JSON.stringify(result, null, json ? undefined : 2))
+    emitStep('fanout run', result, io, json, positional)
     return result.status === 'PASS' ? EXIT.ok : EXIT.shape
   } finally {
     process.removeListener('SIGINT', stop)
