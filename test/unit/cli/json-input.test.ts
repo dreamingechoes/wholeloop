@@ -5,6 +5,7 @@ import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { bundledCanonical } from '../../../src/adapters/canonical.js'
 import { ADAPTERS, generateAdapter } from '../../../src/adapters/generate.js'
+import { COMMANDS } from '../../../src/cli/commands.js'
 import { experienceReport } from '../../../src/experience/report.js'
 import { experienceTrace } from '../../../src/experience/transcript.js'
 import { FlowEngine } from '../../../src/flow/engine.js'
@@ -40,6 +41,9 @@ interface Payload {
   reviewTemplate: FrameReview
   plan?: { status: string; assignments?: unknown }
   display: { text: string }
+}
+function framingSchemas(payload: ReturnType<FlowEngine['begin']>['payload']) {
+  return 'inputSchemas' in payload ? payload.inputSchemas : undefined
 }
 function fixture(
   check: (value: {
@@ -97,8 +101,8 @@ describe.each(['file', 'stdin'] as const)('%s small step payloads', (mode) => {
         id = begun.payload.subject?.id ?? '',
         draft = join(dir, 'draft.md'),
         file = join(dir, 'decision.json')
-      expect(begun.payload.inputSchemas?.decision.$id).toBe('wholeloop/frame-decision@1')
-      expect(begun.payload.inputSchemas?.review.$id).toBe('wholeloop/frame-review@1')
+      expect(framingSchemas(begun.payload)?.decision.$id).toBe('wholeloop/frame-decision@1')
+      expect(framingSchemas(begun.payload)?.review.$id).toBe('wholeloop/frame-review@1')
       writeFileSync(draft, artifact)
       writeFileSync(file, JSON.stringify(decision))
       const prepared = cli(
@@ -381,6 +385,35 @@ describe('bounded streamed step inputs', () => {
           scratchDirectory(engine.store.files.root, 'run-0000000000000001', temporary),
         ).toThrow()
     }))
+  it('returns framing schemas only when ready and prevents caller mutation from changing validation', () =>
+    fixture(({ engine }) => {
+      const missing = engine.begin('frame-problem', { input: 'Search tasks' })
+      expect(missing.code).toBe(2)
+      expect(framingSchemas(missing.payload)).toBeUndefined()
+      expect(engine.store.events()).toEqual([])
+      const first = engine.begin('frame-problem', {
+          input: 'Search tasks',
+          owner: 'Fixture Owner',
+        }),
+        schemas = framingSchemas(first.payload)
+      if (!schemas) throw new Error('Expected ready framing schemas')
+      schemas.decision.required.length = 0
+      const resumed = engine.begin('frame-problem', { subject: first.payload.subject?.id ?? '' })
+      expect(framingSchemas(resumed.payload)?.decision.required).toContain('stopConditions')
+    }))
+  it('uses stdin only on commands whose registered contract declares it', () => {
+    const commands = [...COMMANDS].sort((a, b) => b.path.length - a.path.length)
+    for (const [file, text] of bundledCanonical())
+      if (/harness\/(?:skills|protocols)\//.test(file))
+        for (const match of text.matchAll(/`([^`]+)`/g)) {
+          const value = (match[1] ?? '').replace(/\s+/g, ' ').trim()
+          if (!value.startsWith('wl ') || !/(?:^| )--stdin(?: |$)/.test(value)) continue
+          const command = commands.find(
+            ({ path }) => value === `wl ${path}` || value.startsWith(`wl ${path} `),
+          )
+          expect(command?.options, `${file}: ${value}`).toContain('--stdin')
+        }
+  })
   it('shows the same compound preparation and quiet input policy in all seven clients', () => {
     for (const adapter of ADAPTERS) {
       const rendered = generateAdapter(

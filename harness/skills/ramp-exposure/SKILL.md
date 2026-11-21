@@ -8,7 +8,7 @@ metadata:
 
 Read ask-never-guess, output-contract and ramp-evidence. Read speaking-to-person.
 
-1. Begin with `wl ramp begin --for <scope> --stdin --json`. Standalone entry supplies a description and --owner. Read `wl ramp schema` and confirm environment, flag/manual control, audiences, thresholds, units and windows. The default 0/internal/10/50/100 sequence is a suggestion, never an approval.
+1. Begin with `wl ramp begin --for <scope> --file <ramp-plan.json> --json`. Standalone entry supplies a description and --owner. Read `wl ramp schema` and confirm environment, flag/manual control, audiences, thresholds, units and windows. The default 0/internal/10/50/100 sequence is a suggestion, never an approval.
 2. Read the pinned ramp.criteria content. A prepared launch also requires its measurement sourceDigest. Do not replace either binding during the run.
 3. Request reads with `wl ramp requests --for <id> --mode observe --json`. The conductor executes only those provider reads and returns sanitized normalized wholeloop/ramp-read-responses@1 results, including explicit unavailable entries. Use `wl ramp observe --for <id> --stdin --json` to record them.
 4. Show exact source queries, units, windows, unknown reasons and recommendations. Ask the person, then record `wl ramp decide go|hold|rollback --for <id>

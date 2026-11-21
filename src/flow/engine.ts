@@ -333,9 +333,6 @@ export class FlowEngine {
           configuration,
           presets: loaded.presets,
         }),
-        ...(name === 'frame-problem'
-          ? { inputSchemas: { decision: FRAME_DECISION_SCHEMA, review: FRAME_REVIEW_SCHEMA } }
-          : {}),
         bindings,
         guidanceSources: inventory.otherClients,
         templateSource,
@@ -466,6 +463,14 @@ export class FlowEngine {
         payload: {
           ...payload,
           scratch: scratchDirectory(this.store.files.root, run),
+          ...(name === 'frame-problem'
+            ? {
+                inputSchemas: {
+                  decision: structuredClone(FRAME_DECISION_SCHEMA),
+                  review: structuredClone(FRAME_REVIEW_SCHEMA),
+                },
+              }
+            : {}),
           subject: { id, kind: subject?.kind ?? step.kind },
         },
         code: EXIT.ok,
