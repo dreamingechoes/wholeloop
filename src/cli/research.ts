@@ -39,8 +39,22 @@ export function researchCommand(
         ...(typeof options['--remember'] === 'string' ? { remember: options['--remember'] } : {}),
         ...(typeof options['--client'] === 'string' ? { client: options['--client'] } : {}),
       })
-    } else if (command === 'research complete') payload = workflow.complete(subject)
-    else {
+    } else if (command === 'research complete') {
+      const supplied = ['--answer', '--recommendation', '--basis'].some(
+        (key) => options[key] !== undefined,
+      )
+      payload = workflow.complete(
+        subject,
+        supplied
+          ? {
+              schema: 'wholeloop/research-conclusion@1',
+              basis: options['--basis'],
+              answer: options['--answer'],
+              recommendation: options['--recommendation'],
+            }
+          : undefined,
+      )
+    } else {
       const file = options['--file']
       if (typeof file !== 'string') throw new CliError('Provide --file <json-report>', EXIT.input)
       // A linked report is still accepted, as before; the check and the read share one descriptor.
@@ -53,7 +67,15 @@ export function researchCommand(
           ? workflow.submit(subject, value)
           : workflow.examine(subject, value)
     }
-    io.out(JSON.stringify(payload, null, json ? undefined : 2))
+    if (
+      !json &&
+      command === 'research complete' &&
+      payload &&
+      typeof payload === 'object' &&
+      'receipt' in payload
+    )
+      io.out(String((payload.receipt as { text: string }).text))
+    else io.out(JSON.stringify(payload, null, json ? undefined : 2))
     return EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error

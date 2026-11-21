@@ -15,6 +15,10 @@
 # enforced by test/unit/experience/experience.test.ts in the ordinary fixture suite.
 version: 1
 rules:
+  - id: research-read-only
+    enforcers: [src/adapters/role-tools.ts#researchRoleProblems, src/adapters/generate.ts#generateAdapter, src/research/assignments.ts#researchAssignments, test/unit/adapters/worker-roles.test.ts, test/unit/research/conclusion.test.ts]
+  - id: research-conclusion-preserves-evidence
+    enforcers: [src/research/conclusion.ts#validateConclusion, src/research/conclusion.ts#conclusionBasis, src/research/report.ts#researchBrief, src/research/workflow.ts#ResearchWorkflow, src/flow/engine.ts#complete, test/unit/research/conclusion.test.ts]
   - id: research-person-selects-sources
     enforcers: [src/providers/source-access.ts#sourceCandidates, src/providers/detect.ts#detectMcpByClient, src/research/plan.ts#researchPlan, src/research/workflow.ts#ResearchWorkflow, src/cli/research.ts#researchCommand, src/config/write.ts#writeSettings, test/unit/research/source-choice.test.ts, test/unit/research/research.test.ts]
   - id: read-only-fanout-joins

@@ -8,6 +8,7 @@ import { FRAME_SECTIONS } from '../../../src/framing/contract.js'
 import { ResearchWorkflow } from '../../../src/research/workflow.js'
 import { StateStore } from '../../../src/state/store.js'
 import { next } from '../../../src/utilities/next.js'
+import { completeResearch } from '../../support/research.js'
 
 const artifact = readFileSync(new URL('../../fixtures/framing/frame.md', import.meta.url), 'utf8')
 function fixture(run: (dir: string, engine: FlowEngine) => void) {
@@ -115,7 +116,7 @@ describe('complete framing contract', () => {
           .subject?.id ?? ''
       const research = new ResearchWorkflow(engine)
       research.plan(brief, { sources: ['native-code', 'native-web'] })
-      const report = research.complete(brief)
+      const report = completeResearch(research, brief)
       const framing = engine.begin('frame-problem', { from: brief })
       const id = framing.payload.subject?.id ?? ''
       expect(framing.payload.input).toBe('Is order retrieval a problem?')
@@ -227,7 +228,21 @@ describe('complete framing contract', () => {
         'Alex',
       ).value.subject.id
       cli('research', 'plan', '--for', brief, '--sources', 'native-code,native-web')
-      expect(cli('research', 'complete', '--for', brief).code).toBe(0)
+      const conclusion = cli('research', 'complete', '--for', brief)
+      expect(
+        cli(
+          'research',
+          'complete',
+          '--for',
+          brief,
+          '--basis',
+          conclusion.value.basis,
+          '--answer',
+          'No fixture source supports an answer.',
+          '--recommendation',
+          'Collect source evidence.',
+        ).code,
+      ).toBe(0)
       const id = cli('step', 'begin', 'frame-problem', '--from', brief).value.subject.id
       const file = join(dir, 'frame.md')
       writeFileSync(file, artifact)

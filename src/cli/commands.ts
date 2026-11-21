@@ -1555,7 +1555,7 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'research complete',
     arguments: '',
-    options: ['--for <id>'],
+    options: ['--for <id>', '--answer <text>', '--recommendation <text>', '--basis <sha256>'],
     schema: 'wholeloop/research-complete@1',
     summary: 'Aggregate evidence into a replayable research brief',
   },

@@ -19,6 +19,7 @@ import { SharingWorkflow } from '../../../src/sharing/workflow.js'
 import { contextPack } from '../../../src/state/resume.js'
 import { StateStore } from '../../../src/state/store.js'
 import { next } from '../../../src/utilities/next.js'
+import { completeResearch } from '../../support/research.js'
 
 async function fixture(
   run: (context: {
@@ -324,7 +325,7 @@ describe('URL adoption and explicit shared publication', () => {
           .subject?.id ?? ''
       const research = new ResearchWorkflow(engine)
       research.plan(brief, { sources: ['native-code', 'native-web'] })
-      research.complete(brief)
+      completeResearch(research, brief)
       expect(sharingState(engine.store.events()).queue.size).toBe(0)
       const id = engine.begin('frame-problem', { from: brief }).payload.subject?.id ?? ''
       const remote = documents()

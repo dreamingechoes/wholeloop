@@ -142,7 +142,9 @@ exports[`self-contained research assignments > gives each verifier the original 
     "evidence": "Declared fixture source",
     "id": "native-code:source.code",
     "operation": "source.code.query",
+    "projectCodeExecution": "forbidden",
     "provider": "native-code",
+    "tools": "read-only-required",
   },
   "claim": "native-code:source.code:reject-empty",
   "input": {
@@ -183,7 +185,9 @@ exports[`self-contained research assignments > includes the exact source, questi
     "evidence": "Declared fixture source",
     "id": "native-code:source.code",
     "operation": "source.code.query",
+    "projectCodeExecution": "forbidden",
     "provider": "native-code",
+    "tools": "read-only-required",
   },
   "angle": {
     "available": true,

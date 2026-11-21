@@ -46,6 +46,7 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 3. **What the person reads:** P9-06–P9-10 and P9-22.
 4. **Cost and guarantees:** P9-11–P9-17.
 5. **Truth and every client:** P9-18, P9-19 and P9-21, with the experience check passing its budgets.
+6. **Additional findings:** P9-23 after the original task order; its private research endpoint shares the answer-first outcome without changing earlier task order.
 
 ## P9-01 · A store the client can write
 
@@ -132,15 +133,17 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-06 · Research that stays read-only and answers first
 
-**Status:** ⬜ · **Size:** S · **Depends on:** P9-03 · **Release:** 1.2.0
+**Status:** ✅ · **Size:** S · **Depends on:** P9-03 · **Release:** 1.2.0
 
 **Goal** — A brief opens with the answer, and research never executes repository code.
 
 **Acceptance criteria:**
 
 - [ ] Research workers have read-only tools on every client, and the skill says research never runs repository code.
-- [ ] The brief has Answer and Recommendation sections written by the conductor and stored by `research complete`; the receipt shows the answer first, with how sure it is and what was not checked, and no separate synthesis outside the brief is needed.
-- [ ] Verifier results collapse to one line per claim unless they dispute it; the evidence label reads "Verifier evidence"; refutation counts read "refuted by N of M (drops at K)"; the title is short and the question sits in the body.
+- [x] The brief has Answer and Recommendation sections written by the conductor and stored by `research complete`; the receipt shows the answer first, with how sure it is and what was not checked, and no separate synthesis outside the brief is needed.
+- [x] Verifier results collapse to one line per claim unless they dispute it; the evidence label reads "Verifier evidence"; refutation counts read "refuted by N of M (drops at K)"; the title is short and the question sits in the body.
+
+**Evidence** — `CHECK PASS in 694s`, 4981 tests in 348 files; `CHECK PASS (fast) in 359s`, 2096 related tests in 95 files. The focused suites passed 777 tests in 21 files, including all adapter renderers, exact conclusion binding, direct-core bypass rejection, replay, confidence, source quotations, compact verifier output, literal CLI arguments and short titles. Seven conclusion snapshots and two updated assignment snapshots were reviewed; the illustrative recording was regenerated and visually checked. Existing step/event/schema fingerprints stay frozen; only the new conclusion input and context output identities were added. Criterion 1 remains unchecked for actual native enforcement: canonical read/web-only capabilities, mutation-denial generation and no-code-execution instructions are implemented and tested, while observed native permissions, including Codex parent/external tools, remain in [manual verification](./manual-verification.md). Private controller conclusions are tracked separately by P9-23. No native model or source call ran.
 
 **Tests** — Report rendering snapshots; rendered-role tool checks from P9-03.
 
@@ -372,6 +375,21 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 - [ ] Skills write any remaining scratch files quietly in one scratch directory, never echoing their contents.
 
 **Tests** — Command tests for standard-input payloads against the same schemas as files; the experience check counts tool calls per step.
+
+## P9-23 · Autonomous research includes an authored conclusion
+
+**Status:** ⬜ · **Size:** M · **Depends on:** P9-06 · **Release:** 1.2.0 · **Decision:** amends [ADR-0021](../docs/decisions/0021-journaled-research-plans-and-refutations.md) and [ADR-0184](../docs/decisions/0184-unattended-research-host.md)
+
+**Goal** — The private research-report endpoint returns an authored Answer and Recommendation, rather than only an evidence ledger.
+
+**Acceptance criteria:**
+
+- [ ] The research controller obtains a conclusion bound to its completed evidence aggregate, with no new source query, repository command or broader tool authority.
+- [ ] Its report opens with the answer, recommendation, core-derived confidence and unchecked work, retaining every claim, refutation and source limitation.
+- [ ] Conclusion generation, replay, failure, changed evidence and the added bounded call are covered by the existing budget and resumption machinery; missing prose never becomes an invented answer.
+- [ ] Its plan/cost preview and documentation reflect the actual work; live quota evidence remains in manual verification.
+
+**Tests** — Private research-host fixtures for a complete conclusion, unknowns, stale input, failed generation, exact replay, bounded calls and unchanged source reads.
 
 ---
 

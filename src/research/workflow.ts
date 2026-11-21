@@ -14,13 +14,20 @@ import { currentClientAttribution } from '../state/attribution-context.js'
 import type { StateEvent } from '../state/events.js'
 import { researchAssignments } from './assignments.js'
 import {
+  conclusionBasis,
+  conclusionSchema,
+  researchCertainty,
+  researchSummary,
+  validateConclusion,
+} from './conclusion.js'
+import {
   type AngleResult,
   type Refutation,
   validateRefutation,
   validateResult,
 } from './contracts.js'
 import { researchPlan } from './plan.js'
-import { researchBrief, researchReport, researchState } from './report.js'
+import { renderResearchBrief, researchReport, researchState } from './report.js'
 
 function activeRun(events: readonly StateEvent[], subject: string): string {
   const latest = [...events]
@@ -213,13 +220,46 @@ export class ResearchWorkflow {
     })
   }
 
-  complete(subject: string) {
+  complete(subject: string, conclusion?: unknown) {
     const events = this.engine.store.events()
     const run = activeRun(events, subject)
     const state = researchState(events, subject, run)
     const report = researchReport(state.plan, state.results, state.votes)
-    const receipt = this.engine.complete('research', subject, researchBrief(events, subject, run))
-    return { schema: 'wholeloop/research-complete@1', report, receipt }
+    const basis = conclusionBasis(state.plan, report)
+    if (conclusion === undefined)
+      return {
+        schema: 'wholeloop/research-conclusion-context@1' as const,
+        status: 'needs-conclusion' as const,
+        subject,
+        run,
+        basis,
+        question: state.plan.question,
+        report,
+        certainty: researchCertainty(report),
+        inputSchema: structuredClone(conclusionSchema),
+        text: renderResearchBrief(state.plan, report),
+      }
+    validateConclusion(conclusion, basis)
+    const content = renderResearchBrief(state.plan, report, conclusion)
+    const completed = this.engine.complete(
+      'research',
+      subject,
+      content,
+      undefined,
+      undefined,
+      conclusion,
+    )
+    const summary = researchSummary(report, conclusion)
+    return {
+      schema: 'wholeloop/research-complete@1' as const,
+      report,
+      receipt: {
+        ...completed,
+        ...summary,
+        text: `${summary.text}\n\nBrief: ${completed.artifact}`,
+        basis,
+      },
+    }
   }
 }
 
