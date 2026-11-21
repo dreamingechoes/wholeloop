@@ -10,6 +10,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 [Phase 9](./phase-9-user-experience.md) is built and tested with fixtures; these checks need signed-in clients and model quota.
 
+- [ ] Baseline: the experience check (P9-20) is run on the current behaviour in Claude Code and in Codex before P9-01–P9-05 land, and its numbers are recorded here.
 - [ ] The experience check (P9-20) passes its budgets on Claude Code and on Codex.
 - [ ] OpenCode, Copilot, Gemini, Cursor and Antigravity: the experience check is run and its results are recorded here, with any gap filed as a Phase 9 task (P9-21).
 - [ ] Repeat the 2026-11-17 research question in Codex after P9-02–P9-07: one question about sources, read-only workers started together, no unrelated source, the answer first.

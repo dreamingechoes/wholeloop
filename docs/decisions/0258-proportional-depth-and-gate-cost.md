@@ -31,7 +31,7 @@ Points 1 and 2 can be accepted independently of point 3.
 
 ## Consequences
 
-Small questions and changes become cheap, and the cost of each check is visible before it is spent. Point 3 adds a dimension every artifact must record and every reader must understand; the compatibility baseline gains new schema versions.
+Small questions and changes become cheap, and the cost of each check is visible before it is spent. Points 1 and 2 alone leave a floor: any research question still costs one worker per chosen source plus three verifiers per load-bearing claim, and any change still runs the mandatory lenses with three refuters per blocker; only point 3 lets a quick question cost one worker. Point 3 adds a dimension every artifact must record and every reader must understand; the compatibility baseline gains new schema versions.
 
 ## Verification
 

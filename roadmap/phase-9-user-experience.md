@@ -1,6 +1,6 @@
 # Phase 9 — User experience for 1.2.0
 
-> **Outcome** — A person who installs wholeloop and runs any step, in the terminal or in any supported client, gets a short, readable answer in proportion to the question: the step asks for the choices that are theirs (sources, providers, guidance), never picks unrelated tools on its own, shows what it costs before spending it, keeps the internal vocabulary to itself and finishes with the answer first. What the documentation shows is what the product does.
+> **Outcome** — A person who installs wholeloop and runs any step, in the terminal or in any supported client, gets a short, readable answer quickly and in proportion to the question: the step uses only the workers, calls, context and sources it needs, asks for the choices that are theirs (sources, providers, guidance), never picks unrelated tools on its own, shows what it costs before spending it, keeps the internal vocabulary to itself and finishes with the answer first. What the documentation shows is what the product does.
 
 > [!NOTE]
 > **Status: ⬜ planned · added on 2026-11-18 for 1.2.0 · open phase.** The task list is not closed: tasks are added as the experience check (P9-20) and the per-client passes (P9-21) find more. The announcement of the package waits for this phase. 1.2.0 was the first factory release in [ADR-0247](../docs/decisions/0247-software-factory-phasing-after-1-0-0.md); the factory moves one minor version later (1.3.0–1.5.0) and keeps its order.
@@ -15,6 +15,7 @@ Inspecting the client's run logs and the code, and walking every step in an isol
 - **Workers that could not do their job.** Codex read-only roles are rendered without a command tool, yet their instructions tell them to run `wl`. The only real researcher gave up in 21 seconds; the conductor replaced every later worker with a full-context copy of itself, which spent the tokens, lost the read-only role and ran the repository's tests.
 - **Choices made for the person.** Every detected source becomes a research angle: an executable on `PATH`, or an MCP server declared in another client's configuration. Guidance discovery matches personal skills by a single word in their description, so in an ordinary repository `build-slice` refuses to start until the person picks a video-captions skill as backend guidance. A metric's provider is free text that is first checked after launch.
 - **No display contract.** Every documented session uses one compact layout, but no skill or protocol defines it; each model improvises, and most `wl` commands print JSON even without `--json`.
+- **Bookkeeping in view.** Each step has the agent hand-write several small JSON files, shown to the person as file diffs, and every `wl` call is a separate tool call; in Codex, approval reviews of those commands spent another 0.54 million tokens.
 - **Cost that does not scale.** Three independent verifiers per claim or finding is a schema floor; every review lens runs on a four-line change; any finding, even cosmetic, fails a round.
 - **A stated guarantee that does not hold.** Supervised `wl verify suite` runs the project's suite on the host with the caller's environment, while the README and ADR-0245 say project code runs only in Docker. Confirmed by execution on 2026-11-18.
 
@@ -22,7 +23,9 @@ Inspecting the client's run logs and the code, and walking every step in an isol
 
 - **Ask what belongs to the person, once, and remember it.** Sources, providers, publication targets and guidance are choices; detection only orders the options.
 - **The core writes what the person reads.** Deterministic text from `wl`, shown verbatim by every client, so the experience is identical on every platform.
+- **Spend only what the step needs.** The fewest workers, tool calls, files, tokens and approval prompts that keep its guarantees; independent work runs together; nothing waits on a clock; each worker gets only its assignment.
 - **Show the cost before spending it.** Workers, model and an estimate, before any fan-out.
+- **Measure before and after.** The experience check (P9-20) records the current behaviour first, so every fix is judged by numbers rather than impressions.
 - **Never trade a guarantee for speed silently.** Anything that reduces checks goes through proposal 0258 and is visible in the result.
 - **Every client, not only one.** Each fix lands in the canonical skill, the core or the adapter layer, with a conformance check for all seven clients.
 
@@ -31,10 +34,18 @@ Inspecting the client's run logs and the code, and walking every step in an isol
 | Topic | Options | Record |
 | --- | --- | --- |
 | Project code in supervised verification | Run `wl verify suite` through Docker and refuse without it (conservative, recommended), or amend the README, ADR-0245 and execution isolation to say the supervised path runs on the host | proposal 0257 |
-| Depth and cost against ADR-0010 | Keep "the profile never changes coverage" and reduce cost only by scheduling, deterministic checks and proportional applicability; or add explicit depth levels whose reduced coverage is recorded and shown | proposal 0258 |
+| Depth and cost against ADR-0010 | Three parts accepted separately: cost cuts that keep coverage (deterministic checks, cost preview, cheaper verifier model, applicability of optional lenses); severity of findings, so only blockers fail a round; and explicit depth levels whose reduced coverage is recorded and shown. Without the third part, the floor for any research question stays one worker per source plus three verifiers per load-bearing claim | proposal 0258 |
 | Documented interactions that do not exist | Implement them (setup detection, codehost and analytics; Define publication target; `next` path) or remove them from the documentation | P9-18 |
 
 Until a decision is accepted, its tasks wait and the current behaviour stays documented as it is.
+
+## Order
+
+1. **Baseline:** the experience check's harness and a recorded run of the current behaviour (P9-20), so the fixes are measured against it.
+2. **What broke the trial:** P9-01–P9-05. Parallel workers without sleeps, working roles and asked sources alone should take the 2026-11-17 question from 14.6 minutes to about three or four.
+3. **What the person reads:** P9-06–P9-10 and P9-22.
+4. **Cost and guarantees:** P9-11–P9-17, as their decisions are accepted.
+5. **Truth and every client:** P9-18, P9-19 and P9-21, with the experience check passing its budgets.
 
 ## P9-01 · A store the client can write
 
@@ -118,7 +129,7 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 **Acceptance criteria:**
 
 - [ ] Research workers have read-only tools on every client, and the skill says research never runs repository code.
-- [ ] The brief has Answer and Recommendation sections written by the conductor and stored by `research complete`; the receipt shows the answer first.
+- [ ] The brief has Answer and Recommendation sections written by the conductor and stored by `research complete`; the receipt shows the answer first, with how sure it is and what was not checked, and no separate synthesis outside the brief is needed.
 - [ ] Verifier results collapse to one line per claim unless they dispute it; the evidence label reads "Verifier evidence"; refutation counts read "refuted by N of M (drops at K)"; the title is short and the question sits in the body.
 
 **Tests** — Report rendering snapshots; rendered-role tool checks from P9-03.
@@ -134,8 +145,9 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 - [ ] Every step command's payload carries a versioned `display` block (header, rows, progress, produced, open questions, next) and its rendered text; the layout matches the documented sessions.
 - [ ] The output contract tells skills to show `display` verbatim and not to narrate internals; the preflight becomes one header line; the profile style block is never shown.
 - [ ] Raw `wl` JSON is never shown to the person by a skill.
+- [ ] While workers run, the person sees one short line as each finishes and the time so far, and nothing else; a long step is never silent and never chatty.
 
-**Tests** — Snapshot tests of `display` for every step; schema registration; the experience check lints transcripts for raw JSON.
+**Tests** — Snapshot tests of `display` for every step, including progress; schema registration; the experience check lints transcripts for raw JSON.
 
 ## P9-08 · Skills and protocols in plain language
 
@@ -146,7 +158,8 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 **Acceptance criteria:**
 
 - [ ] A short protocol for speaking to the person, loaded by every skill, with the person-facing words for internal terms; a lint lists the banned terms.
-- [ ] Rules the core enforces are no longer loaded into skills; protocols keep only what the agent must do.
+- [ ] Rules the core enforces are no longer loaded into skills; protocols keep only what the agent must do, and each skill loads only the protocols its step uses.
+- [ ] A step reaches its first question, plan or answer in a bounded number of tool calls, set by the experience check's baseline.
 - [ ] Maintainer-facing caveats (conformance, Linux not run) leave the skills; stale ones are removed, including status's "checkpoints are not collected yet".
 - [ ] Shown commands use a short form instead of a 60-character launcher path wherever the client allows it.
 
@@ -304,15 +317,16 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-20 · Experience check with budgets
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-07 · **Release:** 1.2.0
+**Status:** ⬜ · **Size:** M · **Depends on:** — · **Release:** 1.2.0
 
 **Goal** — The experience is measured the way a person meets it, and regressions fail a check.
 
 **Acceptance criteria:**
 
 - [ ] `npm run eval:experience` runs research, framing, spec, scopes, slicing and an ad-hoc build in a small fixture application outside this repository, through a client's headless mode, with fixture answers; it refuses without `WHOLELOOP_LIVE_CONFIRM=spend-quota`.
-- [ ] Per step it records wall time, tokens, workers, tool calls shown, lines of assistant text, raw JSON shown, banned terms and whether the documented questions were asked.
-- [ ] Budgets fail the check (initially: quick research ≤ 3 minutes and ≤ 3 workers, each Define step ≤ 5 minutes, no raw JSON, no banned terms, final message ≤ 25 lines); the transcript parsers are tested with recorded fixtures.
+- [ ] Per step it records wall time, time to the first question or plan, tokens, workers and whether they ran together, tool calls shown, approval prompts, lines of assistant text, raw JSON shown, banned terms, sources used that the person did not choose, and whether the documented questions were asked.
+- [ ] A baseline of the current behaviour on Codex and Claude Code is recorded before the fixes of P9-01–P9-05 land.
+- [ ] Budgets fail the check (initially: quick research ≤ 3 minutes and ≤ 3 workers, each Define step ≤ 5 minutes, no source the person did not choose, no fixed sleeps, no raw JSON, no banned terms, final message ≤ 25 lines; budgets for tokens, the first question and the build gates are set from the baseline and only tighten); the transcript parsers are tested with recorded fixtures.
 
 **Tests** — Parser and budget tests on recorded transcripts; the live runs go to manual verification.
 
@@ -324,10 +338,25 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 **Acceptance criteria:**
 
-- [ ] For each client, a written pass over rendered skills and agents: roles started, tools available, waiting primitive, sandbox and store access, launcher noise; gaps found become tasks in this phase.
+- [ ] For each client, a written pass over rendered skills and agents: roles started, tools available, waiting primitive, sandbox and store access, approval prompts per step, launcher noise; gaps found become tasks in this phase.
+- [ ] Install shows, for review, the narrowest rule that lets the client run the `wl` launcher without asking each time, per client that supports one; it never writes it on its own, because that widens what runs without approval.
 - [ ] The experience check passes on both reference clients; the other clients' results are recorded in manual verification.
 
-**Tests** — Rendered-artifact snapshots; live results in manual verification.
+**Tests** — Rendered-artifact snapshots; allow-rule rendering per client; live results in manual verification.
+
+## P9-22 · Fewer calls and files per step
+
+**Status:** ⬜ · **Size:** M · **Depends on:** P9-07 · **Release:** 1.2.0
+
+**Goal** — A step does its bookkeeping in as few `wl` calls as possible, and the person does not watch the agent write JSON files.
+
+**Acceptance criteria:**
+
+- [ ] Small decision and result payloads (frame decision, review answers, worker results, normalized responses) are accepted on standard input or as answers; files remain for large artifacts only.
+- [ ] Commands that always run together in a step are one call (for example beginning a step and returning its plan).
+- [ ] Skills write any remaining scratch files quietly in one scratch directory, never echoing their contents.
+
+**Tests** — Command tests for standard-input payloads against the same schemas as files; the experience check counts tool calls per step.
 
 ---
 

@@ -15,6 +15,7 @@ Presentation has one right answer for a given payload, which by [ADR-0003](./000
 
 - Every step command's payload gains a versioned `display` block: `header`, `rows`, optional `progress`, `produced`, `open` and `next`, plus `text`, the block rendered as plain text at 80 columns. The block is additive to the existing schemas.
 - The same renderer produces the human output of the CLI without `--json`, so the terminal and every client show identical text.
+- While workers run, `progress` gives one line per finished worker and the elapsed time; the skill shows those lines and nothing else until the result.
 - The output contract changes: a skill shows `display.text` verbatim for each command it runs, adds only what the person needs to decide, and never narrates internal fields or shows raw JSON. The preflight becomes the header line; the profile style block is for the agent only.
 - A banned-terms list for person-facing text is kept beside the renderer; the experience check (P9-20) lints transcripts against it.
 
