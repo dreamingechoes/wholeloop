@@ -94,14 +94,14 @@ Or simply say it in the conversation: "más técnico", "challenge me harder", "s
 
 | Invariant | Why |
 | --- | --- |
-| **The output contract**: preflight, one-line narration, stop on request, receipt | A run must always be legible, whatever the verbosity |
+| **The output contract**: core-rendered display, observed progress, stop on request | A run must always be legible, whatever the verbosity |
 | **Coverage**: every lens, every verification, every cap | Slowing a check down is a preference; narrowing it is a conversation, not a setting |
 | **Decision points** | Accountability stays with a person; only an explicit autonomous-delivery authorization, never a profile, lets a person decide in advance |
 | **Ask, never guess** | A `brief` or `autopilot` profile asks fewer *optional* questions, never fewer *necessary* ones |
 
 ## How it reaches the model
 
-The core renders the active profile into a **style block of at most ten lines** and includes it in every `wl step begin` payload. Skills do not interpret the dials themselves, so the same profile produces the same instructions in every client, and the rendering is snapshot-tested. This is the block for `sparring` with `language=es`:
+The core renders the active profile into a **style block of at most ten lines** and includes it in every `wl step begin` payload. The style block is private input and is never printed to the person. Skills do not interpret the dials themselves, so the same profile produces the same instructions in every client, and the rendering is snapshot-tested. This is the block for `sparring` with `language=es`:
 
 ```text
 Style for this run:

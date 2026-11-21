@@ -322,6 +322,12 @@ rules:
     enforcers: [scripts/check-package.mjs, package.json]
   - id: v1-declaration-compatibility
     enforcers: [src/contracts/compatibility.ts#checkCompatibility, src/contracts/compatibility.ts#schemaContracts, src/adapters/generate.ts#generateAdapter, src/adapters/distribution.ts#generateDistribution, test/unit/contracts/compatibility.test.ts]
+  - id: core-person-display
+    enforcers: [src/display/step.ts#stepDisplay, src/display/render.ts#renderDisplay, src/cli/presentation.ts#emitStep, test/unit/display/display.test.ts]
+  - id: display-no-raw-json
+    enforcers: [src/cli/presentation.ts#emitStep, src/experience/report.ts#experienceReport, test/unit/display/display.test.ts, test/unit/experience/experience.test.ts]
+  - id: worker-completion-progress
+    enforcers: [src/display/render.ts#progressText, src/cli/display.ts#displayCommand, src/fanout/host.ts#HeadlessHost, test/unit/display/display.test.ts, test/unit/fanout/fanout.test.ts]
   - id: public-versioned-json-contract
     enforcers: [src/cli/contracts.ts#checkCommandSchemas, test/unit/cli-contracts.test.ts, test/fixtures/contracts/event-data-v1.json]
   - id: release-complete-local-history
@@ -387,7 +393,7 @@ rules:
   - id: distribution-local-preview
     enforcers: [src/adapters/distribution.ts#generateDistribution, src/cli/release.ts#releaseArtifacts, test/unit/adapters/distribution.test.ts]
   - id: artifacts-bundled-core
-    enforcers: [src/adapters/generate.ts#generateAdapter, src/adapters/claude.ts#claudeAdapter, src/cli/adapter-root.ts#adapterRoot, src/cli/adapter-root.ts#packagedContext, src/cli/adapter-context.ts#adapterInvocation, test/unit/adapters/adapters.test.ts, test/unit/adapters/targets.test.ts, test/unit/adapters/invocation.test.ts, test/unit/installation/installation.test.ts]
+    enforcers: [scripts/build.mjs, src/adapters/generate.ts#generateAdapter, src/adapters/claude.ts#claudeAdapter, src/cli/adapter-root.ts#adapterRoot, src/cli/adapter-root.ts#packagedContext, src/cli/adapter-context.ts#adapterInvocation, test/unit/adapters/adapters.test.ts, test/unit/adapters/targets.test.ts, test/unit/adapters/invocation.test.ts, test/unit/installation/installation.test.ts]
   - id: headless-exact-assignment
     enforcers: [src/fanout/host.ts#HeadlessHost, src/gates/workflow.ts#submit, test/unit/fanout/fanout.test.ts]
   - id: headless-bounded-workers

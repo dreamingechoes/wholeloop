@@ -1,0 +1,914 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`bounded progress and terminal text > failed is one observed line with elapsed time 1`] = `
+{
+  "header": "",
+  "next": [],
+  "open": [],
+  "produced": [],
+  "progress": [
+    {
+      "elapsedMs": 65123,
+      "label": "AC-1",
+      "status": "failed",
+    },
+  ],
+  "rows": [],
+  "schema": "wholeloop/display@1",
+  "text": "AC-1 — failed · 1:05",
+}
+`;
+
+exports[`bounded progress and terminal text > finished is one observed line with elapsed time 1`] = `
+{
+  "header": "",
+  "next": [],
+  "open": [],
+  "produced": [],
+  "progress": [
+    {
+      "elapsedMs": 65123,
+      "label": "AC-1",
+      "status": "finished",
+    },
+  ],
+  "rows": [],
+  "schema": "wholeloop/display@1",
+  "text": "AC-1 — finished · 1:05",
+}
+`;
+
+exports[`bounded progress and terminal text > running is one observed line with elapsed time 1`] = `
+{
+  "header": "",
+  "next": [],
+  "open": [],
+  "produced": [],
+  "progress": [
+    {
+      "elapsedMs": 65123,
+      "label": "AC-1",
+      "status": "running",
+    },
+  ],
+  "rows": [],
+  "schema": "wholeloop/display@1",
+  "text": "AC-1 — running · 1:05",
+}
+`;
+
+exports[`bounded progress and terminal text > unavailable is one observed line with elapsed time 1`] = `
+{
+  "header": "",
+  "next": [],
+  "open": [],
+  "produced": [],
+  "progress": [
+    {
+      "elapsedMs": 65123,
+      "label": "AC-1",
+      "status": "unavailable",
+    },
+  ],
+  "rows": [],
+  "schema": "wholeloop/display@1",
+  "text": "AC-1 — unavailable · 1:05",
+}
+`;
+
+exports[`keeps preparation to one header and retains undo declarations without claiming cleanup 1`] = `
+{
+  "header": "Build — item-fixture",
+  "next": [],
+  "open": [
+    "Undo commands are declarations; no cleanup was executed.",
+  ],
+  "produced": [],
+  "rows": [
+    {
+      "label": "Declared writes",
+      "value": "1",
+    },
+    {
+      "label": "Resource",
+      "value": "fixture database",
+    },
+    {
+      "label": "Effect",
+      "value": "Created a table",
+    },
+    {
+      "label": "Declared by",
+      "value": "Alex",
+    },
+    {
+      "label": "Undo from",
+      "value": "/tmp/fixture",
+    },
+    {
+      "label": "Undo arguments",
+      "value": ""fixture-db" "drop" "orders archive"",
+    },
+  ],
+  "schema": "wholeloop/display@1",
+  "text": "Build — item-fixture
+Declared writes   1
+Resource          fixture database
+Effect            Created a table
+Declared by       Alex
+Undo from         /tmp/fixture
+Undo arguments    "fixture-db" "drop" "orders archive"
+
+Open questions
+  Undo commands are declarations; no cleanup was executed.",
+}
+`;
+
+exports[`one core display for every step > build-slice retains its layout and omits internal preparation 1`] = `
+{
+  "begin": {
+    "header": "Build "Find past orders"",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Mode",
+        "value": "standalone",
+      },
+      {
+        "label": "Owner",
+        "value": "Alex",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Build "Find past orders"
+Mode     standalone
+Owner    Alex",
+  },
+  "complete": {
+    "header": "Build — slice-00000000",
+    "next": [],
+    "open": [
+      "Confirm human testing",
+    ],
+    "produced": [
+      "items/slice-00000000/artifacts/build-slice/run-0000000000000000.md · wl open slice-00000000",
+    ],
+    "rows": [],
+    "schema": "wholeloop/display@1",
+    "text": "Build — slice-00000000
+
+Produced
+  items/slice-00000000/artifacts/build-slice/run-0000000000000000.md · wl open
+  slice-00000000
+
+Open questions
+  Confirm human testing",
+  },
+}
+`;
+
+exports[`one core display for every step > cut-scopes retains its layout and omits internal preparation 1`] = `
+{
+  "begin": {
+    "header": "Scopes "Find past orders"",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Mode",
+        "value": "standalone",
+      },
+      {
+        "label": "Owner",
+        "value": "Alex",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Scopes "Find past orders"
+Mode     standalone
+Owner    Alex",
+  },
+  "complete": {
+    "header": "Scopes — init-00000000",
+    "next": [],
+    "open": [
+      "Approve the scopes",
+    ],
+    "produced": [
+      "items/init-00000000/artifacts/cut-scopes/run-0000000000000000.md · wl open init-00000000",
+    ],
+    "rows": [],
+    "schema": "wholeloop/display@1",
+    "text": "Scopes — init-00000000
+
+Produced
+  items/init-00000000/artifacts/cut-scopes/run-0000000000000000.md · wl open
+  init-00000000
+
+Open questions
+  Approve the scopes",
+  },
+}
+`;
+
+exports[`one core display for every step > decide-next retains its layout and omits internal preparation 1`] = `
+{
+  "begin": {
+    "header": "Decide "Find past orders"",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Mode",
+        "value": "standalone",
+      },
+      {
+        "label": "Owner",
+        "value": "Alex",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Decide "Find past orders"
+Mode     standalone
+Owner    Alex",
+  },
+  "complete": {
+    "header": "Decide — scope-00000000",
+    "next": [],
+    "open": [],
+    "produced": [
+      "items/scope-00000000/artifacts/decide-next/run-0000000000000000.md · wl open scope-00000000",
+    ],
+    "rows": [],
+    "schema": "wholeloop/display@1",
+    "text": "Decide — scope-00000000
+
+Produced
+  items/scope-00000000/artifacts/decide-next/run-0000000000000000.md · wl open
+  scope-00000000",
+  },
+}
+`;
+
+exports[`one core display for every step > frame-problem retains its layout and omits internal preparation 1`] = `
+{
+  "begin": {
+    "header": "Frame "Find past orders"",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Mode",
+        "value": "standalone",
+      },
+      {
+        "label": "Owner",
+        "value": "Alex",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Frame "Find past orders"
+Mode     standalone
+Owner    Alex",
+  },
+  "complete": {
+    "header": "Frame — init-00000000",
+    "next": [
+      "Spec",
+    ],
+    "open": [],
+    "produced": [
+      "items/init-00000000/artifacts/frame-problem/run-0000000000000000.md · wl open init-00000000",
+    ],
+    "rows": [],
+    "schema": "wholeloop/display@1",
+    "text": "Frame — init-00000000
+
+Produced
+  items/init-00000000/artifacts/frame-problem/run-0000000000000000.md · wl open
+  init-00000000
+
+Next
+  Spec",
+  },
+}
+`;
+
+exports[`one core display for every step > keeps the answer first, uncertainty explicit and a pending decision out of Next 1`] = `
+{
+  "header": "Research — brief-fixture",
+  "next": [],
+  "open": [
+    "No time-to-find baseline.",
+    "Approve the specification",
+  ],
+  "produced": [
+    "brief.md · wl open brief-fixture",
+  ],
+  "rows": [
+    {
+      "label": "Answer",
+      "value": "Filters hide old orders.",
+    },
+    {
+      "label": "Recommendation",
+      "value": "Add search.",
+    },
+    {
+      "label": "Confidence",
+      "value": "low",
+    },
+  ],
+  "schema": "wholeloop/display@1",
+  "text": "Research — brief-fixture
+Answer           Filters hide old orders.
+Recommendation   Add search.
+Confidence       low
+
+Produced
+  brief.md · wl open brief-fixture
+
+Open questions
+  No time-to-find baseline.
+  Approve the specification",
+}
+`;
+
+exports[`one core display for every step > measure-impact retains its layout and omits internal preparation 1`] = `
+{
+  "begin": {
+    "header": "Measure "Find past orders"",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Mode",
+        "value": "standalone",
+      },
+      {
+        "label": "Owner",
+        "value": "Alex",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Measure "Find past orders"
+Mode     standalone
+Owner    Alex",
+  },
+  "complete": {
+    "header": "Measure — scope-00000000",
+    "next": [
+      "Decide",
+    ],
+    "open": [],
+    "produced": [
+      "items/scope-00000000/artifacts/measure-impact/run-0000000000000000.md · wl open scope-00000000",
+    ],
+    "rows": [],
+    "schema": "wholeloop/display@1",
+    "text": "Measure — scope-00000000
+
+Produced
+  items/scope-00000000/artifacts/measure-impact/run-0000000000000000.md · wl
+  open scope-00000000
+
+Next
+  Decide",
+  },
+}
+`;
+
+exports[`one core display for every step > open-pr retains its layout and omits internal preparation 1`] = `
+{
+  "begin": {
+    "header": "Open PR "Find past orders"",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Mode",
+        "value": "standalone",
+      },
+      {
+        "label": "Owner",
+        "value": "Alex",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Open PR "Find past orders"
+Mode     standalone
+Owner    Alex",
+  },
+  "complete": {
+    "header": "Open PR — slice-00000000",
+    "next": [
+      "Prepare launch",
+    ],
+    "open": [],
+    "produced": [
+      "items/slice-00000000/artifacts/open-pr/run-0000000000000000.md · wl open slice-00000000",
+    ],
+    "rows": [],
+    "schema": "wholeloop/display@1",
+    "text": "Open PR — slice-00000000
+
+Produced
+  items/slice-00000000/artifacts/open-pr/run-0000000000000000.md · wl open
+  slice-00000000
+
+Next
+  Prepare launch",
+  },
+}
+`;
+
+exports[`one core display for every step > prepare-launch retains its layout and omits internal preparation 1`] = `
+{
+  "begin": {
+    "header": "Prepare launch "Find past orders"",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Mode",
+        "value": "standalone",
+      },
+      {
+        "label": "Owner",
+        "value": "Alex",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Prepare launch "Find past orders"
+Mode     standalone
+Owner    Alex",
+  },
+  "complete": {
+    "header": "Prepare launch — scope-00000000",
+    "next": [
+      "Ramp",
+    ],
+    "open": [],
+    "produced": [
+      "items/scope-00000000/artifacts/prepare-launch/run-0000000000000000.md · wl open scope-00000000",
+    ],
+    "rows": [],
+    "schema": "wholeloop/display@1",
+    "text": "Prepare launch — scope-00000000
+
+Produced
+  items/scope-00000000/artifacts/prepare-launch/run-0000000000000000.md · wl
+  open scope-00000000
+
+Next
+  Ramp",
+  },
+}
+`;
+
+exports[`one core display for every step > preserves measurement actuals and missing evidence, publication pending and unperformed flags 1`] = `
+{
+  "launch": {
+    "header": "Prepare launch",
+    "next": [],
+    "open": [
+      "Support guide: publication pending.",
+    ],
+    "produced": [
+      "launch/support.md",
+    ],
+    "rows": [
+      {
+        "label": "Publication",
+        "value": "Support guide: pending · docs",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Prepare launch
+Publication   Support guide: pending · docs
+
+Produced
+  launch/support.md
+
+Open questions
+  Support guide: publication pending.",
+  },
+  "learning": {
+    "header": "Decide",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Decision",
+        "value": "iterate",
+      },
+      {
+        "label": "Reason",
+        "value": "The target was not met",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Decide
+Decision   iterate
+Reason     The target was not met",
+  },
+  "metrics": {
+    "header": "Measure",
+    "next": [],
+    "open": [
+      "Support tickets: Source is not connected",
+    ],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Time to find",
+        "value": "18 s · met",
+      },
+      {
+        "label": "Support tickets",
+        "value": "unknown count · unknown",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Measure
+Time to find      18 s · met
+Support tickets   unknown count · unknown
+
+Open questions
+  Support tickets: Source is not connected",
+  },
+  "ramp": {
+    "header": "Ramp",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Recommendation",
+        "value": "hold",
+      },
+      {
+        "label": "Flag change",
+        "value": "Not performed",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Ramp
+Recommendation   hold
+Flag change      Not performed",
+  },
+}
+`;
+
+exports[`one core display for every step > ramp-exposure retains its layout and omits internal preparation 1`] = `
+{
+  "begin": {
+    "header": "Ramp "Find past orders"",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Mode",
+        "value": "standalone",
+      },
+      {
+        "label": "Owner",
+        "value": "Alex",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Ramp "Find past orders"
+Mode     standalone
+Owner    Alex",
+  },
+  "complete": {
+    "header": "Ramp — scope-00000000",
+    "next": [
+      "Measure",
+    ],
+    "open": [],
+    "produced": [
+      "items/scope-00000000/artifacts/ramp-exposure/run-0000000000000000.md · wl open scope-00000000",
+    ],
+    "rows": [],
+    "schema": "wholeloop/display@1",
+    "text": "Ramp — scope-00000000
+
+Produced
+  items/scope-00000000/artifacts/ramp-exposure/run-0000000000000000.md · wl open
+  scope-00000000
+
+Next
+  Measure",
+  },
+}
+`;
+
+exports[`one core display for every step > research retains its layout and omits internal preparation 1`] = `
+{
+  "begin": {
+    "header": "Research "Find past orders"",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Mode",
+        "value": "standalone",
+      },
+      {
+        "label": "Owner",
+        "value": "Alex",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Research "Find past orders"
+Mode     standalone
+Owner    Alex",
+  },
+  "complete": {
+    "header": "Research — brief-00000000",
+    "next": [
+      "Frame",
+    ],
+    "open": [],
+    "produced": [
+      "items/brief-00000000/artifacts/research/run-0000000000000000.md · wl open brief-00000000",
+    ],
+    "rows": [],
+    "schema": "wholeloop/display@1",
+    "text": "Research — brief-00000000
+
+Produced
+  items/brief-00000000/artifacts/research/run-0000000000000000.md · wl open
+  brief-00000000
+
+Next
+  Frame",
+  },
+}
+`;
+
+exports[`one core display for every step > retains failed findings, missing observations, source choices and unconnected providers 1`] = `
+{
+  "gate": {
+    "header": "Verify",
+    "next": [],
+    "open": [
+      "The end date is excluded.",
+      "The observed work has changed; check it again before continuing.",
+    ],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Status",
+        "value": "FAIL",
+      },
+      {
+        "label": "Not checked",
+        "value": "AC-2",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Verify
+Status        FAIL
+Not checked   AC-2
+
+Open questions
+  The end date is excluded.
+  The observed work has changed; check it again before continuing.",
+  },
+  "sources": {
+    "header": "Research",
+    "next": [],
+    "open": [
+      "extra: not usable yet; docs/extending/providers.md",
+      "Which sources may I use, and where should I remember your choice?",
+    ],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Status",
+        "value": "Choose sources",
+      },
+      {
+        "label": "Workers",
+        "value": "0",
+      },
+      {
+        "label": "Sources",
+        "value": "Choose before research starts",
+      },
+      {
+        "label": "Web",
+        "value": "native",
+      },
+      {
+        "label": "Analytics",
+        "value": "configured in another client",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Research
+Status      Choose sources
+Workers     0
+Sources     Choose before research starts
+Web         native
+Analytics   configured in another client
+
+Open questions
+  extra: not usable yet; docs/extending/providers.md
+  Which sources may I use, and where should I remember your choice?",
+  },
+}
+`;
+
+exports[`one core display for every step > review-code retains its layout and omits internal preparation 1`] = `
+{
+  "begin": {
+    "header": "Review "Find past orders"",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Mode",
+        "value": "standalone",
+      },
+      {
+        "label": "Owner",
+        "value": "Alex",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Review "Find past orders"
+Mode     standalone
+Owner    Alex",
+  },
+  "complete": {
+    "header": "Review — review-00000000",
+    "next": [],
+    "open": [
+      "Confirm human testing",
+    ],
+    "produced": [
+      "items/review-00000000/artifacts/review-code/run-0000000000000000.md · wl open review-00000000",
+    ],
+    "rows": [],
+    "schema": "wholeloop/display@1",
+    "text": "Review — review-00000000
+
+Produced
+  items/review-00000000/artifacts/review-code/run-0000000000000000.md · wl open
+  review-00000000
+
+Open questions
+  Confirm human testing",
+  },
+}
+`;
+
+exports[`one core display for every step > slice-work retains its layout and omits internal preparation 1`] = `
+{
+  "begin": {
+    "header": "Slices "Find past orders"",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Mode",
+        "value": "standalone",
+      },
+      {
+        "label": "Owner",
+        "value": "Alex",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Slices "Find past orders"
+Mode     standalone
+Owner    Alex",
+  },
+  "complete": {
+    "header": "Slices — scope-00000000",
+    "next": [
+      "Build",
+    ],
+    "open": [],
+    "produced": [
+      "items/scope-00000000/artifacts/slice-work/run-0000000000000000.md · wl open scope-00000000",
+    ],
+    "rows": [],
+    "schema": "wholeloop/display@1",
+    "text": "Slices — scope-00000000
+
+Produced
+  items/scope-00000000/artifacts/slice-work/run-0000000000000000.md · wl open
+  scope-00000000
+
+Next
+  Build",
+  },
+}
+`;
+
+exports[`one core display for every step > verify-works retains its layout and omits internal preparation 1`] = `
+{
+  "begin": {
+    "header": "Verify "Find past orders"",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Mode",
+        "value": "standalone",
+      },
+      {
+        "label": "Owner",
+        "value": "Alex",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Verify "Find past orders"
+Mode     standalone
+Owner    Alex",
+  },
+  "complete": {
+    "header": "Verify — slice-00000000",
+    "next": [
+      "Review",
+    ],
+    "open": [],
+    "produced": [
+      "items/slice-00000000/artifacts/verify-works/run-0000000000000000.md · wl open slice-00000000",
+    ],
+    "rows": [],
+    "schema": "wholeloop/display@1",
+    "text": "Verify — slice-00000000
+
+Produced
+  items/slice-00000000/artifacts/verify-works/run-0000000000000000.md · wl open
+  slice-00000000
+
+Next
+  Review",
+  },
+}
+`;
+
+exports[`one core display for every step > write-spec retains its layout and omits internal preparation 1`] = `
+{
+  "begin": {
+    "header": "Spec "Find past orders"",
+    "next": [],
+    "open": [],
+    "produced": [],
+    "rows": [
+      {
+        "label": "Mode",
+        "value": "standalone",
+      },
+      {
+        "label": "Owner",
+        "value": "Alex",
+      },
+    ],
+    "schema": "wholeloop/display@1",
+    "text": "Spec "Find past orders"
+Mode     standalone
+Owner    Alex",
+  },
+  "complete": {
+    "header": "Spec — init-00000000",
+    "next": [],
+    "open": [
+      "Approve the specification",
+    ],
+    "produced": [
+      "items/init-00000000/artifacts/write-spec/run-0000000000000000.md · wl open init-00000000",
+    ],
+    "rows": [],
+    "schema": "wholeloop/display@1",
+    "text": "Spec — init-00000000
+
+Produced
+  items/init-00000000/artifacts/write-spec/run-0000000000000000.md · wl open
+  init-00000000
+
+Open questions
+  Approve the specification",
+  },
+}
+`;

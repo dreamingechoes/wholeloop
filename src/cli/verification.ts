@@ -10,6 +10,7 @@ import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { roundOverrides } from './gate.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export function verificationCommand(
   command: string,
@@ -51,7 +52,7 @@ export function verificationCommand(
         receipt: workflow.complete(value('--for') ?? ''),
       }
     }
-    io.out(JSON.stringify(payload, null, json ? undefined : 2))
+    emitStep(command, payload, io, json, positional)
     return 'status' in payload && payload.status === 'question' ? EXIT.input : EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error
@@ -82,6 +83,6 @@ export async function verificationSuiteCommand(
       ...(value('--timeout') ? { timeoutMs: Number(value('--timeout')) } : {}),
     },
   )
-  io.out(JSON.stringify(payload, null, json ? undefined : 2))
+  emitStep('verify suite', payload, io, json, positional)
   return payload.result.status === 'passed' && payload.current ? EXIT.ok : EXIT.shape
 }

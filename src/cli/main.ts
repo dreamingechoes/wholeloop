@@ -21,6 +21,7 @@ import { deliveryPrivateAsyncCommand } from './delivery-private.js'
 import { deliveryRecoverCommand } from './delivery-recovery.js'
 import { deliveryRunnerAsyncCommand, deliveryRunnerCommand } from './delivery-runner.js'
 import { discoveryCommand } from './discovery.js'
+import { displayCommand } from './display.js'
 import { docsCheck, docsNav, docsReference } from './docs.js'
 import { doctorCommand } from './doctor.js'
 import { environmentCommand } from './environment.js'
@@ -48,6 +49,7 @@ import { learningCommand } from './learning.js'
 import { mailboxCommand } from './mailbox.js'
 import { maintenanceCommand } from './maintenance.js'
 import { overviewCommand } from './overview.js'
+import { displayArguments, displayPayload } from './presentation.js'
 import { profileCommand } from './profile.js'
 import { providerCommand } from './provider.js'
 import { providerPlanCommand } from './provider-plan.js'
@@ -107,6 +109,7 @@ function help(args: readonly string[]): string {
 export function run(argv: readonly string[], io: Io, root = process.cwd()): number {
   const json = argv.includes('--json')
   const args = argv.filter((arg) => arg !== '--json')
+  let presentationArgs: readonly string[] = []
   try {
     if (args.length === 1 && ['--version', '-v'].includes(args[0] ?? '')) {
       io.out(json ? JSON.stringify({ schema: 'wholeloop/version@1', version: VERSION }) : VERSION)
@@ -130,8 +133,10 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
         .filter((option) => option.includes(' '))
         .map((option) => option.split(' ')[0] ?? option),
     )
+    presentationArgs = displayArguments(parsed)
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
+    if (command.path === 'display progress') return displayCommand(parsed, json, io)
     return withCommandAttribution(command.path, parsed, root, () => {
       if (['overview', 'overview schema'].includes(command.path))
         return overviewCommand(command.path, root, json, io)
@@ -255,7 +260,20 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
         ? error.code
         : EXIT.unexpected
     const message = storeFailure ?? (error instanceof Error ? error.message : String(error))
-    if (json) io.out(JSON.stringify({ schema: 'wholeloop/error@1', code, message }))
+    if (json)
+      io.out(
+        JSON.stringify(
+          displayPayload(
+            findCommand(args)?.path ?? '',
+            {
+              schema: 'wholeloop/error@1',
+              code,
+              message,
+            },
+            presentationArgs,
+          ),
+        ),
+      )
     else io.err(`wl: ${message}`)
     return code
   }
@@ -319,6 +337,7 @@ export async function runAsync(
   )
     return run(argv, io, root)
   const json = argv.includes('--json')
+  let presentationArgs: readonly string[] = []
   try {
     const parsed = parseArguments(
       args.slice(command.path.split(' ').length),
@@ -327,6 +346,7 @@ export async function runAsync(
         .filter((option) => option.includes(' '))
         .map((option) => option.split(' ')[0] ?? option),
     )
+    presentationArgs = displayArguments(parsed)
     return await withCommandAttribution(command.path, parsed, root, async () => {
       if (command.path === 'watch') return await watchCommand(parsed, root, io)
       if (command.path.startsWith('guard '))
@@ -413,7 +433,16 @@ export async function runAsync(
         : EXIT.precondition
     const message =
       storeFailure ?? (error instanceof Error ? error.message : 'Asynchronous command failed')
-    if (json) io.out(JSON.stringify({ schema: 'wholeloop/error@1', code, message }))
+    if (json)
+      io.out(
+        JSON.stringify(
+          displayPayload(
+            command.path,
+            { schema: 'wholeloop/error@1', code, message },
+            presentationArgs,
+          ),
+        ),
+      )
     else io.err(`wl: ${message}`)
     return code
   }

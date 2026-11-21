@@ -11,6 +11,6 @@
 - ⛔ `headless-antigravity-ready` — hold AGY assignments until bounded reported initialization names only the selected read tools/workspace and strict native permissions. Use a private observer/hook and one fresh matching successful turn; missing/refused readiness never receives a bootstrap prompt or counts as evidence.
 
 Plan a gate first. Verification requires its actual once-per-round suite before read-only fan-out. Select headless explicitly and use an available recipe; current local recipes cover all seven clients; AGY requires read-only init before input. Run `wl fanout run review|verify --for
-<id> --engine headless --adapter <client> --json`. Apply no automatic repair or budget reset. A failed round needs the existing explicit gate planning path.
+<id> --engine headless --progress --adapter <client> --json`. Apply no automatic repair or budget reset. A failed round needs the existing explicit gate planning path.
 
 Inspect worker metadata in the external store; stdout/stderr and prompt bodies are not retained by this transport. Unknown stale locks require inspection of owner.json and confirmation that its process stopped, never automatic theft. Recipe help probes and synthetic processes do not establish real client isolation, MCP/managed policy behavior, authenticated output normalization or Linux conformance.

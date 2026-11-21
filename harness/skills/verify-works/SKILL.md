@@ -18,6 +18,6 @@ Read worker-handoffs, headless-gates, ask-never-guess, output-contract, gate-rou
 8. Keep human testing separate. Report absent rendering sources, live-client isolation gaps and other unavailable observations instead of implying coverage.
 
 When the conductor explicitly selects headless, use `wl fanout run verify --for
-<id> --engine headless --adapter claude|codex|opencode|copilot|cursor --json` after the same planned inputs and actual suite receipt. The process host submits results/refutations and seals the same core verdict; continue with this skill's completion/handoff instead of dispatching workers twice.
+<id> --engine headless --progress --adapter claude|codex|opencode|copilot|cursor --json` after the same planned inputs and actual suite receipt. The process host submits results/refutations and seals the same core verdict; continue with this skill's completion/handoff instead of dispatching workers twice.
 
 Start only the named rendered role with its assignment, required protocol text and result schema. Never fork conversation history or copy the conductor as a worker. Validate each final-message result and submit it from the conductor; checked headless transports already own their submissions.

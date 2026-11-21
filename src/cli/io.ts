@@ -4,6 +4,7 @@ export interface Io {
   err: (text: string) => void
   flush?: (signal?: AbortSignal) => Promise<void>
   cancelOutput?: () => void
+  progress?: (text: string) => void
 }
 
 export const EXIT = {

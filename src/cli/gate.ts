@@ -9,6 +9,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export function roundOverrides(value: string): Partial<Record<GateKind, number>> {
   const result: Partial<Record<GateKind, number>> = {}
@@ -32,12 +33,12 @@ export function gateCommand(
   const value = (key: string) => (typeof options[key] === 'string' ? options[key] : undefined)
   try {
     if (action === 'schema') {
-      io.out(
-        JSON.stringify(
-          { schema: 'wholeloop/gate-schema@1', schemas: GATE_SCHEMAS },
-          null,
-          json ? undefined : 2,
-        ),
+      emitStep(
+        command,
+        { schema: 'wholeloop/gate-schema@1', schemas: GATE_SCHEMAS },
+        io,
+        json,
+        positional,
       )
       return EXIT.ok
     }
@@ -94,7 +95,7 @@ export function gateCommand(
         })
       } else payload = workflow.verdict(subject, gate as GateKind)
     }
-    io.out(JSON.stringify(payload, null, json ? undefined : 2))
+    emitStep(command, payload, io, json, positional)
     if (isObject(payload) && typeof payload.verdict === 'string' && payload.verdict !== 'PASS')
       return EXIT.shape
     return EXIT.ok

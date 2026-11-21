@@ -10,6 +10,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export function launchCommand(
   command: string,
@@ -28,12 +29,16 @@ export function launchCommand(
   }
   try {
     if (command === 'launch schema') {
-      io.out(
-        JSON.stringify({
+      emitStep(
+        command,
+        {
           schema: 'wholeloop/launch-schema@1',
           measurement: measurementSchema,
           draft: draftSchema,
-        }),
+        },
+        io,
+        json,
+        positional,
       )
       return EXIT.ok
     }
@@ -65,7 +70,7 @@ export function launchCommand(
           publication: workflow.publication(value('--for') ?? ''),
         }
     }
-    io.out(JSON.stringify(payload, null, json ? undefined : 2))
+    emitStep(command, payload, io, json, positional)
     return payload &&
       typeof payload === 'object' &&
       'status' in payload &&

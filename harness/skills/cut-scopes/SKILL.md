@@ -9,7 +9,7 @@ metadata:
 Read worker-handoffs, destination-publication, ask-never-guess, output-contract and scope-definition.
 
 1. Call `wl step begin cut-scopes --for <initiative> --json`. Standalone use accepts `--input "<deliverable>" --owner "<person>"`; it creates an initiative without inventing earlier steps. Collect missing inputs first.
-2. Show the preflight and style. Read the spec in `have` and call `wl scopes plan --for <initiative> --json`. Start with the single suggested scope. Split only when each deliverable can ship and be measured independently.
+2. Show display.text; use the style privately. Read the spec in `have` and call `wl scopes plan --for <initiative> --json`. Start with the single suggested scope. Split only when each deliverable can ship and be measured independently.
 3. Present delivery, flag and complexity questions together for each proposed scope. Read the selected `bindings.flags.naming` guidance before naming flags. Use `feature` or `proof-of-concept`, a flag or reason for its absence, and `simple` or `complex` with its reasoning. Complexity changes the suggested cut, not the checks or required approval.
 4. Read `wl scopes schema --json`. Author YAML front matter with `schema: wholeloop/scope-plan@1`, the pinned `sourceSpec` and `scopes`. Preserve story and metric IDs from the spec; every one needs a scope owner. Standalone work supplies `metricIds` or an explicit measurement exception. A scope without metrics records `measurementReason`.
 5. Give each scope a stable `key`, title and goal. Reuse keys on revision to preserve IDs and tracker references. `after` contains only intentional dependencies, named by another plan key or an existing scope ID in this initiative. Omitting an existing scope does not delete it.

@@ -12,6 +12,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'display progress',
+    schema: 'wholeloop/display-progress@1',
+    arguments: '',
+    options: ['--step <name>', '--worker <label>', '--elapsed-ms <n>', '--status <status>'],
+    summary: 'Show one observed worker completion and the elapsed time',
+  },
+  {
     path: 'overview schema',
     arguments: '',
     options: [],
@@ -1586,6 +1593,7 @@ export const COMMANDS: readonly Command[] = [
       '--adapter <claude|codex>',
       '--concurrency <1..16>',
       '--timeout <seconds>',
+      '--progress',
     ],
     schema: 'wholeloop/fanout@1',
     summary: 'Collect bounded isolated headless gate workers without changing coverage',

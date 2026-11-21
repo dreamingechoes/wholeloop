@@ -2,6 +2,7 @@
 import { spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
+import { stepDisplay } from '../../../src/display/step.js'
 import {
   calibrateExperience,
   EXPERIENCE_STEPS,
@@ -257,4 +258,29 @@ describe('experience budgets and provenance', () => {
     })
     expect(parseTranscript(trace).text).toHaveLength(2)
   })
+})
+
+it('accepts the core display as visible text and detects the same payload leaked as JSON', () => {
+  const trace = fixture('claude')
+  const result = trace.events.at(-1)
+  if (!result) throw new Error('Missing fixture result')
+  const payload = {
+    schema: 'wholeloop/research-complete@1',
+    receipt: {
+      subject: 'brief-fixture',
+      answer: 'Orders need search.',
+      recommendation: 'Add a filter.',
+      confidence: 'low',
+      notChecked: ['No usage baseline.'],
+      artifact: 'brief.md',
+    },
+  }
+  const display = stepDisplay('research complete', payload)
+  result.event.result = display.text
+  const report = experienceReport(trace)
+  expect(report.rawJson).toBe(false)
+  expect(report.bannedTerms).toEqual([])
+  expect(report.finalLines).toBeLessThanOrEqual(25)
+  result.event.result = JSON.stringify({ ...payload, display })
+  expect(experienceFailures(experienceReport(trace))).toContain('Raw JSON shown')
 })

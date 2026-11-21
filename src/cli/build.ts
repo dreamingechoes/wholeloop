@@ -8,6 +8,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export function buildCommand(
   command: string,
@@ -59,7 +60,7 @@ export function buildCommand(
         value('--basis') ?? '',
       )
     } else payload = { schema: 'wholeloop/build-complete@1', receipt: workflow.complete(subject) }
-    io.out(JSON.stringify(payload, null, json ? undefined : 2))
+    emitStep(command, payload, io, json, positional)
     return EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error

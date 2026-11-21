@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-21 · P9-07 ✅ · One core display for every step
+
+- **Changed:** step commands attach wholeloop/display@1 through one shared emitter before serialization. Human output uses its exact text: one bounded header, aligned rows, observed progress, produced artifacts, open questions and the available next step. All thirteen layouts preserve decisions and unavailable evidence; profile style and coordination acknowledgements stay private.
+- **Facts retained:** document failures list every actual problem; recorded builder plans return their already-validated steps/tests/assumptions without another query. Measurement unknowns, pending publication, unperformed flag changes and declared undo arguments remain visible. Parsed error routing names the requested check, ignores unrelated adapter values and leaves unknown checks neutral.
+- **Progress:** a stateless formatter consumes native completion observations. Headless callbacks use the same one-line elapsed format, with --progress explicit for JSON callers; cached rounds emit no new completion. Presentation observer failure cannot invalidate evidence. Actual native forwarding, absence of raw JSON and completion timing remain open in manual verification.
+- **Decision:** [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md) and [ADR-0010](../docs/decisions/0010-interaction-profile-never-changes-coverage.md) record verbatim phase output, private style and observation-based progress. Model-specific layouts, repeated state reads, JSON round trips and clock-based completion guesses were rejected. [ADR-0205](../docs/decisions/0205-public-controller-bundle.md) keeps the existing 4 MiB copy bound: whitespace compaction produces a 3028603-byte public core, and the build refuses overflow without changing identifiers, syntax or authority.
+- **Documentation:** research begins and finishes with text from the renderer; its completion lines use the shared formatter. The 236862-byte research and 126858-byte framing illustrative GIFs were rendered locally, matched to their page transcripts and checked visually. Generated references include the formatter and remain current. No new task was added; P9-23 remains open after the original order.
+- **Verified:** `CHECK PASS in 705s`, 5119 tests in 349 files; `CHECK PASS (fast) in 12s`, 286 related tests in 7 files. The broader fast gate passed 1796 tests in 74 files in 248s; focused suites passed 779 tests in 11 files and supplemental CLI suites passed 358 tests in four files. Twenty-one snapshots were reviewed. Earlier completed fast gates exposed missing help reachability, a 1228-byte public-core overflow and duplicate ADR headings; their replacements passed. An earlier full gate was intentionally stopped to repair the reproduced async error header and is excluded from evidence. Existing contracts stay frozen; only the display source and progress output identities were registered. macOS arm64 locally; required CI supplies Linux coverage. No native model or live source call ran.
+
+---
+
 ## 2026-11-21 · P9-06 ✅ · Research opens with an authored answer
 
 - **Changed:** public completion returns an evidence-bound conclusion context before recording the conductor's Answer and Recommendation. The core checks freshness again inside completion, preserves the aggregate and stores the prose in the existing artifact event. The receipt opens with the same answer, recommendation, derived confidence and unchecked work; no separate synthesis artifact is needed.

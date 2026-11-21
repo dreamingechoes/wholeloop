@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-21 (P9-07).** Display support exposed the public copy bound: the uncompressed-format core exceeded 4 MiB by 1228 bytes, and installation/guard tests correctly refused it. Both bundles now compact whitespace, retaining names, syntax, the exact shebang and the controller digest boundary. The build rejects a public core above 4 MiB before tests or packaging. Raising copy/read limits was rejected; source modules stay readable and no permission or supported route changes.
+
 `wl delivery run` launches an owned controller child with one fixed public host. Until now that host composed no stage adapter ([ADR-0183](./0183-public-foreground-runner-host.md)). Two things blocked composition:
 
 - **Size.** The domain adapters would push the single-file core past its 4 MiB bound. Hook and install copies of the core enforce that bound, so it cannot simply be raised.
@@ -17,7 +19,7 @@ Trusted runtime observers now exist for both reference clients ([ADR-0120](./012
 - **A separate controller bundle.** The build first produces `dist/wl-runner.mjs`. It is self-contained: the engine, the store, the dispatcher, every fixed adapter and the public composition. The build then embeds its SHA-256 into the core.
   - When the embedded digest is present, `wl delivery run` launches that bundle as the owned child. It verifies the bundle's bytes first and refuses a missing or changed bundle before claiming the run.
   - A build without the digest, as when tests run from sources, launches the core child, which composes nothing.
-  - Both files ship in the package. The core stays at about 3.8 MB.
+  - Both files ship in the package. Whitespace-compacted output keeps the public core within its existing 4 MiB copy/read bound; the build checks that bound.
 
   The process boundary is also the module boundary. No class is loaded twice in one process, so `instanceof` checks on adapters and errors keep their meaning.
 - **A runtime document.** `--runtime` reads a closed `wholeloop/native-runtime@1` document. It holds one entry per reference client, each with the absolute path of the client binary to launch and the client home the operator signed in to. It holds no credential, model or role; those stay in the bindings.
@@ -32,13 +34,16 @@ Trusted runtime observers now exist for both reference clients ([ADR-0120](./012
 
 ## Alternatives rejected
 
-- Raising the core's 4 MiB bound would weaken the size limit that hook and install copies enforce.
+- Raising the core's 4 MiB bound would weaken the size limit that hook and install copies enforce. Compact whitespace and fail the build at that unchanged bound instead.
+- Minifying identifiers or syntax is unnecessary to regain headroom; retaining names and syntax keeps emitted errors and behavior easier to inspect.
 - esbuild code splitting would make the core import shared chunks, so a copied core would no longer be one file.
 - Dynamically importing a second bundle into the core process would load two copies of shared classes.
 - Resolving clients through `PATH` would let any earlier directory substitute a program.
 - Putting runtime paths into the bindings document would mix where a client lives with which models and roles the operator trusts.
 
 ## Verification
+
+The ordinary build checks the public core byte bound. Native-installation and real local Git-hook fixtures verify copied bytes, ownership and executable behavior; required Node 20 runtime and Ubuntu/macOS gates check the same emitted artifacts.
 
 - Compiled CLI: with bindings and a runtime, the owned child is the verified bundle. A route the composer does not support ends blocked with no client launched. A changed bundle beside an installed core is refused before the run is claimed.
 - The runtime document refuses relative, quoted, unnormalized, duplicate and identical paths, unknown targets and extra fields. A bindings-only identity is unchanged.

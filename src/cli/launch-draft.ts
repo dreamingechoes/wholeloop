@@ -8,6 +8,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export async function launchDraftCommand(
   { positional, options }: ReturnType<typeof parseArguments>,
@@ -46,7 +47,7 @@ export async function launchDraftCommand(
           : {}),
       },
     )
-    io.out(JSON.stringify(result, null, json ? undefined : 2))
+    emitStep('launch draft', result, io, json, positional)
     return result.status === 'stopped' ? EXIT.shape : EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error

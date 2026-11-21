@@ -345,12 +345,14 @@ it('completes through actual CLI flags and prints the same answer-first receipt 
       false,
     )
     expect(completed.status, completed.stderr).toBe(0)
-    expect(completed.stdout).toMatch(/^Answer\nNo evidence/)
-    expect(completed.stdout).toContain(answer)
-    expect(completed.stdout).toContain('Confidence: unknown.')
-    expect(completed.stdout).toContain('Not checked: No retained claim supports an answer.')
+    expect(completed.stdout).toMatch(/^Research — brief-/)
+    expect(completed.stdout).toContain('Answer')
+    expect(completed.stdout.replace(/\s+/g, ' ')).toContain(answer)
+    expect(completed.stdout).toMatch(/Confidence\s+unknown/)
+    expect(completed.stdout).toContain('No retained claim supports an answer.')
     expect(completed.stdout).not.toContain('"schema"')
-    const artifact = completed.stdout.split('Brief: ')[1]?.trim() ?? ''
+    const artifact =
+      /Produced\n\s+([^\n]+)/.exec(completed.stdout)?.[1]?.split(' · ')[0]?.trim() ?? ''
     expect(readFileSync(join(directory, 'cli-state/wholeloop', artifact), 'utf8')).toContain(answer)
   }))
 

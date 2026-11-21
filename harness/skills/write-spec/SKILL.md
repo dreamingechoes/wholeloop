@@ -9,7 +9,7 @@ metadata:
 Read worker-handoffs, destination-publication, ask-never-guess, output-contract and spec-definition.
 
 1. Call `wl step begin write-spec --for <initiative> --json`. Standalone use accepts `--input "<problem>" --owner "<person>" --impact "<observable impact>"` without requiring earlier steps. Collect returned missing inputs before creating work.
-2. Show the preflight and style block. Read existing framing/research artifacts from `have`, including their unresolved questions. Preserve the initiative ID.
+2. Show display.text; use the style block privately. Read existing framing/research artifacts from `have`, including their unresolved questions. Preserve the initiative ID.
 3. Use `templateSource`: for repository guidance, load its `ref` before drafting; for a manifest, fill its `content` and preserve all returned required headings. Repository guidance takes priority. Core criteria/measurement metadata remains additive to the team's format.
 4. Read `wl spec schema --json`. The artifact's YAML front matter uses `schema: wholeloop/spec@1`, impact, stories, metrics and rollout. Each story names its actor, desired behavior, benefit and criteria with falsifiable tests. Remove vague wording rather than accepting "fast", "intuitive" or "better".
 5. For every metric, pin provider, query operation, stored query, unit, baseline, target and measurement window/timezone. A known baseline cites evidence. An unknown baseline names missing evidence, an answerer and an existing story that adds the tracking. No metrics requires an explicit measurement exception with a reason and accountable person; it is not a silent omission.

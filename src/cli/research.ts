@@ -6,6 +6,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export function researchCommand(
   command: string,
@@ -67,15 +68,7 @@ export function researchCommand(
           ? workflow.submit(subject, value)
           : workflow.examine(subject, value)
     }
-    if (
-      !json &&
-      command === 'research complete' &&
-      payload &&
-      typeof payload === 'object' &&
-      'receipt' in payload
-    )
-      io.out(String((payload.receipt as { text: string }).text))
-    else io.out(JSON.stringify(payload, null, json ? undefined : 2))
+    emitStep(command, payload, io, json, positional)
     return EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error

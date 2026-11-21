@@ -9,7 +9,7 @@ Require bash
 Set Shell bash
 Set FontSize 15
 Set Width 1100
-Set Height 1040
+Set Height 1450
 Set Padding 24
 Set TypingSpeed 25ms
 Set Theme "Dracula"

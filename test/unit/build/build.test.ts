@@ -597,7 +597,7 @@ describe('build routing and host conformance fixtures', () => {
       expect(preflight.guidance[0].content).toContain('Validate input before')
       const prepared = invoke(0, 'build', 'prepare', agreed.subject, '--base', 'main')
       writeFileSync(join(dir, 'plan.json'), JSON.stringify(plan))
-      invoke(
+      const planned = invoke(
         0,
         'build',
         'plan',
@@ -607,6 +607,9 @@ describe('build routing and host conformance fixtures', () => {
         '--basis',
         prepared.snapshot,
       )
+      expect(planned.plan).toEqual(plan)
+      expect(planned.display.text).toContain(plan.steps[0])
+      expect(planned.display.text).toContain(plan.tests[0])
       invoke(3, 'build', 'complete', agreed.subject)
       expect(invoke(0, 'build', 'schema').plan.required).toContain('assumptions')
       expect(workflow.ready(agreed.subject).plan).toEqual(plan)

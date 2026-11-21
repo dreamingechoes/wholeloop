@@ -11,6 +11,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import type { Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export function frameCommand(
   command: string,
@@ -21,16 +22,16 @@ export function frameCommand(
 ) {
   if (positional.length) throw new CliError('Frame commands use named options')
   if (command === 'frame schema') {
-    io.out(
-      JSON.stringify(
-        {
-          schema: 'wholeloop/frame-schema@1',
-          decisionSchema: FRAME_DECISION_SCHEMA,
-          reviewSchema: FRAME_REVIEW_SCHEMA,
-        },
-        null,
-        json ? undefined : 2,
-      ),
+    emitStep(
+      command,
+      {
+        schema: 'wholeloop/frame-schema@1',
+        decisionSchema: FRAME_DECISION_SCHEMA,
+        reviewSchema: FRAME_REVIEW_SCHEMA,
+      },
+      io,
+      json,
+      positional,
     )
     return 0
   }
@@ -59,7 +60,7 @@ export function frameCommand(
       command === 'frame draft'
         ? prepareFrame(engine, subject, content, input)
         : finalizeFrame(engine, subject, content, input)
-    io.out(JSON.stringify(output, null, json ? undefined : 2))
+    emitStep(command, output, io, json, positional)
   } catch (error) {
     throw new CliError(error instanceof Error ? error.message : 'Invalid final framing review')
   }

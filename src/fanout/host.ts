@@ -1,6 +1,7 @@
 // The headless host that launches review and verification workers and records their results.
 import { randomUUID } from 'node:crypto'
 import { isObject } from '../config/schema.js'
+import type { DisplayProgress } from '../display/render.js'
 import type { FlowEngine } from '../flow/engine.js'
 import {
   GATE_SCHEMAS,
@@ -26,6 +27,7 @@ export interface HeadlessOptions {
   timeoutMs?: number
   signal?: AbortSignal
   env?: NodeJS.ProcessEnv
+  onProgress?: (progress: DisplayProgress) => void
 }
 export interface WorkerRecord {
   schema: 'wholeloop/headless-worker@1'
@@ -48,6 +50,7 @@ export class HeadlessHost implements GateHost {
   private active = 0
   private waiting: (() => void)[] = []
   private readonly disconnect: () => void
+  private readonly started = performance.now()
   constructor(
     readonly engine: FlowEngine,
     readonly options: HeadlessOptions,
@@ -207,6 +210,18 @@ export class HeadlessHost implements GateHost {
       }
       this.engine.store.files.atomic(record.path, `${JSON.stringify(record, null, 2)}\n`)
       this.records.push(record)
+      try {
+        this.options.onProgress?.({
+          label:
+            role === 'inspect'
+              ? String(assignment.id)
+              : `${String(assignment.finding)} check ${String(assignment.verifier)}`,
+          status: status === 'succeeded' ? 'finished' : 'unavailable',
+          elapsedMs: Math.max(0, Math.floor(performance.now() - this.started)),
+        })
+      } catch {
+        // Presentation observers cannot replace or invalidate a returned evidence result.
+      }
       if (!value || status !== 'succeeded')
         throw new Error(`Headless worker ${status}; inspect ${record.path}`)
       return value

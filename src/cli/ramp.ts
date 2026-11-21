@@ -9,6 +9,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export async function rampCommand(
   command: string,
@@ -26,7 +27,7 @@ export async function rampCommand(
     }
   }
   if (command === 'ramp schema') {
-    io.out(JSON.stringify({ schema: 'wholeloop/ramp-schema@1', plan: schema }))
+    emitStep(command, { schema: 'wholeloop/ramp-schema@1', plan: schema }, io, json, positional)
     return EXIT.ok
   }
   const workflow = new RampWorkflow(new FlowEngine(new StateStore(), root))
@@ -89,7 +90,7 @@ export async function rampCommand(
     })
   } else if (command === 'ramp proposal') payload = workflow.proposal(subject ?? '')
   else payload = workflow.report(subject ?? '')
-  io.out(JSON.stringify(payload, null, json ? undefined : 2))
+  emitStep(command, payload, io, json, positional)
   return payload &&
     typeof payload === 'object' &&
     'status' in payload &&

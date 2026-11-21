@@ -8,6 +8,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitStep } from './presentation.js'
 
 export function environmentCommand(
   command: string,
@@ -39,7 +40,7 @@ export function environmentCommand(
         input.undo.cwd = resolve(root, input.undo.cwd)
       payload = ledger.declare(subject, input as EnvironmentWrite)
     } else payload = ledger.report(subject)
-    io.out(json ? JSON.stringify(payload) : payload.receipt)
+    emitStep(command, payload, io, json, positional)
     return EXIT.ok
   } catch (error) {
     throw new CliError(

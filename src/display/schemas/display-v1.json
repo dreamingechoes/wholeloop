@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/display@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "header", "rows", "produced", "open", "next", "text"],
+  "properties": {
+    "schema": {
+      "const": "wholeloop/display@1",
+      "type": "string"
+    },
+    "header": {
+      "type": "string"
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "value"],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "progress": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "status", "elapsedMs"],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": ["running", "finished", "failed", "unavailable"],
+            "type": "string"
+          },
+          "elapsedMs": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "produced": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "open": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "next": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "text": {
+      "type": "string"
+    }
+  }
+}

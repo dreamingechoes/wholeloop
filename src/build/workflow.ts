@@ -320,6 +320,7 @@ export class BuildWorkflow {
         schema: 'wholeloop/build-plan@1',
         subject,
         run: active.data.run,
+        plan: structuredClone(plan),
         pending: plan.assumptions.some((assumption) => assumption.status !== 'verified')
           ? ['approve-build-plan']
           : [],

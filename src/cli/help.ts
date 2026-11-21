@@ -43,7 +43,7 @@ export const AREAS: readonly { title: string; groups: readonly string[] }[] = [
   { title: 'Autonomous delivery (experimental)', groups: ['delivery', 'maintenance', 'eval'] },
   {
     title: 'Repository tools',
-    groups: ['guard', 'docs', 'harness', 'adapter', 'release', 'conformance'],
+    groups: ['guard', 'docs', 'harness', 'adapter', 'release', 'conformance', 'display'],
   },
 ]
 

@@ -2,6 +2,8 @@
   "schema": "wholeloop/compatibility-baseline@1",
   "status": "v1-candidate",
   "contracts": {
+    "schema:wholeloop/display@1": "3e9231307f6cded45b026795479fe60f20ee85624850b87acd5fec1899d8476d",
+    "output:wholeloop/display-progress@1": "5681e18776ac7fd65c57c6fd1e0e66285e3cacb5124ad9f5b081a0d0db6f2842",
     "schema:wholeloop/delivery-person-attribution@1": "bc305a0542eba1cf3d02335f7730304f3e647dfa80f2ee641edaae21ba581d2c",
     "output:wholeloop/adapter-build@1": "5645c8083b6e6b3613387d56d0000f8b64c3dd14f590d451a28684870f2efaa1",
     "output:wholeloop/adapter-root@1": "1b0fa21a0a574158b51c80cebe1aad235341fb7f66e26be9f7d45a8de2bd56c9",

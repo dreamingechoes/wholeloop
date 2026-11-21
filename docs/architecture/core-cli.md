@@ -16,6 +16,21 @@ Reads make no store writes and establish no native acceptance. See the [overview
 
 Displayed item approval commands include optional `answer --basis <event-id>`. The writer transaction checks that it still matches the pending decision before appending an approval. Person and outcome inputs remain explicit.
 
+## Person-facing display
+
+Every step command carries a **display** (`wholeloop/display@1`): one header, aligned label/value rows, optional observed progress, produced artifacts, open questions and the available next step. Its `text` is the same plain text the terminal prints without `--json`, at 80 terminal cells. Skills forward that text verbatim; profile style instructions and internal state identifiers stay in machine fields. The shared emitter renders the operation's structured result before its single serialization, with no extra store query or command execution. Decisions still block continuation, unavailable checks stay visible, and formatting changes no approval or evidence.
+
+Terminal exceptions retain their conventional error stream and message; JSON errors also carry display data.
+
+Native hosts format actual completion events with the stateless progress command. The values below are a synthetic observation; formatting it does not start a worker or establish that one ran:
+
+```console
+$ wl display progress --step research --worker Web --elapsed-ms 65123
+Web — finished · 1:05
+```
+
+Headless fan-out uses the same formatter. Human output includes progress on stderr; JSON stays silent unless `--progress` is requested. Only observed completions are emitted, with elapsed time; a cached round emits none. A native host must use its actual completion event and original start time, never a fixed sleep or inferred result. Actual native forwarding and timing remain in [manual verification](../../roadmap/manual-verification.md); fixtures establish the layout and local process route only. See the [display decision](../decisions/0256-person-facing-display-rendered-by-the-core.md).
+
 ## Private decision attribution
 
 Person decisions support `--channel <name>` plus one optional `--rationale-stdin` or `--rationale-file <path>`. These flags apply to `answer decision.<id>=<outcome>`, `frame finalize`, `build agree`, `pr tested`, `learn decide`, `ramp decide`, and delivery `human-decide`, `pause`, `resume` and `stop`. A rationale must be nonblank UTF-8 of at most 4096 bytes.
@@ -24,7 +39,7 @@ A declared agent cannot supply person metadata. No option accepts the optional p
 
 ## Design rules
 
-1. **Every command has `--json`**, with a versioned schema. Skills only ever consume JSON. Without it, `install`, `uninstall`, `doctor` and `status` print a short summary for people, and the other commands print the same payload indented.
+1. **Every command has `--json`**, with a versioned schema. Skills only ever consume JSON. Step commands attach a versioned `display` and print its exact text without `--json`. `install`, `uninstall`, `doctor` and `status` also have human forms; remaining non-step commands keep their existing format until the human-output work is complete.
 2. **Deterministic.** Same inputs, same store, same config → same output. No model calls, no network unless the command is explicitly about a provider.
 3. **Single writer.** Only `wl` writes the store. Writes are validated, atomic (write-then-rename) and serialised with a lock.
 4. **Exit codes mean something.** `0` ok · `2` needs input (questions in the payload) · `3` precondition failed · `4` shape check failed · `1` unexpected error.
@@ -65,6 +80,7 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl display progress` | `wholeloop/display-progress@1` | Show one observed worker completion and the elapsed time |
 | `wl overview schema` | `wholeloop/overview-schema@1` | Print the overview and local feed contract kit without opening a store |
 | `wl overview` | `wholeloop/overview@1` | Read bounded operator attention, progress and exact next commands without writes |
 | `wl watch` | `wholeloop/watch-frame@1` | Follow bounded local activity and overviews without writes or listeners |
