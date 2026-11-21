@@ -1,0 +1,210 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`self-contained gate assignments > pins an inspection to its unit and private patch without unrelated findings or store paths 1`] = `
+{
+  "allowedSource": {
+    "access": "read-only",
+    "base": {
+      "ref": "main",
+      "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    },
+    "repository": "/fixture/repository",
+    "snapshot": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  },
+  "id": "inspect:correctness",
+  "input": {
+    "review": {
+      "after": "cccccccccccccccccccccccccccccccccccccccc",
+      "before": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "diff": "-accept empty
++reject empty",
+      "diffDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "previousFindings": [
+        {
+          "finding": {
+            "evidence": [
+              "Observed fixture",
+            ],
+            "id": "prior",
+            "location": "handler.ts:1",
+            "text": "Prior owned blocker",
+          },
+          "unit": "correctness",
+        },
+      ],
+      "rubric": {
+        "content": "Report concrete correctness and security defects.",
+        "digest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "origin": "harness",
+        "ref": "default",
+      },
+    },
+    "unit": {
+      "asks": "Inspect correctness of the changed handler.",
+      "failSafe": true,
+      "id": "correctness",
+      "lens": "correctness",
+      "origin": "builtin:correctness",
+      "prompt": "Use concrete evidence only.",
+    },
+  },
+  "question": "Inspect correctness of the changed handler.",
+  "resultContract": "wholeloop/gate-result@1",
+  "resultSchema": "wholeloop/gate-result@1",
+  "returnTo": {
+    "channel": "final-message",
+    "role": "conductor",
+  },
+  "role": "reviewer",
+  "round": 1,
+  "run": "gate-0000000000000000",
+  "subject": "slice-0123abcd",
+}
+`;
+
+exports[`self-contained gate assignments > returns only pending independent refutations with their exact finding and no other votes 1`] = `
+{
+  "allowedSource": {
+    "access": "read-only",
+    "base": {
+      "ref": "main",
+      "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    },
+    "repository": "/fixture/repository",
+    "snapshot": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  },
+  "id": "refute:correctness:empty:2",
+  "input": {
+    "finding": {
+      "evidence": [
+        "Observed fixture condition",
+      ],
+      "id": "correctness:empty",
+      "location": "handler.ts:1",
+      "text": "Empty input is accepted.",
+    },
+    "review": {
+      "after": "cccccccccccccccccccccccccccccccccccccccc",
+      "before": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "diff": "-accept empty
++reject empty",
+      "diffDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "previousFindings": [
+        {
+          "finding": {
+            "evidence": [
+              "Observed fixture",
+            ],
+            "id": "prior",
+            "location": "handler.ts:1",
+            "text": "Prior owned blocker",
+          },
+          "unit": "correctness",
+        },
+      ],
+      "rubric": {
+        "content": "Report concrete correctness and security defects.",
+        "digest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "origin": "harness",
+        "ref": "default",
+      },
+    },
+    "unit": {
+      "asks": "Inspect correctness of the changed handler.",
+      "failSafe": true,
+      "id": "correctness",
+      "lens": "correctness",
+      "origin": "builtin:correctness",
+      "prompt": "Use concrete evidence only.",
+    },
+    "verifier": 2,
+  },
+  "question": "Cross-examine this finding against its pinned evidence: Empty input is accepted.",
+  "resultContract": "wholeloop/gate-vote@1",
+  "resultSchema": "wholeloop/gate-vote@1",
+  "returnTo": {
+    "channel": "final-message",
+    "role": "conductor",
+  },
+  "role": "reviewer",
+  "round": 1,
+  "run": "gate-0000000000000000",
+  "subject": "slice-0123abcd",
+}
+`;
+
+exports[`self-contained research assignments > gives each verifier the original claim and evidence without another verdict or confidence derived from votes 1`] = `
+{
+  "allowedSource": {
+    "access": "read-only",
+    "available": true,
+    "capability": "source.code",
+    "evidence": "Declared fixture source",
+    "id": "native-code:source.code",
+    "operation": "source.code.query",
+    "provider": "native-code",
+  },
+  "claim": "native-code:source.code:reject-empty",
+  "input": {
+    "claim": {
+      "confidence": "high",
+      "evidence": [
+        {
+          "excerpt": "Empty input returns status 400.",
+          "ref": "fixture:handler:1",
+        },
+      ],
+      "id": "native-code:source.code:reject-empty",
+      "loadBearing": true,
+      "text": "Empty requests are rejected.",
+    },
+    "verifier": 2,
+  },
+  "question": "Which behavior rejects empty requests?",
+  "resultContract": "wholeloop/research-vote@1",
+  "resultSchema": "wholeloop/research-vote@1",
+  "returnTo": {
+    "channel": "final-message",
+    "role": "conductor",
+  },
+  "role": "challenger",
+  "run": "run-0000000000000000",
+  "subject": "brief-0123abcd",
+  "verifier": 2,
+}
+`;
+
+exports[`self-contained research assignments > includes the exact source, question, bound response and final destination without mutating the plan 1`] = `
+{
+  "allowedSource": {
+    "access": "read-only",
+    "available": true,
+    "capability": "source.code",
+    "evidence": "Declared fixture source",
+    "id": "native-code:source.code",
+    "operation": "source.code.query",
+    "provider": "native-code",
+  },
+  "angle": {
+    "available": true,
+    "capability": "source.code",
+    "evidence": "Declared fixture source",
+    "id": "native-code:source.code",
+    "operation": "source.code.query",
+    "provider": "native-code",
+  },
+  "input": {
+    "angle": "native-code:source.code",
+  },
+  "question": "Which behavior rejects empty requests?",
+  "resultContract": "wholeloop/research-result@1",
+  "resultSchema": "wholeloop/research-result@1",
+  "returnTo": {
+    "channel": "final-message",
+    "role": "conductor",
+  },
+  "role": "researcher",
+  "run": "run-0000000000000000",
+  "subject": "brief-0123abcd",
+}
+`;

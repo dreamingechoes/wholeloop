@@ -2,6 +2,7 @@
 import type { FlowEngine } from '../flow/engine.js'
 import type { ReviewContext } from '../review/contracts.js'
 import { prepareReviewInput } from '../review/input.js'
+import { scheduleAssignments } from '../workers/schedule.js'
 import type { GatePlan, GateResult, GateVote } from './contracts.js'
 import { workspaceSnapshot } from './snapshot.js'
 import { gateRuns } from './state.js'
@@ -21,19 +22,6 @@ export interface GateHost {
   ): Promise<GateVote>
   stopped(): boolean
 }
-async function schedule<T>(
-  inputs: readonly T[],
-  operation: (input: T) => Promise<void>,
-  sequential: boolean,
-) {
-  if (sequential) {
-    for (const input of inputs) await operation(input)
-    return
-  }
-  const settled = await Promise.allSettled(inputs.map(operation))
-  const failure = settled.find((result) => result.status === 'rejected')
-  if (failure?.status === 'rejected') throw failure.reason
-}
 export async function inspectGateRound(
   engine: FlowEngine,
   plan: GatePlan,
@@ -48,7 +36,7 @@ export async function inspectGateRound(
     .find((run) => run.run === plan.run)
     ?.rounds.at(-1)
   const unchanged = () => workspaceSnapshot(plan.repository).digest === plan.snapshot.digest
-  await schedule(
+  await scheduleAssignments(
     plan.units.filter((unit) => !current?.results.some((result) => result.unit === unit.id)),
     async (unit) => {
       if (host.stopped()) return
@@ -81,7 +69,7 @@ export async function inspectGateRound(
         if (unchanged()) throw error
       }
     },
-    sequential,
+    sequential ? 'sequential' : 'native',
   )
   const submitted = gateRuns(engine.store.events())
     .find((run) => run.run === plan.run)
@@ -101,7 +89,7 @@ export async function inspectGateRound(
           (vote) => vote.finding === job.finding && vote.verifier === job.verifier,
         ),
     )
-  await schedule(
+  await scheduleAssignments(
     jobs,
     async (job) => {
       if (host.stopped()) return
@@ -120,6 +108,6 @@ export async function inspectGateRound(
         if (unchanged()) throw error
       }
     },
-    sequential,
+    sequential ? 'sequential' : 'native',
   )
 }

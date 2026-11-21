@@ -27,7 +27,7 @@ exports[`step begin contracts > build-slice: standalone empty, standalone input 
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -92,7 +92,7 @@ exports[`step begin contracts > build-slice: standalone empty, standalone input 
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -134,7 +134,7 @@ exports[`step begin contracts > build-slice: standalone empty, standalone input 
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -189,7 +189,7 @@ exports[`step begin contracts > cut-scopes: standalone empty, standalone input a
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -255,7 +255,7 @@ exports[`step begin contracts > cut-scopes: standalone empty, standalone input a
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -298,7 +298,7 @@ exports[`step begin contracts > cut-scopes: standalone empty, standalone input a
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -350,7 +350,7 @@ exports[`step begin contracts > decide-next: standalone empty, standalone input 
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -415,7 +415,7 @@ exports[`step begin contracts > decide-next: standalone empty, standalone input 
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -457,7 +457,7 @@ exports[`step begin contracts > decide-next: standalone empty, standalone input 
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -510,7 +510,7 @@ exports[`step begin contracts > frame-problem: standalone empty, standalone inpu
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -578,7 +578,7 @@ exports[`step begin contracts > frame-problem: standalone empty, standalone inpu
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -623,7 +623,7 @@ exports[`step begin contracts > frame-problem: standalone empty, standalone inpu
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -679,7 +679,7 @@ exports[`step begin contracts > measure-impact: standalone empty, standalone inp
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -742,7 +742,7 @@ exports[`step begin contracts > measure-impact: standalone empty, standalone inp
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -782,7 +782,7 @@ exports[`step begin contracts > measure-impact: standalone empty, standalone inp
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -835,7 +835,7 @@ exports[`step begin contracts > open-pr: standalone empty, standalone input and 
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -901,7 +901,7 @@ exports[`step begin contracts > open-pr: standalone empty, standalone input and 
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -944,7 +944,7 @@ exports[`step begin contracts > open-pr: standalone empty, standalone input and 
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -996,7 +996,7 @@ exports[`step begin contracts > prepare-launch: standalone empty, standalone inp
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1061,7 +1061,7 @@ exports[`step begin contracts > prepare-launch: standalone empty, standalone inp
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1103,7 +1103,7 @@ exports[`step begin contracts > prepare-launch: standalone empty, standalone inp
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1156,7 +1156,7 @@ exports[`step begin contracts > ramp-exposure: standalone empty, standalone inpu
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1220,7 +1220,7 @@ exports[`step begin contracts > ramp-exposure: standalone empty, standalone inpu
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1261,7 +1261,7 @@ exports[`step begin contracts > ramp-exposure: standalone empty, standalone inpu
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1313,7 +1313,7 @@ exports[`step begin contracts > research: standalone empty, standalone input and
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1377,7 +1377,7 @@ exports[`step begin contracts > research: standalone empty, standalone input and
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1418,7 +1418,7 @@ exports[`step begin contracts > research: standalone empty, standalone input and
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1470,7 +1470,7 @@ exports[`step begin contracts > review-code: standalone empty, standalone input 
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1533,7 +1533,7 @@ exports[`step begin contracts > review-code: standalone empty, standalone input 
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1573,7 +1573,7 @@ exports[`step begin contracts > review-code: standalone empty, standalone input 
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1624,7 +1624,7 @@ exports[`step begin contracts > slice-work: standalone empty, standalone input a
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1690,7 +1690,7 @@ exports[`step begin contracts > slice-work: standalone empty, standalone input a
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1733,7 +1733,7 @@ exports[`step begin contracts > slice-work: standalone empty, standalone input a
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1787,7 +1787,7 @@ exports[`step begin contracts > verify-works: standalone empty, standalone input
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1850,7 +1850,7 @@ exports[`step begin contracts > verify-works: standalone empty, standalone input
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1890,7 +1890,7 @@ exports[`step begin contracts > verify-works: standalone empty, standalone input
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -1943,7 +1943,7 @@ exports[`step begin contracts > write-spec: standalone empty, standalone input a
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -2012,7 +2012,7 @@ exports[`step begin contracts > write-spec: standalone empty, standalone input a
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -2058,7 +2058,7 @@ exports[`step begin contracts > write-spec: standalone empty, standalone input a
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.

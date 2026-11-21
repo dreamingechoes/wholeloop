@@ -86,6 +86,32 @@ function fail(engine: FlowEngine, subject: string) {
 }
 
 describe('incremental private review inputs', () => {
+  it('returns current assignments from both begin and resumed input without extra writes', () =>
+    fixture(({ workflow, engine }) => {
+      const first = planned(workflow)
+      expect(first.jobs).toHaveLength(first.plan.units.length)
+      const job = first.jobs[0]
+      expect(job?.input.review?.diff).toBe(first.review.diff)
+      expect(job?.input.review?.rubric).toEqual(first.review.rubric)
+      const before = engine.store.events()
+      const resumed = workflow.input(first.subject)
+      expect(resumed.jobs).toEqual(first.jobs)
+      expect(resumed.examinations).toEqual([])
+      expect(engine.store.events()).toEqual(before)
+      if (!job) throw new Error('Missing planned inspection')
+      new GateWorkflow(engine).submit(first.subject, first.plan.run, first.plan.round, {
+        unit: job.input.unit.id,
+        status: 'ok',
+        findings: [],
+        evidence: ['Inspected fixture patch'],
+      })
+      expect(
+        workflow
+          .input(first.subject)
+          .jobs.some((entry) => entry.input.unit.id === job.input.unit.id),
+      ).toBe(false)
+    }))
+
   it('reviews only changes since the prior uncommitted snapshot, including new paths and reversions', async () =>
     fixture(({ root, engine, git }) => {
       const subject = engine.store.create({

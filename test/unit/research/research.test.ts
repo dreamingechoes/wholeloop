@@ -240,6 +240,11 @@ describe('native and sequential research workflows', () => {
       const id = start.payload.subject?.id ?? ''
       expect(id).toMatch(/^brief-/)
       const p = workflow.plan(id)
+      expect(p.jobs).toHaveLength(p.angles.length)
+      expect(p.jobs[0]).toMatchObject({
+        question: p.question,
+        returnTo: { role: 'conductor', channel: 'final-message' },
+      })
       mkdirSync(join(engine.root, '.wholeloop'), { recursive: true })
       writeFileSync(
         join(engine.root, '.wholeloop/config.yml'),
@@ -249,9 +254,17 @@ describe('native and sequential research workflows', () => {
       expect(workflow.plan(id)).toEqual(p)
       expect(engine.store.events()).toEqual(before)
       const worker: ResearchEngine = {
-        investigate: async (angle) => result(angle.id),
-        challenge: async (claim, verifier) =>
-          vote(claim, verifier, verifier <= 2 ? 'refute' : 'confirm'),
+        investigate: async (angle, _plan, assignment) => {
+          expect(assignment?.input.angle).toBe(angle.id)
+          expect(assignment?.question).toBe(p.question)
+          return result(angle.id)
+        },
+        challenge: async (claim, verifier, _plan, assignment) => {
+          expect(assignment?.input.claim.id).toBe(claim)
+          expect(assignment?.input.verifier).toBe(verifier)
+          expect(assignment?.input).not.toHaveProperty('votes')
+          return vote(claim, verifier, verifier <= 2 ? 'refute' : 'confirm')
+        },
       }
       await runResearch(p, worker, {
         submit: (value) => {

@@ -20,9 +20,12 @@ export function renderProfile(profile: Profile): string {
       adversarial: '- Challenge assumptions and argue the opposite case at decisions.',
     }[profile.challenge],
     {
-      guided: '- Run one worker at a time.',
-      staged: '- Run independent workers in bounded stages.',
-      parallel: '- Run independent workers concurrently when dependencies allow.',
+      guided:
+        '- Stage decisions and writing work one at a time; run independent read-only workers concurrently.',
+      staged:
+        '- Stage decisions and writing work in bounded groups; run independent read-only workers concurrently.',
+      parallel:
+        '- Run independent writing work concurrently when dependencies allow; batch decisions and run read-only workers concurrently.',
     }[profile.pace],
     profile.stops === 'every-step'
       ? '- Pause after every step and at every required decision.'

@@ -10,6 +10,17 @@ const core = '#!/usr/bin/env node\nconsole.log("fixture core")\n'
 const canonical = () => bundledCanonical()
 
 describe.each(ADAPTERS)('$id role handoffs', (adapter) => {
+  it('preserves launch-before-join instructions in every read-only fan-out', () => {
+    const generated = generateAdapter(adapter.id, canonical(), core, '0.0.0')
+    for (const skill of ['research', 'review-code', 'verify-works', 'measure-impact']) {
+      const text = generated.files.get(adapter.paths('skill', skill))?.content ?? ''
+      expect(text, skill).toMatch(/(?:Launch|Start) all independent/)
+      expect(text, skill).toMatch(/then join|before joining/)
+      expect(text, skill).toContain('native')
+      expect(text, skill).toContain('never use fixed sleeps')
+    }
+  })
+
   it('renders every available role with instructions compatible with its actual tools', () => {
     const generated = generateAdapter(adapter.id, canonical(), core, '0.0.0')
     for (const role of canonicalRoles(canonical())) {

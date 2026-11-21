@@ -5,7 +5,7 @@ exports[`interaction profile > autopilot × brief renders a bounded style block 
 - Explain briefly; one line per action unless more is requested.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run independent workers concurrently when dependencies allow.
+- Run independent writing work concurrently when dependencies allow; batch decisions and run read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -18,7 +18,7 @@ exports[`interaction profile > autopilot × detailed renders a bounded style blo
 - Explain reasoning, context and trade-offs in detail.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run independent workers concurrently when dependencies allow.
+- Run independent writing work concurrently when dependencies allow; batch decisions and run read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -31,7 +31,7 @@ exports[`interaction profile > autopilot × standard renders a bounded style blo
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run independent workers concurrently when dependencies allow.
+- Run independent writing work concurrently when dependencies allow; batch decisions and run read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -44,7 +44,7 @@ exports[`interaction profile > mentor × brief renders a bounded style block 1`]
 - Explain briefly; one line per action unless more is requested.
 - Balance product outcomes with useful technical detail.
 - Point out assumption gaps constructively.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause after every step and at every required decision.
 - Explain why the process uses each step as you work.
 - Match the conversation language.
@@ -57,7 +57,7 @@ exports[`interaction profile > mentor × detailed renders a bounded style block 
 - Explain reasoning, context and trade-offs in detail.
 - Balance product outcomes with useful technical detail.
 - Point out assumption gaps constructively.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause after every step and at every required decision.
 - Explain why the process uses each step as you work.
 - Match the conversation language.
@@ -70,7 +70,7 @@ exports[`interaction profile > mentor × standard renders a bounded style block 
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Point out assumption gaps constructively.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause after every step and at every required decision.
 - Explain why the process uses each step as you work.
 - Match the conversation language.
@@ -83,7 +83,7 @@ exports[`interaction profile > pair × brief renders a bounded style block 1`] =
 - Explain briefly; one line per action unless more is requested.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -96,7 +96,7 @@ exports[`interaction profile > pair × detailed renders a bounded style block 1`
 - Explain reasoning, context and trade-offs in detail.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -109,7 +109,7 @@ exports[`interaction profile > pair × standard renders a bounded style block 1`
 - Give enough reasoning and context to assess each action.
 - Balance product outcomes with useful technical detail.
 - Challenge unsupported assumptions firmly and kindly.
-- Run one worker at a time.
+- Stage decisions and writing work one at a time; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -122,7 +122,7 @@ exports[`interaction profile > sparring × brief renders a bounded style block 1
 - Explain briefly; one line per action unless more is requested.
 - Use technical vocabulary; name files, functions and queries.
 - Challenge assumptions and argue the opposite case at decisions.
-- Run independent workers in bounded stages.
+- Stage decisions and writing work in bounded groups; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -135,7 +135,7 @@ exports[`interaction profile > sparring × detailed renders a bounded style bloc
 - Explain reasoning, context and trade-offs in detail.
 - Use technical vocabulary; name files, functions and queries.
 - Challenge assumptions and argue the opposite case at decisions.
-- Run independent workers in bounded stages.
+- Stage decisions and writing work in bounded groups; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.
@@ -148,7 +148,7 @@ exports[`interaction profile > sparring × standard renders a bounded style bloc
 - Give enough reasoning and context to assess each action.
 - Use technical vocabulary; name files, functions and queries.
 - Challenge assumptions and argue the opposite case at decisions.
-- Run independent workers in bounded stages.
+- Stage decisions and writing work in bounded groups; run independent read-only workers concurrently.
 - Pause at every required decision.
 - Keep process explanations short unless requested.
 - Match the conversation language.

@@ -2,7 +2,7 @@
 
 > **TL;DR** — Splits a question into **angles**, investigates each one against a real source in parallel, lets a challenger try to refute the claims the conclusion rests on, and hands back a **brief**: claims with evidence and confidence, plus the open questions nothing could answer. Optional in the flow; useful on its own any day.
 
-Running the angles in parallel depends on your client, and authenticated sources are experimental.
+Independent angles run concurrently at every interaction pace when the client supports native fan-out; otherwise the same assignments run sequentially. Actual native overlap and authenticated sources still need live-client evidence.
 
 ## At a glance
 
@@ -49,6 +49,8 @@ flowchart TD
 3. **Never fabricated.** A source that is not configured, not authenticated or returns nothing becomes an **open question** with what is missing and who might have it.
 4. **Cross-examination is bounded.** Only the claims each angle's conclusion rests on are challenged; a claim falls only on **two active refutations**, so a silent verifier cannot delete a real finding.
 5. **The brief has a fixed shape**, checked by `wl step complete` before it is recorded.
+
+The plan view returns pending `jobs` and `examinations`. Each assignment includes its question, exact allowed source, angle or original claim, inline result schema and final-message destination. Start independent jobs before joining native handles; launch examination slots after the source phase has joined. Another verifier's vote is never part of an assignment. The conductor validates and submits the returned results.
 
 ## Standalone use
 

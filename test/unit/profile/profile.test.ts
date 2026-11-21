@@ -13,6 +13,22 @@ import { renderProfile } from '../../../src/profile/render.js'
 import { StateStore } from '../../../src/state/store.js'
 
 describe('interaction profile', () => {
+  it.each(['guided', 'staged', 'parallel'] as const)(
+    'keeps read-only concurrency explicit for %s pace',
+    (pace) => {
+      const style = renderProfile({
+        ...PRESETS.pair,
+        preset: 'pair',
+        language: 'auto',
+        artifact_language: 'en',
+        pace,
+      })
+      expect(style).toContain('read-only workers concurrently')
+      expect(style).toContain('writing work')
+      expect(style).not.toContain('Run one worker at a time')
+    },
+  )
+
   for (const preset of Object.keys(PRESETS) as Preset[])
     for (const verbosity of ['brief', 'standard', 'detailed']) {
       it(`${preset} × ${verbosity} renders a bounded style block`, () => {

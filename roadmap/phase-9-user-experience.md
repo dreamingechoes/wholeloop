@@ -99,15 +99,17 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-04 · Fan-out that runs in parallel and waits properly
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-03 · **Release:** 1.2.0 · **Decision:** amends [ADR-0010](../docs/decisions/0010-interaction-profile-never-changes-coverage.md) (what pace controls)
+**Status:** ✅ · **Size:** M · **Depends on:** P9-03 · **Release:** 1.2.0 · **Decision:** amends [ADR-0010](../docs/decisions/0010-interaction-profile-never-changes-coverage.md) (what pace controls)
 
 **Goal** — Independent read-only workers run together, and the conductor waits on them, not on a clock.
 
 **Acceptance criteria:**
 
-- [ ] Pace gates decisions and writing workers, not independent read-only fan-out; the profile text says so and no longer reads "Run one worker at a time" for those steps.
-- [ ] Skills start all jobs of a fan-out, then wait with the client's own wait primitive; fixed sleeps are never prescribed.
-- [ ] Each job in a returned plan is a self-contained assignment (question, angle or unit, allowed source, result schema, where to return it).
+- [x] Pace gates decisions and writing workers, not independent read-only fan-out; the profile text says so and no longer reads "Run one worker at a time" for those steps.
+- [x] Skills start all jobs of a fan-out, then wait with the client's own wait primitive; fixed sleeps are never prescribed.
+- [x] Each job in a returned plan is a self-contained assignment (question, angle or unit, allowed source, result schema, where to return it).
+
+**Evidence** — `CHECK PASS in 678s`, 4906 tests in 346 files; `CHECK PASS (fast) in 409s`, 1503 related tests in 115 files. Profile snapshots and 324-combination coverage checks preserve gate guarantees. Four assignment snapshots and workflow tests cover exact sources, response identities, independent refutations, current input and cached suite output. Promise barriers prove launch-before-join and complete joins after failure; all seven rendered clients retain native-wait instructions. Actual native overlap and wait behavior remain in [manual verification](./manual-verification.md). No live experience or model run was performed.
 
 **Tests** — Profile rendering tests; plan assignment snapshots; the experience check (P9-20) measures concurrency.
 
