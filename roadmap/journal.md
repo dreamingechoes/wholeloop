@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-21 · P9-09 ✅ · Human command output and explicit raw documents
+
+- **Changed:** ordinary command handlers present structured observations directly as human text. Next, setup, resumption, configuration, profiles, overview, workspaces and catalogs have purpose-specific views; other inspection results use bounded labelled facts. Human watch frames use the overview view and --json retains NDJSON. Formatting adds no state query or JSON round trip.
+- **Contracts:** --json preserves prior fields, schemas and exit codes. The returned next step contract gains the existing display block additively, fixing its canonical skill's missing display without another invocation. Questions retain offered labels, values and free text. Open defaults to a readable document with notes/links; the additive --raw flag retains its complete projection. Raw and JSON are distinct output modes; ordinary Markdown horizontal rules remain content.
+- **Diagnostics:** Doctor develops failures only and aggregates optional observations once. No failures is not a certification of unknown checks. Dry runs report no written installation record; specification problems include their supplied path and preserve exit 4.
+- **Decision:** [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md) records direct structured presentation and explicit raw output. Parsing stdout, exposing private profile prompts and claiming that unknown checks passed were rejected. Native guard and private process wire responses stay exact; presentation grants no approval or execution authority. No task was added.
+- **Documentation:** README, getting started, profile examples and the generated command reference match the new views. The 233704-byte help GIF shows its full header in a taller viewport; the 174419-byte installation GIF uses a temporary home and a version-only fixture. Both were rendered and visually checked. The installation illustration records 203 files and makes no native certification claim.
+- **Verified:** `CHECK PASS in 700s`, 5167 tests in 351 files; `CHECK PASS (fast) in 14s`, 1034 related tests in 16 files. Focused coverage includes compiled NO_COLOR routes, a real local synthetic Git worktree, read-only event checks, exact raw/JSON content, privacy and a serialization observer. Sixteen new presentation snapshots were reviewed. Early focused failures exposed obsolete summary expectations and the need to preserve short-line spacing; corrected runs passed. macOS arm64 locally; required CI supplies Linux coverage. No live model, signed-in client, hosted trial or service call ran.
+
+---
+
 ## 2026-11-21 · P9-08 ✅ · Plain language with step-specific instructions
 
 - **Changed:** all seventeen skills load one short speaking protocol. The vocabulary map is shared with the experience lint; speaking instructions are checked without changing executable commands, private fields or structured examples. All seven rendered catalogs retain the same policy.

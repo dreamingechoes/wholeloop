@@ -28,6 +28,7 @@ import { RunnerStore } from '../runner/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 /** Preparation and controls never select an arbitrary executable or import host results. */
 export function deliveryRunnerCommand(
@@ -38,33 +39,31 @@ export function deliveryRunnerCommand(
   io: Io,
 ) {
   if (command === 'delivery runner-schema') {
-    io.out(
-      JSON.stringify(
-        {
-          schema: 'wholeloop/delivery-runner-schema@1',
-          contracts: { request, event, facet, observation, processOutcome, status },
-          executed: false,
-          completeRouteAvailable: false,
-        },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      command,
+      {
+        schema: 'wholeloop/delivery-runner-schema@1',
+        contracts: { request, event, facet, observation, processOutcome, status },
+        executed: false,
+        completeRouteAvailable: false,
+      },
+      io,
+      json,
     )
     return EXIT.ok
   }
   if (command === 'delivery runner-host') {
     // Computes only; documents are retained when a run or reconcile names them.
     const { bindings, runtime } = publicDocuments(options, root)
-    io.out(
-      JSON.stringify(
-        {
-          schema: 'wholeloop/delivery-runner-host@1',
-          host: publicRunnerIdentity(bindings, runtime),
-          runtime: runtime !== undefined,
-        },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      command,
+      {
+        schema: 'wholeloop/delivery-runner-host@1',
+        host: publicRunnerIdentity(bindings, runtime),
+        runtime: runtime !== undefined,
+      },
+      io,
+      json,
     )
     return EXIT.ok
   }
@@ -94,7 +93,7 @@ export function deliveryRunnerCommand(
         by: value('--operator'),
         ...(typeof options['--note'] === 'string' ? { note: options['--note'] } : {}),
       })
-      io.out(JSON.stringify(recorded, null, json ? undefined : 2))
+      emitCommand(command, recorded, io, json)
       return EXIT.ok
     }
     let receipt: ReturnType<RunnerStore['inspect']>
@@ -125,7 +124,7 @@ export function deliveryRunnerCommand(
         receipt = store.control(digest, operation as 'pause' | 'resume' | 'stop', operator)
       }
     }
-    io.out(JSON.stringify(receipt, null, json ? undefined : 2))
+    emitCommand(command, receipt, io, json)
     return receipt.problems.length ? EXIT.precondition : EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error
@@ -187,12 +186,11 @@ export async function deliveryRunnerAsyncCommand(
         { recoveryProblems, ...status } = bundle
           ? await bundleReconcile(bundle, store.files.root, digest, cancel)
           : await new DeliveryRunner(store).reconcile(digest, host, { cancel })
-      io.out(
-        JSON.stringify(
-          { schema: 'wholeloop/delivery-runner-reconcile@1', status, recoveryProblems },
-          null,
-          json ? undefined : 2,
-        ),
+      emitCommand(
+        command,
+        { schema: 'wholeloop/delivery-runner-reconcile@1', status, recoveryProblems },
+        io,
+        json,
       )
       return recoveryProblems.length ? EXIT.precondition : EXIT.ok
     }
@@ -222,12 +220,11 @@ export async function deliveryRunnerAsyncCommand(
       const { status } = await new OwnedForegroundRunner(store).run(digest, bundle ?? core, {
         signal: abort.signal,
       })
-      io.out(
-        JSON.stringify(
-          { schema: 'wholeloop/delivery-runner-run@1', status, preflight },
-          null,
-          json ? undefined : 2,
-        ),
+      emitCommand(
+        command,
+        { schema: 'wholeloop/delivery-runner-run@1', status, preflight },
+        io,
+        json,
       )
       return status.state === 'completed' ? EXIT.ok : EXIT.precondition
     } finally {

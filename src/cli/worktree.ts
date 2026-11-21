@@ -5,6 +5,7 @@ import { WorktreeManager } from '../worktrees/manager.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function worktreeCommand(
   command: string,
@@ -42,7 +43,7 @@ export function worktreeCommand(
         options['--abandon'] === true ? value('--reason') : undefined,
       )
     } else payload = manager.prune(id, options['--dry-run'] === true)
-    io.out(JSON.stringify(payload, null, json ? undefined : 2))
+    emitCommand(command, payload, io, json)
     return EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error

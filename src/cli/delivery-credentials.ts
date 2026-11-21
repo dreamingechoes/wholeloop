@@ -12,6 +12,7 @@ import {
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 const LIMIT = 4097
 
@@ -64,7 +65,7 @@ export async function deliveryCredentialCommand(
     run = dependencies.run ?? spawnSecretStore,
     platform = dependencies.platform ?? process.platform
   const out = (body: Record<string, unknown>) =>
-    io.out(JSON.stringify({ ...body, reference: credential }, null, json ? undefined : 2))
+    emitCommand(command, { ...body, reference: credential }, io, json)
   if (command === 'delivery credential-store') {
     const value = stdinValue(
       dependencies.read ??

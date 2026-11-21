@@ -16,6 +16,7 @@ import { ITEM_ID } from '../state/events.js'
 import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import type { Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 /** Bound transient native input; never include its contents in errors or reports. */
 export function hookInput(): Promise<unknown> {
@@ -67,7 +68,7 @@ export async function guardCommand(
       action === 'install' ? readFileSync(fileURLToPath(import.meta.url), 'utf8') : undefined,
       typeof options['--store'] === 'string' ? options['--store'] : undefined,
     )
-    io.out(JSON.stringify(result, null, json ? undefined : 2))
+    emitCommand('guard hooks', result, io, json)
     return ['broken', 'configuration-changed', 'changed'].includes(result.status) ? 3 : 0
   }
   let result: GuardDecision

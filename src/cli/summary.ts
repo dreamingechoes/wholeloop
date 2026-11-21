@@ -1,6 +1,7 @@
 // Short summaries for people of the commands a new user runs first. Scripts and skills read the
 // versioned payload through --json, which these summaries never replace.
 import type { DoctorCheck } from '../diagnostics/doctor.js'
+import { humanLines } from '../display/render.js'
 
 // Single quotes keep a store path with spaces copyable; a quote inside one is closed, escaped
 // and reopened, the one portable way in POSIX shells.
@@ -11,28 +12,33 @@ const plural = (count: number, word: string) => `${count} ${word}${count === 1 ?
 
 export function doctorSummary(report: { status: string; checks: readonly DoctorCheck[] }): string {
   const failed = report.checks.filter((check) => check.status === 'fail')
-  const width = Math.max(...report.checks.map((check) => check.id.length))
-  const lines = report.checks.flatMap((check) => [
-    `  ${check.status.padEnd(7)}  ${check.id.padEnd(width)}${check.version ? `  ${check.version}` : ''}`.trimEnd(),
-    // A passing check only needs its name; the others say what was seen and what to do.
-    ...(check.status === 'pass' ? [] : [`           ${check.summary}`]),
+  const optional = report.checks.filter(
+    (check) => check.status !== 'fail' && (check.id.startsWith('cli.') || check.status !== 'pass'),
+  )
+  const lines = failed.flatMap((check) => [
+    `  Failed: ${check.id}${check.version ? ` (${check.version})` : ''}`,
+    `    ${check.summary}`,
     ...(check.repair
-      ? [
-          `           ${check.repair.instruction}`,
-          `           Command: ${shellLine(check.repair.command)}`,
-        ]
+      ? [`    ${check.repair.instruction}`, `    Command: ${shellLine(check.repair.command)}`]
       : []),
   ])
-  return [
-    failed.length
-      ? `Doctor: ${plural(failed.length, 'required check')} failed.`
-      : 'Doctor: every required check passed.',
-    '',
-    ...lines,
-    '',
-    'Doctor cannot see whether the client loads the skills, is signed in or grants permissions.',
-    'Add --json for the full report.',
-  ].join('\n')
+  return humanLines(
+    [
+      failed.length
+        ? `Doctor: ${plural(failed.length, 'check')} failed.`
+        : 'Doctor: no failed checks.',
+      `Observed: ${plural(report.checks.filter((check) => check.status === 'pass').length, 'passing check')}.`,
+      ...(optional.length
+        ? [
+            `Optional checks: ${optional.filter((check) => check.status === 'pass').length} observed, ${optional.filter((check) => check.status === 'unknown').length} unknown, ${optional.filter((check) => check.status === 'skip').length} skipped.`,
+          ]
+        : []),
+      ...(lines.length ? ['', ...lines] : []),
+      '',
+      'Doctor cannot see whether the client loads the skills, is signed in or grants permissions.',
+      'Add --json for the full report.',
+    ].join('\n'),
+  )
 }
 
 interface StatusItem {
@@ -62,11 +68,13 @@ export function statusSummary(payload: {
         : 'none'
     }${item.flow.pending.length ? ` · waiting on ${plural(item.flow.pending.length, 'decision')}` : ''}`,
   ])
-  return [
-    ...items,
-    '',
-    `${plural(payload.unreadCount, 'unread message')}. Add --json for the full status.`,
-  ].join('\n')
+  return humanLines(
+    [
+      ...items,
+      '',
+      `${plural(payload.unreadCount, 'unread message')}. Add --json for the full status.`,
+    ].join('\n'),
+  )
 }
 
 interface InstallationSummary {
@@ -114,19 +122,21 @@ export function installationSummary(result: InstallationSummary): string {
           `Git guards are removed per repository: ${shellLine(result.removal.command)}`,
         ]
       : []
-  return [
-    headline[result.status] ?? `${action}: ${result.status} for ${subject}.`,
-    ...planned,
-    ...(result.backup ? [`Backups: ${result.backup}`] : []),
-    `Receipt: ${result.receipt}`,
-    ...next,
-    ...(result.storeAccess
-      ? [
-          `Codex store access — review only; no client settings were changed: ${result.storeAccess.file}`,
-          result.storeAccess.snippet,
-          'Merge this with your existing settings only after choosing to allow the store; keep other writable roots you still need.',
-        ]
-      : []),
-    'Add --json for the full result.',
-  ].join('\n')
+  return humanLines(
+    [
+      headline[result.status] ?? `${action}: ${result.status} for ${subject}.`,
+      ...planned,
+      ...(result.backup ? [`Backups: ${result.backup}`] : []),
+      ...(result.status === 'planned' ? [] : [`Installation record: ${result.receipt}`]),
+      ...next,
+      ...(result.storeAccess
+        ? [
+            `Codex store access — review only; no client settings were changed: ${result.storeAccess.file}`,
+            result.storeAccess.snippet,
+            'Merge this with your existing settings only after choosing to allow the store; keep other writable roots you still need.',
+          ]
+        : []),
+      'Add --json for the full result.',
+    ].join('\n'),
+  )
 }

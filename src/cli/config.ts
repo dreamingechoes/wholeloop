@@ -4,6 +4,7 @@ import { CONFIG_SCHEMA } from '../config/schema.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function configCommand(
   action: string,
@@ -16,10 +17,11 @@ export function configCommand(
     throw new CliError('Configuration commands do not take positional arguments')
   if (action === 'schema') {
     if (Object.keys(options).length) throw new CliError('config schema does not take options')
-    io.out(
-      json
-        ? JSON.stringify({ schema: 'wholeloop/config-schema@1', configSchema: CONFIG_SCHEMA })
-        : JSON.stringify(CONFIG_SCHEMA, null, 2),
+    emitCommand(
+      'config schema',
+      { schema: 'wholeloop/config-schema@1', configSchema: CONFIG_SCHEMA },
+      io,
+      json,
     )
     return EXIT.ok
   }
@@ -36,7 +38,7 @@ export function configCommand(
       values: config.values,
       ...(options['--explain'] ? { sources: config.sources } : {}),
     }
-    io.out(JSON.stringify(payload, null, json ? undefined : 2))
+    emitCommand('config show', payload, io, json)
     return EXIT.ok
   } catch (error) {
     throw new CliError(error instanceof Error ? error.message : String(error))

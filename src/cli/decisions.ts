@@ -5,6 +5,7 @@ import { DECISION_SCHEMAS, DelegatedDecisions } from '../decisions/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function delegatedDecisionsCommand(
   command: string,
@@ -14,16 +15,15 @@ export function delegatedDecisionsCommand(
   io: Io,
 ) {
   if (command === 'delivery decision-schema') {
-    io.out(
-      JSON.stringify(
-        {
-          schema: 'wholeloop/delegated-decision-schema@1',
-          contracts: { ...DECISION_SCHEMAS, rubric: DECISION_RUBRIC_SCHEMA },
-          executed: false,
-        },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      command,
+      {
+        schema: 'wholeloop/delegated-decision-schema@1',
+        contracts: { ...DECISION_SCHEMAS, rubric: DECISION_RUBRIC_SCHEMA },
+        executed: false,
+      },
+      io,
+      json,
     )
     return EXIT.ok
   }
@@ -56,7 +56,7 @@ export function delegatedDecisionsCommand(
       receipt = store.preflight({ run, revision, grant })
       if ((receipt as { status: string }).status !== 'ready') code = EXIT.precondition
     }
-    io.out(JSON.stringify(receipt, null, json ? undefined : 2))
+    emitCommand(command, receipt, io, json)
     return code
   } catch (error) {
     if (error instanceof CliError) throw error

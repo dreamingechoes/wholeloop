@@ -6,7 +6,7 @@
 
 Your coding client already has a capable model. wholeloop adds **the process around it**: which questions to ask before building, what counts as evidence, where you decide and what is remembered between conversations. It installs into the client you already use, Claude Code, Codex, Copilot, Gemini and others, and you can use one step for a small job or the whole loop for a feature.
 
-![Installing wholeloop into Claude Code: a dry run lists 188 files, the install writes them, and doctor reports every required check as passed](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/terminal/install.gif)
+![Illustrative installation with a version-only client fixture: a dry run lists 203 files, the install writes them, and doctor separates observed passes from unknown checks](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/terminal/install.gif)
 
 ## Contents
 
@@ -117,7 +117,7 @@ First, **preview**. `--dry-run` writes nothing and tells you what would change:
 ```console
 $ wl install --target claude --scope user --dry-run
 Dry run for claude at user scope: nothing was written.
-  188 files to write
+  203 files to write
 Run the same command without --dry-run to apply it.
 …
 ```
@@ -132,29 +132,25 @@ Then **install**. The *scope* decides where the skills are available:
 ```console
 $ wl install --target claude --scope user
 Installed claude at user scope.
-Receipt: ~/.local/state/wholeloop/installations/22d5c1ca…/receipt.json
+Installation record:
+~/.local/state/wholeloop/installations/22d5c1ca…/receipt.json
 Restart the client and check that the skills appear.
 …
 ```
 
-The **receipt** records exactly what was written, so updating or uninstalling later touches only those files. Install also prints a command to add wholeloop's Git guards to a repository; [getting started](./docs/getting-started.md#install-for-one-client) explains it.
+The **installation record** lists exactly what was written, so updating or uninstalling later touches only those files. Install also prints a command to add wholeloop's Git guards to a repository; [getting started](./docs/getting-started.md#install-for-one-client) explains it.
 
 Finally, **check**:
 
 ```console
 $ wl doctor --target claude
-Doctor: every required check passed.
+Doctor: no failed checks.
+Observed: 6 passing checks.
+Optional checks: 1 observed, 2 unknown, 0 skipped.
 
-  pass     node                  24.22.0
-  pass     git                   2.49.0
-  pass     cli.claude            2.1.326
-  pass     store
-  pass     providers
-  unknown  artifacts
-  …
-  pass     installation.user
-  unknown  installation.project
-  …
+Doctor cannot see whether the client loads the skills, is signed in or grants
+permissions.
+Add --json for the full report.
 ```
 
 > [!TIP]
@@ -243,7 +239,7 @@ Here is a framing step as it might look in your client:
 
 ![What every step does: the skill begins the step with the core, which returns what exists, the open questions and your repository's guidance; the skill shows you a preflight and asks its questions; it does the work; it completes the step with its artifact, which the core checks and records; and you get a receipt and any decision that is due](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/diagrams/step.svg)
 
-From a terminal you can see everything the client sees. `wl --help` lists the everyday commands first, `wl <command> --help` explains one, and a typo gets a suggestion:
+From a terminal you can see everything the client sees. `wl --help` lists everyday commands first and `--help --all` includes repository and maintainer tools, `wl <command> --help` explains one, and a typo gets a suggestion:
 
 ![wl --help shows commands grouped by purpose; wl status --help shows the options of one command; and the typo wl stauts suggests wl status](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/terminal/help.gif)
 

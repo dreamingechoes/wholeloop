@@ -10,6 +10,7 @@ import {
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 function required(options: ReturnType<typeof parseArguments>['options'], name: string) {
   const value = options[name]
@@ -90,7 +91,7 @@ export function deliveryIntegrationCommand(
         if (inspected.status !== 'current') code = EXIT.precondition
       }
     }
-    io.out(JSON.stringify(receipt, null, json ? undefined : 2))
+    emitCommand(command, receipt, io, json)
     return code
   } catch (error) {
     if (error instanceof CliError) throw error

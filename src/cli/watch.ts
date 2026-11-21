@@ -2,12 +2,14 @@
 import { watchOverview } from '../overview/watch.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 /** A terminal process owns cancellation only; it never owns a store writer lease. */
 export async function watchCommand(
   parsed: { positional: string[]; options: Record<string, string | true> },
   root: string,
   io: Io,
+  json = false,
 ) {
   if (parsed.positional.length) throw new CliError('watch takes no positional arguments')
   const abort = new AbortController(),
@@ -40,7 +42,7 @@ export async function watchCommand(
       async (frame) => {
         if (outputError) throw outputError
         try {
-          io.out(JSON.stringify(frame))
+          emitCommand('watch', frame, io, json)
           await io.flush?.(abort.signal)
           if (outputError) throw outputError
         } catch (error) {

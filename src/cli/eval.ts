@@ -12,6 +12,7 @@ import {
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function evalCommand(
   { positional, options }: ReturnType<typeof parseArguments>,
@@ -27,7 +28,7 @@ export function evalCommand(
       ? parsePredictions(JSON.parse(readFileSync(file, 'utf8')), corpus)
       : undefined
   const report = definitionReport(corpus, predictions)
-  io.out(JSON.stringify(report, null, json ? undefined : 2))
+  emitCommand('eval', report, io, json)
   // Misses are measurements, not runner errors. Callers can assert a chosen threshold from this report.
   return EXIT.ok
 }
@@ -41,7 +42,7 @@ export function gateEvalCommand(
   const corpus = loadGateCorpus(positional[0] ?? '')
   if (options['--inputs'] === true) {
     if (options['--predictions']) throw new CliError('Choose blind inputs or scoring, not both')
-    io.out(JSON.stringify(gateEvaluationInputs(corpus), null, json ? undefined : 2))
+    emitCommand('eval', gateEvaluationInputs(corpus), io, json)
   } else {
     const file = options['--predictions']
     if (typeof file !== 'string')
@@ -50,7 +51,7 @@ export function gateEvalCommand(
         EXIT.input,
       )
     const predictions = parseGatePredictions(JSON.parse(readFileSync(file, 'utf8')), corpus)
-    io.out(JSON.stringify(gateEvaluationReport(corpus, predictions), null, json ? undefined : 2))
+    emitCommand('eval', gateEvaluationReport(corpus, predictions), io, json)
   }
   return EXIT.ok
 }

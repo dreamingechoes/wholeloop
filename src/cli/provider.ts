@@ -11,6 +11,7 @@ import { MCP_TARGETS, type McpTarget, renderMcp } from '../providers/mcp.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function providerCommand(
   command: string,
@@ -77,9 +78,18 @@ export function providerCommand(
       const provider = registry.providers.find((provider) => provider.manifest.id === positional[0])
       if (!provider) throw new CliError(`Unknown provider: ${positional[0]}`, EXIT.precondition)
       const payload = renderMcp(provider.manifest, target as McpTarget)
-      io.out(
-        json ? JSON.stringify(payload) : `Merge into ${payload.destination}:\n${payload.snippet}`,
-      )
+      if (json) io.out(JSON.stringify(payload))
+      else
+        emitCommand(
+          command,
+          {
+            destination: payload.destination,
+            status: 'Review only; no settings changed',
+            next: 'Use --json for the configuration snippet.',
+          },
+          io,
+          false,
+        )
       return EXIT.ok
     }
     if (command === 'provider resolve') {
@@ -90,12 +100,11 @@ export function providerCommand(
           ? configuration.providers[capability]
           : undefined
       const provider = resolveProvider(registry, operation, configured)
-      io.out(
-        JSON.stringify(
-          { schema: 'wholeloop/provider-resolve@1', operation, ...provider },
-          null,
-          json ? undefined : 2,
-        ),
+      emitCommand(
+        command,
+        { schema: 'wholeloop/provider-resolve@1', operation, ...provider },
+        io,
+        json,
       )
       return EXIT.ok
     }
@@ -116,7 +125,7 @@ export function providerCommand(
       problems: [...registry.problems, ...detection.problems],
       probe: 'Not performed; verify tool availability and authentication in the host CLI',
     }
-    io.out(JSON.stringify(payload, null, json ? undefined : 2))
+    emitCommand(command, payload, io, json)
     return payload.problems.length ? EXIT.shape : EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error

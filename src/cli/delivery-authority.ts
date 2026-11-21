@@ -11,6 +11,7 @@ import { readSourceFile } from '../delivery/input.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function deliveryAuthorityCommand(
   command: string,
@@ -20,18 +21,17 @@ export function deliveryAuthorityCommand(
   io: Io,
 ): number {
   if (command === 'delivery authority-schema') {
-    io.out(
-      JSON.stringify(
-        {
-          schema: 'wholeloop/delivery-authority-schema@1',
-          authorizationSchema: AUTHORIZATION_REQUEST_SCHEMA,
-          revocationSchema: REVOCATION_REQUEST_SCHEMA,
-          brokerSchema: BROKER_REQUEST_SCHEMA,
-          brokerReceiptSchema: BROKER_RECEIPT_SCHEMA,
-        },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      command,
+      {
+        schema: 'wholeloop/delivery-authority-schema@1',
+        authorizationSchema: AUTHORIZATION_REQUEST_SCHEMA,
+        revocationSchema: REVOCATION_REQUEST_SCHEMA,
+        brokerSchema: BROKER_REQUEST_SCHEMA,
+        brokerReceiptSchema: BROKER_RECEIPT_SCHEMA,
+      },
+      io,
+      json,
     )
     return EXIT.ok
   }
@@ -60,7 +60,7 @@ export function deliveryAuthorityCommand(
       }
       receipt = command === 'delivery revoke' ? authority.revoke(value) : authority.authorize(value)
     }
-    io.out(JSON.stringify(receipt, null, json ? undefined : 2))
+    emitCommand(command, receipt, io, json)
     return EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error

@@ -7,6 +7,7 @@ import { readSourceBytes, readSourceFile } from '../delivery/input.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 function context(options: ReturnType<typeof parseArguments>['options'], root: string) {
   return {
@@ -77,7 +78,7 @@ export function deliveryAcceptanceCommand(
         }
       } else throw new CliError('Use the asynchronous acceptance entrypoint', EXIT.precondition)
     }
-    io.out(JSON.stringify(receipt, null, json ? undefined : 2))
+    emitCommand(command, receipt, io, json)
     return EXIT.ok
   } catch (error) {
     return failure(error)
@@ -144,7 +145,7 @@ export async function deliveryAcceptanceAsyncCommand(
         request,
       )
     }
-    io.out(JSON.stringify(receipt, null, json ? undefined : 2))
+    emitCommand(command, receipt, io, json)
     return code
   } catch (error) {
     return failure(error)

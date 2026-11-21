@@ -8,6 +8,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function mailboxCommand(
   command: string,
@@ -27,8 +28,11 @@ export function mailboxCommand(
     const store = new StateStore()
     if (command === 'resume') {
       const role = value('--for') ?? 'conductor'
-      io.out(
-        JSON.stringify(contextPack(store.events(), positional[0], role, value('--reader') ?? role)),
+      emitCommand(
+        command,
+        contextPack(store.events(), positional[0], role, value('--reader') ?? role),
+        io,
+        json,
       )
       return EXIT.ok
     }
@@ -58,12 +62,11 @@ export function mailboxCommand(
         }),
       }
     }
-    io.out(
-      JSON.stringify(
-        { schema: `wholeloop/${command.replaceAll(' ', '-')}@1`, ...payload },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      command,
+      { schema: `wholeloop/${command.replaceAll(' ', '-')}@1`, ...payload },
+      io,
+      json,
     )
     return EXIT.ok
   } catch (error) {

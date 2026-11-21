@@ -13,23 +13,23 @@ import { VERSION } from '../version.js'
 import type { AdapterContext } from './adapter-context.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 /** Resolve from the actual imported core, including when a skill launcher was reached by symlink. */
 export function adapterRoot(json: boolean, io: Io) {
   try {
     const { root, value } = packagedAdapter(fileURLToPath(import.meta.url))
-    io.out(
-      JSON.stringify(
-        {
-          schema: 'wholeloop/adapter-root@1',
-          root,
-          target: value.target,
-          version: VERSION,
-          source: value.source,
-        },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      'adapter root',
+      {
+        schema: 'wholeloop/adapter-root@1',
+        root,
+        target: value.target,
+        version: VERSION,
+        source: value.source,
+      },
+      io,
+      json,
     )
     return EXIT.ok
   } catch {

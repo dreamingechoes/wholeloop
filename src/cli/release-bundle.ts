@@ -10,6 +10,7 @@ import { VERSION } from '../version.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 function boundedFile(path: string, limit: number) {
   const file = readRegularFile(path, limit)
@@ -64,7 +65,7 @@ export function releaseVerifyCommand(
       source: releaseSource(root),
     })
     const result = verifyReleaseBundle(manifest, files, preflight)
-    io.out(JSON.stringify(result, null, json ? undefined : 2))
+    emitCommand('release verify', result, io, json)
     return EXIT.ok
   } catch {
     throw new CliError(

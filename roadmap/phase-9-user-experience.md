@@ -184,16 +184,18 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-09 · Human output for every person-facing command
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-07 · **Release:** 1.2.0
+**Status:** ✅ · **Size:** M · **Depends on:** P9-07 · **Release:** 1.2.0
 
 **Goal** — Without `--json`, every command a person runs prints text meant for them.
 
 **Acceptance criteria:**
 
-- [ ] `next`, `setup`, `overview`, `resume`, `config show`, `profile show`, `open`, `worktree open`, `spec check` and every step command have a human form; JSON appears only with `--json`.
-- [ ] `wl --help` describes commands in plain sentences and hides repository and maintainer groups behind `--help --all`.
-- [ ] Doctor shows details only for failures and summarises optional checks in one line; an install dry run does not claim a written receipt; `spec check` lists one problem per line with its path.
-- [ ] `wl open` shows a readable header; front matter only with `--raw`.
+- [x] `next`, `setup`, `overview`, `resume`, `config show`, `profile show`, `open`, `worktree open`, `spec check` and every step command have a human form; JSON appears only with `--json`.
+- [x] `wl --help` describes commands in plain sentences and hides repository and maintainer groups behind `--help --all`.
+- [x] Doctor shows details only for failures and summarises optional checks in one line; an install dry run does not claim a written receipt; `spec check` lists one problem per line with its path.
+- [x] `wl open` shows a readable header; front matter only with `--raw`.
+
+**Evidence:** ordinary handlers consume structured observations through the shared emitter; named question/preference/resume/overview/workspace views and bounded inspection text replace implicit JSON. The existing next step contract gains display additively; --json fields, schema identities and exit codes stay compatible. `test/unit/display/commands.test.ts` runs compiled routes with NO_COLOR, preserves raw metadata only on explicit --raw, retains notes/links and real Markdown rules, checks no extra state events, and opens a real synthetic Git worktree without claiming human testing. Help snapshots cover ordinary/full/group pages at 80 columns. Doctor tests keep optional details and repairs out of the failure report, while installed records remain distinct from dry runs. Spec problems retain their supplied path. Native guard and private process wire protocols retain their exact machine formats, as ADR-0256 records. `CHECK PASS in 700s`, 5167 tests in 351 files; `CHECK PASS (fast) in 14s`, 1034 related tests in 16 files. The 233704-byte help and 174419-byte installation recordings were regenerated locally and inspected visually, with a temporary home and version-only client fixture; no model or native account ran.
 
 **Tests** — Snapshot tests for each human form, at 80 columns and with `NO_COLOR`.
 

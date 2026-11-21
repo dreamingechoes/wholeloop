@@ -15,6 +15,8 @@
 # enforced by test/unit/experience/experience.test.ts in the ordinary fixture suite.
 version: 1
 rules:
+  - id: human-command-text
+    enforcers: [src/cli/presentation.ts#emitCommand, src/display/commands.ts#commandText, test/unit/display/commands.test.ts, test/unit/cli-summary.test.ts, test/unit/cli-help.test.ts]
   - id: person-facing-language
     enforcers: [src/harness/communication.ts#checkCommunication, src/display/terms.ts#PERSON_WORDS, test/unit/harness/communication.test.ts]
   - id: step-only-protocols

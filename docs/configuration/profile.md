@@ -37,37 +37,33 @@ Presets are just bundles; any dial can be overridden on top. Teams can ship thei
 
 ## Changing it
 
-Pick a preset, then tune a dial. Each command prints the resulting profile and the style block the model will receive:
+Pick a preset, then tune a dial. Each command prints the resulting preferences. The style instructions stay private; use `--json` when a tool needs the full contract:
 
 ```console
 $ wl profile preset sparring
-{
-  "preset": "sparring",
-  "verbosity": "standard",
-  "depth": "technical",
-  "challenge": "adversarial",
-  "pace": "staged",
-  …
-}
-
-Style for this run:
-- Give enough reasoning and context to assess each action.
-- Use technical vocabulary; name files, functions and queries.
-- Challenge assumptions and argue the opposite case at decisions.
-…
+Preferences updated
+Preset             sparring
+Verbosity          standard
+Depth              technical
+Challenge          adversarial
+Pace               staged
+Stops              decisions
+Teaching           off
+Language           auto
+Artifact language
+  en
 $ wl profile set language=es
-{
-  "preset": "sparring",
-  …
-  "language": "es",
-  "artifact_language": "en"
-}
-
-Style for this run:
-…
-- Speak in language code es.
-- Write artifacts in language code en.
-…
+Preferences updated
+Preset             sparring
+Verbosity          standard
+Depth              technical
+Challenge          adversarial
+Pace               staged
+Stops              decisions
+Teaching           off
+Language           es
+Artifact language
+  en
 ```
 
 `wl profile show` prints the same for the profile in force. To see which file each value came from, use `wl config show --explain`.

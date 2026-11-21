@@ -12,6 +12,7 @@ import { DeliveryPlanning } from '../delivery/planning-store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function deliveryPlanningCommand(
   command: string,
@@ -25,16 +26,15 @@ export function deliveryPlanningCommand(
     throw new CliError('Provide --schema-version 1 or 2', EXIT.input)
   const expected = `wholeloop/delivery-plan@${version}`
   if (command === 'delivery plan-schema') {
-    io.out(
-      JSON.stringify(
-        {
-          schema: `wholeloop/delivery-planning-schema@${version}`,
-          planSchema: version === '2' ? DELIVERY_PLAN_V2_SCHEMA : DELIVERY_PLAN_SCHEMA,
-          envelopeSchema: DELIVERY_ENVELOPE_SCHEMA,
-        },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      command,
+      {
+        schema: `wholeloop/delivery-planning-schema@${version}`,
+        planSchema: version === '2' ? DELIVERY_PLAN_V2_SCHEMA : DELIVERY_PLAN_SCHEMA,
+        envelopeSchema: DELIVERY_ENVELOPE_SCHEMA,
+      },
+      io,
+      json,
     )
     return EXIT.ok
   }
@@ -89,7 +89,7 @@ export function deliveryPlanningCommand(
             }
           : planning.preparePlan(value)
     }
-    io.out(JSON.stringify(receipt, null, json ? undefined : 2))
+    emitCommand(command, receipt, io, json)
     return EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error

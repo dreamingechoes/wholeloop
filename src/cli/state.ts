@@ -1,11 +1,13 @@
 // `wl state`, `note`, `link` and `open`: typed items in the external store.
 import { readFileSync } from 'node:fs'
+import { openText } from '../display/commands.js'
 import { type ItemInput, type ItemKind, type ItemPatch, KINDS } from '../state/events.js'
 import { projections } from '../state/projections.js'
 import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function stateCommand(
   command: string,
@@ -25,6 +27,8 @@ export function stateCommand(
         ? 0
         : 1
   if (args.length > maximum) throw new CliError(`Too many arguments for ${command}`)
+  if (command === 'open' && json && options['--raw'])
+    throw new CliError('Choose --raw or --json, not both')
   try {
     const store = new StateStore()
     let payload: Record<string, unknown>
@@ -96,16 +100,20 @@ export function stateCommand(
         readable =
           projections(new Map([[item.id, item]])).get(`items/${item.id}/${item.kind}.md`) ?? ''
         payload = { id: item.id, content: readable }
+        if (!json && !options['--raw']) readable = openText(item)
         break
       }
       default:
         throw new Error(`Missing state handler: ${command}`)
     }
-    io.out(
-      json
-        ? JSON.stringify({ schema: `wholeloop/${command.replaceAll(' ', '-')}@1`, ...payload })
-        : (readable ?? JSON.stringify(payload, null, 2)),
-    )
+    if (!json && readable !== undefined) io.out(readable)
+    else
+      emitCommand(
+        command,
+        { schema: `wholeloop/${command.replaceAll(' ', '-')}@1`, ...payload },
+        io,
+        json,
+      )
     return EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error

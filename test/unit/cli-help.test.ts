@@ -50,6 +50,22 @@ describe('default help', () => {
       expect(json.commands).toEqual(COMMANDS)
     }
   })
+
+  it('hides repository tools from everyday help and bounds every human help line', () => {
+    const everyday = help('--help').out
+    expect(everyday).not.toContain('Repository tools:')
+    expect(everyday).not.toContain('guard docs harness adapter release conformance display')
+    const all = help('--help', '--all').out
+    expect(all).toContain('  harness check')
+    expect(everyday).toMatchSnapshot()
+    for (const output of [
+      everyday,
+      all,
+      help('install', '--help').out,
+      help('release', '--help').out,
+    ])
+      for (const line of output.split('\n')) expect(line.length).toBeLessThanOrEqual(80)
+  })
 })
 
 describe('command and group help', () => {

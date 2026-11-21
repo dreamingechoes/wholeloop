@@ -10,6 +10,7 @@ import { SyncWorkflow } from '../sync/workflow.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export async function syncCommand(
   { positional, options }: ReturnType<typeof parseArguments>,
@@ -83,6 +84,6 @@ export async function syncCommand(
       prune: prune === 'on',
     },
   )
-  io.out(JSON.stringify(result, null, json ? undefined : 2))
+  emitCommand('sync', result, io, json)
   return result.observations.some((row) => row.status === 'unknown') ? EXIT.precondition : EXIT.ok
 }

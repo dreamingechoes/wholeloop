@@ -7,7 +7,7 @@ Require wl
 Set Shell bash
 Set FontSize 15
 Set Width 1400
-Set Height 820
+Set Height 1100
 Set Padding 24
 Set TypingSpeed 30ms
 Set Theme "Dracula"

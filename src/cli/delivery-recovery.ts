@@ -14,6 +14,7 @@ import intentSchema from '../delivery/schemas/effect-intent-v1.json' with { type
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 export function deliveryRecoveryCommand(
   command: string,
@@ -22,7 +23,7 @@ export function deliveryRecoveryCommand(
   json: boolean,
   io: Io,
 ): number {
-  const emit = (value: unknown) => io.out(JSON.stringify(value, null, json ? undefined : 2))
+  const emit = (value: unknown) => emitCommand(command, value, io, json)
   if (command === 'delivery recovery-schema') {
     emit({
       schema: 'wholeloop/delivery-recovery-schema@1',
@@ -111,12 +112,11 @@ export async function deliveryRecoverCommand(
     const result = await new DeliveryRecovery(
       typeof store === 'string' ? resolve(root, store) : undefined,
     ).recover(run, { resume: options['--resume'] === true })
-    io.out(
-      JSON.stringify(
-        { schema: 'wholeloop/delivery-recovery-result@1', ...result },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      'delivery recover',
+      { schema: 'wholeloop/delivery-recovery-result@1', ...result },
+      io,
+      json,
     )
     return result.ready ? EXIT.ok : EXIT.precondition
   } catch (error) {

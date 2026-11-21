@@ -1,5 +1,7 @@
 // Help text for people: a short default page, one page per command or group, and a suggestion for
 // a mistyped command. The JSON help still lists every command from the table, unchanged.
+
+import { humanLines } from '../display/render.js'
 import { VERSION } from '../version.js'
 import { COMMANDS, type Command } from './commands.js'
 
@@ -47,13 +49,28 @@ export const AREAS: readonly { title: string; groups: readonly string[] }[] = [
   },
 ]
 
+const EVERYDAY_WORDS: Readonly<Record<string, string>> = {
+  install: 'Install wholeloop in your coding client.',
+  doctor: 'Find installation problems.',
+  setup: 'Choose how you want to work.',
+  uninstall: 'Remove an owned installation.',
+  status: 'See work and pending decisions.',
+  next: 'Continue work or start an idea.',
+  resume: 'Pick up an item with its recent context.',
+  overview: 'See what needs attention across work.',
+  watch: 'Follow changes without starting work.',
+  'profile show': 'See your interaction preferences.',
+  'profile preset': 'Choose an interaction preset.',
+  'config show': 'See the effective settings.',
+}
+
 const OPTIONS = `Options:
   -v, --version   Print the version
   -h, --help      Print help; after a command or group, print help for it
   --json          Print a versioned JSON payload`
 
 const line = (command: Command, width = 30) =>
-  `  ${`${command.path} ${command.arguments}`.trim().padEnd(width)} ${command.summary}`
+  humanLines(`  ${`${command.path} ${command.arguments}`.trim().padEnd(width)} ${command.summary}`)
 const byPath = (path: string) => COMMANDS.find((command) => command.path === path)
 const groupOf = (path: string) => path.split(' ')[0] ?? path
 
@@ -64,11 +81,15 @@ export function usage(): string {
       `${title}:\n${paths
         .map(byPath)
         .filter((command) => command !== undefined)
-        .map((command) => line(command))
+        .map((command) =>
+          line({ ...command, summary: EVERYDAY_WORDS[command.path] ?? command.summary }),
+        )
         .join('\n')}`,
   )
-  const areas = AREAS.map(({ title, groups }) => `  ${title}\n    ${groups.join(' ')}`).join('\n')
-  return `wholeloop ${VERSION} — a CLI-agnostic AI development harness
+  const areas = AREAS.filter(({ title }) => title !== 'Repository tools')
+    .map(({ title, groups }) => `  ${title}\n    ${groups.join(' ')}`)
+    .join('\n')
+  return humanLines(`wholeloop ${VERSION} — define, build, roll out and learn
 
 Usage: wl <command> [options]
 
@@ -80,19 +101,19 @@ ${areas}
 ${OPTIONS}
 
 Run 'wl <command> --help' for one command, 'wl <group> --help' for a group,
-or 'wl --help --all' for every command.`
+or 'wl --help --all' for every command, including repository and maintainer tools.`)
 }
 
 /** Every command, in table order: the page the default help replaced. */
 export function fullUsage(): string {
-  return `wholeloop ${VERSION} — a CLI-agnostic AI development harness
+  return humanLines(`wholeloop ${VERSION} — define, build, roll out and learn
 
 Usage: wl <command> [options]
 
 ${OPTIONS}
 
 Commands:
-${COMMANDS.map((command) => line(command)).join('\n')}`
+${COMMANDS.map((command) => line(command)).join('\n')}`)
 }
 
 /** One command's usage, summary and options, with the commands that share its group. */
@@ -101,16 +122,18 @@ export function commandUsage(command: Command): string {
     (other) => other !== command && groupOf(other.path) === groupOf(command.path),
   )
   const options = [...command.options, '--json']
-  return [
-    `Usage: wl ${`${command.path} ${command.arguments}`.trim()}${command.options.length ? ' [options]' : ''}`,
-    '',
-    command.summary,
-    '',
-    `Options:\n${options.map((option) => `  ${option}`).join('\n')}`,
-    ...(related.length
-      ? ['', `Related commands:\n${related.map((other) => line(other)).join('\n')}`]
-      : []),
-  ].join('\n')
+  return humanLines(
+    [
+      `Usage: wl ${`${command.path} ${command.arguments}`.trim()}${command.options.length ? ' [options]' : ''}`,
+      '',
+      command.summary,
+      '',
+      `Options:\n${options.map((option) => `  ${option}`).join('\n')}`,
+      ...(related.length
+        ? ['', `Related commands:\n${related.map((other) => line(other)).join('\n')}`]
+        : []),
+    ].join('\n'),
+  )
 }
 
 /** Every command whose path starts with the group's word, or undefined for an unknown group. */
@@ -121,7 +144,9 @@ export function groupUsage(group: string): string | undefined {
     44,
     Math.max(...commands.map((command) => `${command.path} ${command.arguments}`.trim().length)),
   )
-  return `Commands in '${group}':\n${commands.map((command) => line(command, width)).join('\n')}\n\nRun 'wl <command> --help' for one of them.`
+  return humanLines(
+    `Commands in '${group}':\n${commands.map((command) => line(command, width)).join('\n')}\n\nRun 'wl <command> --help' for one of them.`,
+  )
 }
 
 /** Optimal string alignment distance: an edit, insertion, deletion or swap of neighbours. */

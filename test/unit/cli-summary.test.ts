@@ -29,24 +29,32 @@ describe('doctor summary', () => {
           { id: 'cli.codex', status: 'skip', summary: 'Not selected.' },
         ],
       }),
-    ).toBe(`Doctor: 1 required check failed.
-
-  pass     node               22.12.0
-  fail     installation.user  0.9.0
-           Owned installation was written by wholeloop 0.9.0.
-           Run this command to update the installation.
-           Command: wl install --target claude --store '/tmp/my store'\\''s' --json
-  skip     cli.codex
-           Not selected.
-
-Doctor cannot see whether the client loads the skills, is signed in or grants permissions.
-Add --json for the full report.`)
+    ).toMatchSnapshot()
   })
 
-  it('says every required check passed when none failed', () => {
+  it('keeps passing and optional details out of the failure report', () => {
+    const summary = doctorSummary({
+      status: 'observed',
+      checks: [
+        { id: 'git', status: 'pass', summary: 'PRIVATE_PASS_DETAIL' },
+        {
+          id: 'cli.codex',
+          status: 'skip',
+          summary: 'PRIVATE_OPTIONAL_DETAIL',
+          repair: { instruction: 'PRIVATE_OPTIONAL_REPAIR', command: ['do-not-run'] },
+        },
+        { id: 'artifacts', status: 'unknown', summary: 'PRIVATE_UNKNOWN_DETAIL' },
+      ],
+    })
+    expect(summary).toContain('Optional checks: 0 observed, 1 unknown, 1 skipped.')
+    expect(summary).not.toContain('PRIVATE_')
+    expect(summary).not.toContain('every required check passed')
+  })
+
+  it('reports no failures without certifying unknown checks', () => {
     expect(
       doctorSummary({ status: 'observed', checks: [{ id: 'git', status: 'pass', summary: '' }] }),
-    ).toMatch(/^Doctor: every required check passed\.\n\n {2}pass {5}git\n/)
+    ).toMatch(/^Doctor: no failed checks\.\nObserved: 1 passing check\./)
   })
 })
 
@@ -145,8 +153,10 @@ describe('installation summary', () => {
     },
   ])('summarizes $result.status', ({ result, lines }) => {
     const summary = installationSummary(result)
-    for (const line of lines) expect(summary.split('\n')).toContain(line)
-    expect(summary).toContain('Receipt: /store/installations/1/receipt.json')
+    for (const line of lines)
+      expect(summary.replace(/\s+/g, ' ')).toContain(line.trim().replace(/\s+/g, ' '))
+    if (result.status === 'planned') expect(summary).not.toContain(base.receipt)
+    else expect(summary).toContain('Installation record: /store/installations/1/receipt.json')
     expect(summary.endsWith('Add --json for the full result.')).toBe(true)
   })
 

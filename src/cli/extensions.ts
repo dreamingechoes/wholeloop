@@ -10,6 +10,7 @@ import { FRAME_SECTIONS } from '../framing/contract.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { emitCommand } from './presentation.js'
 
 function scaffold(kind: string, id: string): Record<string, string> {
   if (kind === 'template')
@@ -66,12 +67,11 @@ function execute<T extends Manifest>(
       for (const [name, content] of Object.entries(files))
         writeFileSync(join(output, name), content, { flag: 'wx', mode: 0o600 })
     }
-    io.out(
-      JSON.stringify(
-        { schema: `wholeloop/${kind}-scaffold@1`, id, files, directory: output ?? null },
-        null,
-        json ? undefined : 2,
-      ),
+    emitCommand(
+      command,
+      { schema: `wholeloop/${kind}-scaffold@1`, id, files, directory: output ?? null },
+      io,
+      json,
     )
     return EXIT.ok
   }
@@ -82,12 +82,11 @@ function execute<T extends Manifest>(
       : catalog.entries.filter(({ manifest }) => manifest.id === positional[0])
   if (action !== 'list' && !entries.length && !catalog.problems.length)
     throw new CliError(`Unknown ${kind}: ${positional[0]}`, EXIT.precondition)
-  io.out(
-    JSON.stringify(
-      { schema: `wholeloop/${kind}-${action}@1`, entries, problems: catalog.problems },
-      null,
-      json ? undefined : 2,
-    ),
+  emitCommand(
+    command,
+    { schema: `wholeloop/${kind}-${action}@1`, entries, problems: catalog.problems },
+    io,
+    json,
   )
   return catalog.problems.length ? EXIT.shape : EXIT.ok
 }
