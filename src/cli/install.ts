@@ -7,8 +7,10 @@ import { bundledCanonical } from '../adapters/canonical.js'
 import { openCodeVersionProbe } from '../diagnostics/doctor.js'
 import { codexStoreAccess } from '../diagnostics/store-access.js'
 import { TARGETS } from '../installation/contracts.js'
+import { installedLauncherAccess } from '../installation/launcher-access.js'
 import { manageInstallation } from '../installation/manage.js'
 import { scopeModels } from '../installation/models.js'
+import type { InstallContext } from '../installation/plan.js'
 import { storePath } from '../state/paths.js'
 import { VERSION } from '../version.js'
 import type { parseArguments } from './arguments.js'
@@ -32,18 +34,20 @@ export function installationCommand(
       action === 'install' && targets.includes('opencode')
         ? openCodeVersionProbe(process.env, root).version
         : undefined
+    const context: InstallContext = {
+      root,
+      home: homedir(),
+      store:
+        typeof options['--store'] === 'string' ? resolve(root, options['--store']) : storePath(),
+      scope,
+      ...(opencodeVersion ? { opencodeVersion } : {}),
+      ...(action === 'install' ? { models: scopeModels(scope, root, homedir()) } : {}),
+    }
+    const canonical = bundledCanonical()
     const installed = manageInstallation(action, {
-      context: {
-        root,
-        home: homedir(),
-        store:
-          typeof options['--store'] === 'string' ? resolve(root, options['--store']) : storePath(),
-        scope,
-        ...(opencodeVersion ? { opencodeVersion } : {}),
-        ...(action === 'install' ? { models: scopeModels(scope, root, homedir()) } : {}),
-      },
+      context,
       targets,
-      canonical: bundledCanonical(),
+      canonical,
       core: readFileSync(fileURLToPath(import.meta.url), 'utf8'),
       version: VERSION,
       dryRun: options['--dry-run'] === true,
@@ -59,6 +63,10 @@ export function installationCommand(
               homedir(),
             ),
           }
+        : {}),
+      // Shown for review only: writing an allow rule widens what runs without approval.
+      ...(action === 'install'
+        ? { launcherAccess: installedLauncherAccess(targets, context, canonical) }
         : {}),
     }
     io.out(json ? JSON.stringify(result) : installationSummary(result))

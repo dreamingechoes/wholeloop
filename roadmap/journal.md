@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-22 · P9-21 ✅ · Agent experience on every supported client
+
+- **Written pass:** [client experience pass](./client-experience-pass.md) reads a disposable seven-client user install and records, per client, roles and tools, waiting, sandbox and store access, launcher calls per step (one to ten distinct commands; build-slice the most) and launcher length (55 to 93 characters). Its one actionable gap is the new task P9-24: every skill carries its own launcher, so an allow rule needs seventeen entries and every approval prompt shows a long path. Antigravity's missing command-level rule and Codex's inherited sandbox are recorded, not filed, because nothing in the repository can change them.
+- **Allow rule, shown only:** `wl install` returns `launcherAccess` for each installed client: the rule that allows exactly its seventeen skill launchers with any arguments, with the file it would go in (Claude Code, Codex, OpenCode, Gemini, Cursor), as launch flags (Copilot), or none (Antigravity). Each entry is marked not applied and not verified; the text output names each file and prints a single client's rule unwrapped so it can be pasted. A launcher path containing pattern syntax or a control character withholds the rule rather than escaping it.
+- **Decision:** [ADR-0050](../docs/decisions/0050-owned-native-overlays-and-explicit-activation.md) records why install shows and never writes the rule. Rejected: writing it, which widens what runs without approval; one broad rule per interpreter such as `node`, which would allow any script; escaping paths for clients that document no escape.
+- **Docs check refinement:** the documented-command check from P9-19 now reports an unknown command only where `wl` starts a line, so output text that mentions the CLI in passing is not taken for a command; options are still checked everywhere.
+- **Documentation:** getting started shows the new install lines and explains the rule; manual verification gains a row to confirm each client accepts its rule and still asks for every other command. The experience check on Claude Code and Codex and the other clients' results remain manual, as P9-20's do. Counts are 124/140, with two Phase 9 tasks open (P9-23 and P9-24).
+- **Verified:** `CHECK PASS in 700s`, 5396 tests in 363 files; `CHECK PASS (fast) in 17s`, 198 related tests in 10 files. `test/unit/installation/launcher-access.test.ts` covers every client format and file at both scopes, withheld rules and a real seven-client install whose rules name exactly the launchers it wrote while no client settings file appears; two new cases cover the refined docs check. No model, native client or hosted trial was used.
+
+---
+
 ## 2026-11-22 · P9-19 ✅ · Documentation that matches behaviour, with a check
 
 - **Check:** `wl docs check` now reads every `wl` invocation in the pages, the README and the illustrative sessions (fenced code, inline code and session transcripts, not Mermaid diagrams or decision records) and fails when one names a command or option the registry does not have. Group names, global options, quoted values, bracketed options, arguments after `--` and redirections are understood. Decision records and the roadmap are history and keep the spelling of their time.

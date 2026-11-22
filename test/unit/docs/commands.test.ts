@@ -31,12 +31,12 @@ describe('documented command extraction', () => {
       '```',
     ].join('\n')
     expect(documentedCommands('docs/page.md', page)).toEqual([
-      { line: 1, command: 'open init-1' },
-      { line: 3, command: 'open init-1 --raw | head' },
-      { line: 9, command: 'share mode --for init-1    --mode shared' },
+      { line: 1, command: 'open init-1', leading: true },
+      { line: 3, command: 'open init-1 --raw | head', leading: true },
+      { line: 9, command: 'share mode --for init-1    --mode shared', leading: true },
     ])
     expect(documentedCommands('docs/assets/terminal/sessions/a.txt', 'Next  wl open x')).toEqual([
-      { line: 1, command: 'open x' },
+      { line: 1, command: 'open x', leading: false },
     ])
   })
 
@@ -67,6 +67,15 @@ describe('documented command check', () => {
     ['`wl <command> --anything`', []],
   ] as const)('%s', (line, expected) => {
     expect(check('docs/page.md', line)).toEqual(expected)
+  })
+
+  it('reports an unknown command only where wl starts the line, but checks options anywhere', () => {
+    expect(
+      check('docs/page.md', '```text\nTo run wl without asking\nNext  wl open x --spec\n```'),
+    ).toEqual(['3: wl open has no --spec option'])
+    expect(check('docs/page.md', '```console\n$ wl shared x\n```')).toEqual([
+      '2: unknown command: wl shared x',
+    ])
   })
 
   it('ignores redirections and pipes after the command', () => {
