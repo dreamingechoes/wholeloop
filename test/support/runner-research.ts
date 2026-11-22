@@ -9,11 +9,13 @@ import type { NativeBoundaryHost, NativeProcessRunner } from '../../src/delivery
 import { NativePurposeAttempts } from '../../src/delivery/native-purpose.js'
 import type { DeliveryPlan } from '../../src/delivery/plan.js'
 import { DeliveryQueue } from '../../src/delivery/queue.js'
+import type { ResearchConclusion } from '../../src/research/conclusion.js'
 import type { Angle, AngleResult, Refutation } from '../../src/research/contracts.js'
 import type { RunnerStageContext } from '../../src/runner/engine.js'
 import { RunnerPlanStages } from '../../src/runner/plan-stages.js'
 import {
   type RunnerResearchClaimJob,
+  type RunnerResearchConclusionJob,
   type RunnerResearchObservation,
   RunnerResearchStages,
 } from '../../src/runner/research-stages.js'
@@ -32,6 +34,13 @@ export const angle = (provider: string, available = true): Angle => ({
   operation: 'source.web.query',
   available,
   evidence: available ? 'Fixture provider declared.' : 'Fixture provider is not configured.',
+})
+export type ConclusionScript = (job: RunnerResearchConclusionJob) => ResearchConclusion | 'crash'
+export const conclude: ConclusionScript = (job) => ({
+  schema: 'wholeloop/research-conclusion@1',
+  basis: job.basis,
+  answer: 'A title index serves search.',
+  recommendation: 'Keep the title index and measure search latency before changing it.',
 })
 export const confirm: ClaimScript = (job) => ({
   claim: job.claim.id,
@@ -60,12 +69,13 @@ export async function runnerResearchFixture(
     plan: DeliveryPlan
     dispatcher: RunnerStageDispatcher
     research: RunnerResearchStages
-    calls: { angles: string[]; claims: string[] }
+    calls: { angles: string[]; claims: string[]; conclusions: RunnerResearchConclusionJob[] }
   }) => Promise<void>,
   settings: {
     angles?: Angle[]
     scripts?: Record<string, AngleScript[]>
     examine?: ClaimScript
+    conclusion?: ConclusionScript
     uncertainty?: DeliveryPlan['policy']['uncertainty']
     intervention?: 'none' | 'supervised'
     decision?: 'accept' | 'reject'
@@ -141,6 +151,7 @@ let input='';process.stdin.on('data',chunk=>input+=chunk);process.stdin.on('end'
 const payload=JSON.parse(input),a=payload.assignment,b=JSON.parse(a.brief);
 const emit=(ref,body)=>{const proposal={schema:'wholeloop/delivery-worker-proposal@1',assignment:a.assignment,status:'complete',summary:'Synthetic process output; no account, model or real source certification.',artifacts:[{ref,kind:'report',text:JSON.stringify(body)}],criteria:[],findings:[],unknowns:[]};
 console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:JSON.stringify(proposal)}}));console.log(JSON.stringify({type:'turn.completed'}))};
+if(b.job&&b.job.basis){const j=b.job;emit('artifacts/research.json',{schema:'wholeloop/research-conclusion@1',basis:j.basis,answer:'A title index serves search.',recommendation:'Keep the title index.'});return}
 if(b.job){const j=b.job;emit('artifacts/research.json',a.identity.role==='planner'?{angle:j.angle.id,status:'ok',claims:[{id:'index',text:'A title index serves search.',confidence:'high',loadBearing:true,evidence:[{ref:'https://'+j.angle.provider+'.example/index',excerpt:'A title index serves search.'}]}],openQuestions:[]}:{claim:j.claim.id,verifier:j.verifier,outcome:'confirm',reason:'The cited excerpt states the claim.',evidence:[]});return}
 const inner=JSON.parse(payload.inputs[0].content);
 const output={schema:b.response.$id,basis:inner.basis,rationale:'Synthetic independent judgment of exact cited fixture evidence.',uncertainties:[]};
@@ -234,7 +245,11 @@ emit('artifacts/decision.json',output);
         })),
       angles = settings.angles ?? [angle('docs'), angle('forum')],
       scripts = structuredClone(settings.scripts ?? {}),
-      calls = { angles: [] as string[], claims: [] as string[] },
+      calls = {
+        angles: [] as string[],
+        claims: [] as string[],
+        conclusions: [] as RunnerResearchConclusionJob[],
+      },
       observation = (value: unknown): RunnerResearchObservation => ({
         provenance: 'host-observed',
         evidence: contractDigest(value),
@@ -291,6 +306,12 @@ emit('artifacts/decision.json',output);
                 calls.claims.push(`${job.claim.id}#${job.verifier}`)
                 const value = (settings.examine ?? confirm)(job)
                 if (value === 'crash') throw new Error('Synthetic refuter crash.')
+                return observation(value)
+              },
+              conclude: async (job) => {
+                calls.conclusions.push(job)
+                const value = (settings.conclusion ?? conclude)(job)
+                if (value === 'crash') throw new Error('Synthetic conclusion crash.')
                 return observation(value)
               },
             }),

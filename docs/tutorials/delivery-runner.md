@@ -265,9 +265,11 @@ A `research-report` route runs **plan → research → handoff** through the fix
 
 | Outcome | When |
 | --- | --- |
-| `research-report-complete` | The brief meets its rubric |
+| `research-report-complete` | The brief meets its rubric and opens with an authored answer |
 | `completed-with-unknowns` | The uncertainty policy is `complete-with-unknowns` and some questions stay open |
 | `blocked` | It cannot meet its rubric |
+
+After the examinations, one bounded call writes the **answer and recommendation** from the stored evidence alone: it queries no source and runs no command, and it gets the same two repair attempts as every job. The brief opens with that answer, the recommendation, a confidence the core derives from the evidence and what was not checked; every claim, refutation and source limit follows unchanged. A conclusion written for different evidence is refused. If no valid conclusion arrives, the brief says the answer was not authored and the run ends `completed-with-unknowns` or `blocked`, depending on the uncertainty policy; no answer is inferred from the claims.
 
 Crashed or unavailable sources and missing examinations stay open questions. A refuted claim stays in the brief with its counterevidence; a refutation below the dropping quorum stays visible as a disputed, low-confidence claim with an open question, and confirming votes do not erase the conflict. The brief stays local, and supervised report research is refused.
 

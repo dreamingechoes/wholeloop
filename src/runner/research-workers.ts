@@ -9,17 +9,21 @@ import {
   type NativeReadOnlyLease,
 } from '../delivery/native-readonly-attempts.js'
 import { validateWorkerAssignment, type WorkerAssignment } from '../delivery/worker-protocol.js'
+import { conclusionSchema } from '../research/conclusion.js'
 import resultSchema from '../research/schemas/result-v1.json' with { type: 'json' }
 import voteSchema from '../research/schemas/vote-v1.json' with { type: 'json' }
 import type {
   RunnerResearchAngleJob,
   RunnerResearchClaimJob,
+  RunnerResearchConclusionJob,
   RunnerResearchObservation,
   RunnerResearchWorkers,
 } from './research-stages.js'
 import { DeliveryRunnerError } from './route.js'
 
-type ResearchJobKind = 'angle' | 'claim'
+type ResearchJobKind = 'angle' | 'claim' | 'conclusion'
+/** Angles and conclusions are judged from pinned inputs; claim examination challenges. */
+const roleOf = (kind: ResearchJobKind) => (kind === 'claim' ? 'challenger' : 'planner')
 interface ResearchWorkerLease extends NativeReadOnlyLease {
   version: 1
   kind: ResearchJobKind
@@ -43,7 +47,7 @@ export class RunnerResearchAttempts extends NativeReadOnlyAttempts<ResearchWorke
   }) {
     return this.claimAttempt({
       ...input,
-      role: input.kind === 'angle' ? 'planner' : 'challenger',
+      role: roleOf(input.kind),
       cell: `research:${input.kind}:${input.key}`,
       authorize: (grant, basis) => {
         if (
@@ -75,7 +79,7 @@ export class RunnerResearchAttempts extends NativeReadOnlyAttempts<ResearchWorke
       Object.keys(value).sort().join(',') !==
         'assignment,contextRoot,grant,key,kind,provenance,version' ||
       value.version !== 1 ||
-      !['angle', 'claim'].includes(value.kind as string) ||
+      !['angle', 'claim', 'conclusion'].includes(value.kind as string) ||
       !/^[a-f0-9]{64}$/.test(String(value.key))
     )
       throw new DeliveryRunnerError('research-worker-binding')
@@ -83,7 +87,7 @@ export class RunnerResearchAttempts extends NativeReadOnlyAttempts<ResearchWorke
     validateWorkerAssignment(lease.assignment)
     if (
       lease.assignment.identity.cell !== `research:${lease.kind}:${lease.key}` ||
-      lease.assignment.identity.role !== (lease.kind === 'angle' ? 'planner' : 'challenger') ||
+      lease.assignment.identity.role !== roleOf(lease.kind) ||
       lease.assignment.identity.unit !== undefined ||
       !['fixture', 'host-observed'].includes(lease.provenance)
     )
@@ -114,9 +118,12 @@ export class NativeResearchWorkers implements RunnerResearchWorkers {
   examine(job: RunnerResearchClaimJob, signal: AbortSignal) {
     return this.invoke('claim', job, signal)
   }
+  conclude(job: RunnerResearchConclusionJob, signal: AbortSignal) {
+    return this.invoke('conclusion', job, signal)
+  }
   private async invoke(
     kind: ResearchJobKind,
-    job: RunnerResearchAngleJob | RunnerResearchClaimJob,
+    job: RunnerResearchAngleJob | RunnerResearchClaimJob | RunnerResearchConclusionJob,
     signal: AbortSignal,
   ): Promise<RunnerResearchObservation> {
     if (signal.aborted || !/^[a-f0-9]{64}$/.test(job.key))
@@ -124,7 +131,7 @@ export class NativeResearchWorkers implements RunnerResearchWorkers {
     const files = this.attempts.queue.lifecycle.journal.files,
       root = `delivery/research-native-inputs/${job.key}`,
       body = JSON.stringify(job),
-      schema = kind === 'angle' ? resultSchema : voteSchema
+      schema = kind === 'angle' ? resultSchema : kind === 'claim' ? voteSchema : conclusionSchema
     safeSourceText(body, 1024 * 1024)
     files.locked(() => {
       const previous = files.read(`${root}/artifacts/research-inputs.json`)
@@ -134,10 +141,13 @@ export class NativeResearchWorkers implements RunnerResearchWorkers {
     })
     // Only the built-in native-web angle reads the public web, and a claim
     // examiner only when its evidence cites a web page it must re-read.
+    // The conclusion author never reads the web: it writes from the stored evidence alone.
     const web =
       'angle' in job
         ? job.angle.provider === 'native-web' && job.angle.capability === 'source.web'
-        : job.claim.evidence.some((item) => /^https?:\/\//.test(item.ref))
+        : 'claim' in job
+          ? job.claim.evidence.some((item) => /^https?:\/\//.test(item.ref))
+          : false
     const lease = this.attempts.claim({
       run: this.options.run,
       grant: this.options.grant,
@@ -148,7 +158,9 @@ export class NativeResearchWorkers implements RunnerResearchWorkers {
         purpose:
           kind === 'angle'
             ? 'Query only the named source angle for the pinned question. Cite every claim with exact references and excerpts; record missing, unavailable or contradictory evidence as open questions.'
-            : 'Independently examine the one pinned claim against its evidence. Refute only with cited counterevidence; say uncertain when support cannot be established.',
+            : kind === 'claim'
+              ? 'Independently examine the one pinned claim against its evidence. Refute only with cited counterevidence; say uncertain when support cannot be established.'
+              : 'Answer the pinned question and recommend what to do from the pinned report alone. Query no source, read no other file and run no command. Rest only on retained claims, say plainly what stays unknown or disputed, and copy basis exactly.',
         response: schema,
         job,
         output:
