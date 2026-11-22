@@ -2,6 +2,7 @@
 
 import { workerAssignment } from '../workers/assignment.js'
 import { assignmentCost } from '../workers/cost.js'
+import type { CitationCheck } from './citation-proof.js'
 import type { AngleResult, Refutation, ResearchPlan } from './contracts.js'
 import { researchReport } from './report.js'
 import resultSchema from './schemas/result-v1.json' with { type: 'json' }
@@ -11,8 +12,10 @@ export function researchAssignments(
   plan: ResearchPlan,
   results: readonly AngleResult[],
   votes: readonly Refutation[],
+  citationChecks: readonly (CitationCheck & { angle: string })[] = [],
+  localRevision?: { repository: string; commit: string | null; reason?: string },
 ) {
-  const report = researchReport(plan, results, votes)
+  const report = researchReport(plan, results, votes, citationChecks)
   const assignments = {
     jobs: plan.angles
       .filter((angle) => !results.some((result) => result.angle === angle.id))
@@ -30,7 +33,12 @@ export function researchAssignments(
               tools: 'read-only-required',
               ...angle,
             },
-            input: { angle: angle.id },
+            input: {
+              angle: angle.id,
+              ...(angle.capability === 'source.code' && localRevision
+                ? { localCodeRevision: localRevision }
+                : {}),
+            },
             resultSchema,
           },
           { angle: angle.id },
@@ -65,7 +73,11 @@ export function researchAssignments(
                   tools: 'read-only-required',
                   ...angle,
                 },
-                input: { claim: { ...original, id: claim.id }, verifier },
+                input: {
+                  claim: { ...original, id: claim.id },
+                  verifier,
+                  ...(claim.codeCitations ? { codeCitations: claim.codeCitations } : {}),
+                },
                 resultSchema: voteSchema,
               },
               { claim: claim.id, verifier },

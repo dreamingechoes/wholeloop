@@ -25,6 +25,11 @@ import {
 import { type RampEventData, rampRuns, validRampData } from '../ramp/contracts.js'
 import { rampProposals } from '../ramp/publish.js'
 import {
+  type CitationReceipt,
+  validCitationReceipt,
+  verifyCitationReceipt,
+} from '../research/citation-proof.js'
+import {
   type AngleResult,
   type Refutation,
   type ResearchPlan,
@@ -145,6 +150,7 @@ export type EventData =
   | { type: 'research.planned'; data: { run: string; plan: ResearchPlan } }
   | { type: 'research.submitted'; data: { run: string; result: AngleResult } }
   | { type: 'research.examined'; data: { run: string; vote: Refutation } }
+  | { type: 'research.citations-checked'; data: CitationReceipt }
   | { type: 'item.created'; data: ItemInput }
   | { type: 'item.updated'; data: ItemPatch }
   | { type: 'item.closed'; data: Record<string, never> }
@@ -314,6 +320,8 @@ function validData(type: string, data: Record<string, unknown>): boolean {
         return false
       }
 
+    case 'research.citations-checked':
+      return validCitationReceipt(data)
     case 'research.planned':
     case 'research.submitted':
     case 'research.examined': {
@@ -554,6 +562,8 @@ function replayItems(events: readonly StateEvent[]): Map<string, Item> {
   const buildRuns = new Map<string, string>()
   const starts = new Set<string>()
   const agreements = new Set<string>()
+  let citationSources: Map<string, AngleResult> | undefined
+  let checkedSources: Set<string> | undefined
   for (const entry of events) {
     validateEvent(entry)
     if (ids.has(entry.id)) throw new Error(`Duplicate journal event: ${entry.id}`)
@@ -575,6 +585,32 @@ function replayItems(events: readonly StateEvent[]): Map<string, Item> {
     }
     const item = items.get(entry.subject)
     if (!item) throw new Error(`Missing item: ${entry.subject}`)
+    if (entry.type === 'research.submitted' && citationSources)
+      citationSources.set(
+        JSON.stringify([entry.subject, entry.data.run, entry.data.result.angle]),
+        entry.data.result,
+      )
+    if (entry.type === 'research.citations-checked') {
+      // Older histories pay no extra scan or retained source index until a receipt actually exists.
+      if (!citationSources) {
+        citationSources = new Map()
+        for (const earlier of events) {
+          if (earlier.id === entry.id) break
+          if (earlier.type === 'research.submitted')
+            citationSources.set(
+              JSON.stringify([earlier.subject, earlier.data.run, earlier.data.result.angle]),
+              earlier.data.result,
+            )
+        }
+      }
+      checkedSources ??= new Set<string>()
+      const key = JSON.stringify([entry.subject, entry.data.run, entry.data.angle]),
+        result = citationSources.get(key)
+      if (!result || checkedSources.has(key))
+        throw new Error('Code citations need one earlier matching submitted result')
+      verifyCitationReceipt(result, entry.data)
+      checkedSources.add(key)
+    }
     if (entry.type === 'step.started') {
       // Only the validated chronological prefix can establish an earlier start;
       // a completion must never borrow another subject, step or future event.

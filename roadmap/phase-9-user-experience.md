@@ -263,14 +263,16 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-14 · Deterministic checks of code citations
 
-**Status:** ⬜ · **Size:** M · **Depends on:** — · **Release:** 1.2.0
+**Status:** ✅ · **Size:** M · **Depends on:** — · **Release:** 1.2.0 · **Decision:** [ADR-0021](../docs/decisions/0021-journaled-research-plans-and-refutations.md)
 
 **Goal** — A claim citing `file:lines@sha` is checked by the core, not only by model verifiers.
 
 **Acceptance criteria:**
 
-- [ ] `research submit` verifies each code citation: the file exists at the commit, the range is valid and the excerpt matches; a failed citation is reported on the claim.
-- [ ] The check adds to the current verifiers; how it reduces verifier work follows point 1 of [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md).
+- [x] `research submit` verifies each code citation: the file exists at the commit, the range is valid and the excerpt matches; a failed citation is reported on the claim.
+- [x] The check adds to the current verifiers; how it reduces verifier work follows point 1 of [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md).
+
+**Evidence** — `CHECK PASS in 715s`, 5301 tests in 357 files; `CHECK PASS (fast) in 636s`, 3863 related tests in 259 files, followed by 34 citation cases in a 12s fast gate. Four initial focused files passed 517 tests. Real disposable Git repositories cover valid, missing, out-of-range and edited quotations, SHA-1/SHA-256 commits, spaces/CRLF, historical revisions, replacement refs, symlinks, filters, binary files, bounded reads and fixed batch counts. Actual CLI failures identify the claim and leave no result; valid submissions retain structural receipts. Replay refuses changed, duplicate and future-linked receipts without Git, while old unproved results stay unchecked. All seven rendered clients retain independent semantic examinations and the configured quorum; no quota reduction is claimed. Four generated references remain current. No new manual evidence gap or task was added.
 
 **Tests** — Citation fixtures: valid, missing file, wrong range, edited excerpt.
 

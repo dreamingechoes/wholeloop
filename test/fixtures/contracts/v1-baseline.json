@@ -435,7 +435,8 @@
     "schema:wholeloop/research-conclusion@1": "09cdd6b82d4698f93c2d979a5d5581b0af33c4ce07194935f4fd2d1ad23ebdc6",
     "output:wholeloop/research-conclusion-context@1": "269393730348044b0c9d2afe95cd4ecce49453d7272eebc2369ed45dcbe416ea",
     "output:wholeloop/verify-suite@2": "16a7d20e92b3787d4919a2cff4807736425848aa228f8b3bde886262b5e10c74",
-    "schema:wholeloop/suite-start-failure@1": "8dc0ab8e7e6f39e0eb477d64d26e2c6b94e77e8cc044b40199a0211d03812669"
+    "schema:wholeloop/suite-start-failure@1": "8dc0ab8e7e6f39e0eb477d64d26e2c6b94e77e8cc044b40199a0211d03812669",
+    "schema:wholeloop/research-code-citations@1": "af22de3a7ffa86f18555fc8993f69dfeab722004d278134b67b235d9dc3a7e4b"
   },
   "commands": [
     {

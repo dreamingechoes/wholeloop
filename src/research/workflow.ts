@@ -13,6 +13,7 @@ import { sourceCandidates } from '../providers/source-access.js'
 import { currentClientAttribution } from '../state/attribution-context.js'
 import type { StateEvent } from '../state/events.js'
 import { researchAssignments } from './assignments.js'
+import { checkCodeCitations, localCodeRevision } from './citations.js'
 import {
   conclusionBasis,
   conclusionSchema,
@@ -185,7 +186,19 @@ export class ResearchWorkflow {
           file: journalFile,
         },
         ...(remembered ? { remembered } : {}),
-        ...researchAssignments(state.plan, state.results, state.votes),
+        ...researchAssignments(
+          state.plan,
+          state.results,
+          state.votes,
+          state.citationChecks,
+          state.plan.angles.some(
+            (angle) =>
+              angle.capability === 'source.code' &&
+              !state.results.some((result) => result.angle === angle.id),
+          )
+            ? localCodeRevision(this.engine.root)
+            : undefined,
+        ),
       }
     })
   }
@@ -198,8 +211,25 @@ export class ResearchWorkflow {
       if (state.results.some((result) => result.angle === value.angle))
         throw new CliError('This angle already has a result; start a new research run to revise it')
       researchReport(state.plan, [...state.results, value], state.votes)
+      const checked = checkCodeCitations(
+        this.engine.root,
+        value,
+        state.plan.angles.find((angle) => angle.id === value.angle)?.capability === 'source.code',
+      )
+      if (checked.problems.length) throw new CliError(checked.problems.join('\n'), EXIT.shape)
       append(subject, { type: 'research.submitted', data: { run, result: value } })
-      return { schema: 'wholeloop/research-submit@1', subject, run, angle: value.angle }
+      if (checked.checks.length)
+        append(subject, {
+          type: 'research.citations-checked',
+          data: { run, angle: value.angle, checks: checked.checks },
+        })
+      return {
+        schema: 'wholeloop/research-submit@1',
+        subject,
+        run,
+        angle: value.angle,
+        codeCitations: checked.checks,
+      }
     })
   }
 
@@ -208,7 +238,7 @@ export class ResearchWorkflow {
     return this.engine.store.transaction((events, append) => {
       const run = activeRun(events, subject)
       const state = researchState(events, subject, run)
-      researchReport(state.plan, state.results, [...state.votes, value])
+      researchReport(state.plan, state.results, [...state.votes, value], state.citationChecks)
       append(subject, { type: 'research.examined', data: { run, vote: value } })
       return {
         schema: 'wholeloop/research-examine@1',
@@ -224,7 +254,7 @@ export class ResearchWorkflow {
     const events = this.engine.store.events()
     const run = activeRun(events, subject)
     const state = researchState(events, subject, run)
-    const report = researchReport(state.plan, state.results, state.votes)
+    const report = researchReport(state.plan, state.results, state.votes, state.citationChecks)
     const basis = conclusionBasis(state.plan, report)
     if (conclusion === undefined)
       return {

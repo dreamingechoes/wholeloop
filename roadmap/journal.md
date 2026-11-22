@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-22 · P9-14 ✅ · Structural checks of committed code citations
+
+- **Changed:** research submission validates versioned code references against locally available committed blobs: exact file, valid line range and literal excerpt. Every failure names its claim and refuses the entire angle before any result/check event commits. Pending code jobs receive the observed local revision; successful checks travel only with their own claim to independent examiners and the derived brief.
+- **Boundaries:** fixed local-only Git batches disable lazy fetching and replacement objects, never request filters/text conversion or follow symlinks, and bound commands, reference counts and unique blob bytes. Duplicate references share object reads. Actual SHA-1 and SHA-256 repositories, dirty checkouts, historical objects, configured filters and unsupported tooling are covered. Missing objects stay unavailable without a network or unguarded fallback.
+- **Decision:** [ADR-0021](../docs/decisions/0021-journaled-research-plans-and-refutations.md) owns the refinement. Trusting checkout bytes, accepting only the valid part of a source result, counting quotes as semantic votes and retroactively rechecking old evidence were rejected. The new additive receipt binds exact submitted quotation hashes; replay refuses changed, duplicate or future-linked proof without opening Git. Legacy results stay unchecked. All configured independent examinations remain; the deterministic-check part of ADR-0258 removes repeated mechanical inspection, with no claimed quota or latency saving.
+- **Documentation:** the research guide, canonical roles and protocol explain citation syntax, bounded failure and structural versus semantic evidence; all seven clients receive them. Four generated references remain current. No recorded command or illustrative transcript changed, so no terminal GIF was regenerated. No new task or manual evidence gap was introduced. Counts are 118/139, with seven Phase 9 tasks open; the phase table also includes the previously added P9-23 in its 23-task count.
+- **Verified:** `CHECK PASS in 715s`, 5301 tests in 357 files; `CHECK PASS (fast) in 636s`, 3863 related tests in 259 files, followed by a 12s fast gate with all 34 citation cases. Four initial focused files passed 517 tests. Coverage includes real compiled CLI refusal/success, atomic rollback, replay, future-result linkage, legacy compatibility, constant three-command batches, byte limits, all seven renderers and retained three-slot semantic examinations. macOS arm64 locally; required CI supplies Linux and Node 20 checks. No hosted product trial, native account, live source query or model quota was used.
+
+---
+
 ## 2026-11-22 · P9-13 ✅ · Cost previews before workers start
 
 - **Changed:** research, framing challenges, verification and review expose current unfinished worker calls, requested role tiers and declared input size before dispatch. Submitted results/votes reduce the estimate; known findings add their independent examinations. Deterministic suite/testability work is excluded from model-worker counts. Later batches refresh the estimate, and framing retains one challenger at every communication style.

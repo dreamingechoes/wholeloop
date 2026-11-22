@@ -1,6 +1,7 @@
 // Renders a synthesized research report and brief; the CLI workflow and the runner share it.
 
 import type { StateEvent } from '../state/events.js'
+import { type CitationCheck, verifyCitationReceipt } from './citation-proof.js'
 import {
   conclusionBasis,
   conclusionText,
@@ -23,13 +24,32 @@ export function researchState(events: readonly StateEvent[], subject: string, ru
   const votes = relevant.flatMap((entry) =>
     entry.type === 'research.examined' ? [entry.data.vote] : [],
   )
-  return { plan: planned.data.plan, results, votes }
+  const citationChecks: (CitationCheck & { angle: string })[] = []
+  if (relevant.some((entry) => entry.type === 'research.citations-checked')) {
+    const prior = new Map<string, AngleResult>(),
+      checked = new Set<string>()
+    for (const entry of relevant) {
+      if (entry.type === 'research.submitted') prior.set(entry.data.result.angle, entry.data.result)
+      if (entry.type === 'research.citations-checked') {
+        const result = prior.get(entry.data.angle)
+        if (!result || checked.has(entry.data.angle))
+          throw new Error('Code citations need one earlier matching submitted result')
+        verifyCitationReceipt(result, entry.data)
+        checked.add(entry.data.angle)
+        citationChecks.push(
+          ...entry.data.checks.map((check) => ({ ...check, angle: entry.data.angle })),
+        )
+      }
+    }
+  }
+  return { plan: planned.data.plan, results, votes, citationChecks }
 }
 
 export function researchReport(
   plan: ResearchPlan,
   results: readonly AngleResult[],
   votes: readonly Refutation[],
+  citationChecks: readonly (CitationCheck & { angle: string })[] = [],
 ) {
   if (new Set(results.map((result) => result.angle)).size !== results.length)
     throw new Error('Duplicate angle result')
@@ -40,7 +60,15 @@ export function researchReport(
     dropped: boolean
     refutations: number
     examinations: Refutation[]
+    codeCitations?: CitationCheck[]
   })[] = []
+  const checkedByClaim = new Map<string, CitationCheck[]>()
+  for (const { angle, ...check } of citationChecks) {
+    const key = JSON.stringify([angle, check.claim]),
+      checks = checkedByClaim.get(key) ?? []
+    checks.push(check)
+    checkedByClaim.set(key, checks)
+  }
   for (const angle of plan.angles) {
     const result = results.find((result) => result.angle === angle.id)
     if (!result || result.status === 'unavailable') {
@@ -93,6 +121,9 @@ export function researchReport(
         })
       claims.push({
         ...claim,
+        ...(checkedByClaim.has(JSON.stringify([angle.id, claim.id]))
+          ? { codeCitations: checkedByClaim.get(JSON.stringify([angle.id, claim.id])) ?? [] }
+          : {}),
         id,
         angle: angle.id,
         dropped,
@@ -119,8 +150,8 @@ export function researchBrief(
   run: string,
   conclusion?: ResearchConclusion,
 ): string {
-  const { plan, results, votes } = researchState(events, subject, run)
-  return renderResearchBrief(plan, researchReport(plan, results, votes), conclusion)
+  const { plan, results, votes, citationChecks } = researchState(events, subject, run)
+  return renderResearchBrief(plan, researchReport(plan, results, votes, citationChecks), conclusion)
 }
 
 /** Older private reports remain evidence ledgers until their conductor supplies a conclusion. */
@@ -171,6 +202,11 @@ export function renderResearchBrief(
       claim.loadBearing
         ? `Confidence: ${claim.confidence}; verifiers: ${votes}; refuted by ${claim.refutations} of ${plan.verifiers} (drops at ${plan.refutations}).`
         : `Confidence: ${claim.confidence}, as the source worker stated it; not load-bearing, so not independently examined.`,
+      ...(claim.codeCitations?.length
+        ? [
+            `Code citations: ${claim.codeCitations.length} file/range/excerpt checks passed; claim meaning remains independently examined.`,
+          ]
+        : []),
       ...claim.evidence.map((entry) => evidence('Evidence', entry)),
       ...claim.examinations
         .filter((vote) => vote.outcome === 'refute')

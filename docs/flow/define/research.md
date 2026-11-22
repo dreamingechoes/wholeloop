@@ -149,6 +149,17 @@ Next
 
 **"Why was a claim dropped that looked right to me?"** The receipt links each dropped claim with the verifiers' reasons. If they were wrong, that is a calibration case worth adding to the eval corpus.
 
+## Code citations checked before submission
+
+**Versioned local citations** use `file:start-end@full-commit-ID`, for example `src/orders.ts:12-18@<complete commit ID>`. Paths are relative to the repository directory in the code job's observed `input.localCodeRevision`; that input adds no source or permission. Never invent a revision. A remote source should retain its actual source reference rather than pretending it is local code.
+
+- The core checks that the commit and blob exist locally, the line range is valid and a nonempty literal excerpt occurs within it. CRLF line endings are normalized; whitespace and wording are not guessed or rewritten.
+- A missing file, wrong range or edited quote names the affected claim and rejects the entire angle result before it is recorded. Correct the citation or report unavailable evidence; no partial result is silently kept.
+- Accepted structural checks travel with that claim's examiner jobs and appear in the report. They cover file/range/excerpt mechanics only: examiners still independently judge the inference and counterexamples, with the same configured quorum.
+- Generic URLs and legacy references without this format remain unchecked by the mechanical check. A matching or older reference never becomes an automatic semantic confirmation.
+- Reads use bounded local Git object batches, without checkout filters, text conversion, replacement objects or on-demand fetching. Symlink text is checked without following its host target. Unsupported local-only Git tooling refuses the check rather than retrying with wider access.
+- Limits are 256 recognized citations, 1 MiB per blob, 4 MiB of unique blob contents and five seconds per Git command. Recorded checks bind the exact quotation and replay without reopening Git; older histories remain readable without manufactured checks.
+
 ## Available core workflow
 
 The commands the skill uses, for scripts and skill authors:
