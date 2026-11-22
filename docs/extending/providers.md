@@ -136,7 +136,7 @@ $ wl provider test acme-support
 ✓ detection: MCP server 'acme-support' found in Claude Code, Codex configs · not in OpenCode
 ✓ install recipe renders for: claude · codex · opencode · copilot · gemini · antigravity · cursor
 ✓ operations: source.support.query → acme_search_tickets (args map cleanly)
-• probe: run inside a CLI session to verify authentication (wl provider test --probe)
+• authentication: not checked here; call one of its tools from your client to confirm access
 ```
 
 Built-in providers also ship a **fixture test**: a recorded tool response and the expected normalised result, so the mapping is verified without a network.

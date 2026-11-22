@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-22 · P9-19 ✅ · Documentation that matches behaviour, with a check
+
+- **Check:** `wl docs check` now reads every `wl` invocation in the pages, the README and the illustrative sessions (fenced code, inline code and session transcripts, not Mermaid diagrams or decision records) and fails when one names a command or option the registry does not have. Group names, global options, quoted values, bracketed options, arguments after `--` and redirections are understood. Decision records and the roadmap are history and keep the spelling of their time.
+- **Corrected:** its first run found seven mismatches. `wl open --spec` and `--plan` were removed from the write-spec and prepare-launch sessions rather than added, because `wl open <id>` already shows the item with its documents and links; `wl env declare --undo` became the declaration file that carries the undo; `wl provider test --probe` became an instruction to call a tool from the client; `wl answer --scope` became `--remember` with an offered command reference.
+- **Verify:** the suite already adds the package's declared typecheck and lint scripts to a selected test script, so the verify session now names `npm run typecheck` instead of a command no repository declared.
+- **Recordings:** the core tour now shows the human output of `wl next` instead of piping JSON through `jq`; it and the install recording were re-rendered from the current build. The write-spec, prepare-launch and verify-works sessions were re-rendered. The docs style guide and the repository-only notes in `enforcement.yml` describe the new check. Counts are 123/139, with two Phase 9 tasks open.
+- **Verified:** `CHECK PASS in 687s`, 5378 tests in 362 files; `CHECK PASS (fast) in 11s`, 191 related tests in 9 files. `test/unit/docs/commands.test.ts` covers extraction, file scope and every option form, and accepts every registered option; `wl docs check` reports 0 problems after the corrections. The five recordings were rendered with VHS and their final frames inspected. No model, native client or hosted trial was used.
+
+---
+
 ## 2026-11-22 · P9-18 ✅ · Documented interactions that do not exist
 
 - **Setup:** each docs, tracker and code-host choice is labelled with the access detected for the executing client: built in, set up in this client, set up in another client, command found with sign-in not checked, or not set up. The labels reuse the research source-access rules through a shared `providerAccess` helper; detection reads declared MCP server names only, and an unreadable client configuration is labelled unknown instead of guessed. Each profile carries a one-line description derived from its dials, so extension profiles read the same way. `wl setup --codehost <id>` validates the provider for draft pull requests and saves `providers.codehost`, which open-pr already reads.

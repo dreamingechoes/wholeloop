@@ -343,17 +343,19 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-19 · Documentation that matches behaviour, with a check
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-07–P9-18 · **Release:** 1.2.0
+**Status:** ✅ · **Size:** M · **Depends on:** P9-07–P9-18 · **Release:** 1.2.0
 
 **Goal** — No documented command, option or session line describes something the product does not do.
 
 **Acceptance criteria:**
 
-- [ ] A docs check parses every `wl` command line in the terminal sessions and step pages; `wl open --spec` and `--plan` are added or removed.
-- [ ] Verify selects every declared check script by default (test, lint, typecheck) or the verify session is corrected.
-- [ ] Sessions are re-recorded from the new `display` output where it exists.
+- [x] A docs check parses every `wl` command line in the terminal sessions and step pages; `wl open --spec` and `--plan` are added or removed. *Removed: `wl open <id>` already shows the item with its documents and links.*
+- [x] Verify selects every declared check script by default (test, lint, typecheck) or the verify session is corrected. *The suite already adds the declared typecheck and lint scripts to a selected test script; the session now names `npm run typecheck` instead of a command no repository declared.*
+- [x] Sessions are re-recorded from the new `display` output where it exists. *The real-command recordings (core tour and install) now show the human display output; illustrative client sessions remain illustrative and were re-rendered where their text changed.*
 
 **Tests** — The new docs check in `npm run check`.
+
+**Evidence** — `src/docs/commands.ts` reads every `wl` invocation in fenced code, inline code and illustrative sessions of the pages and the README, skipping Mermaid diagrams and decision records, and `wl docs check` now fails on an unknown command or option. `test/unit/docs/commands.test.ts` covers extraction, file scope, unknown commands and options, group names, global options, quoted values, bracketed options, the `--` separator and redirections, and accepts every registered option. Its first run found seven mismatches, all fixed: `wl open --spec` and `--plan`, `wl env declare --undo`, `wl provider test --probe` and `wl answer --scope`. The core tour and install recordings were re-rendered from the current build and now show the human display output; the write-spec, prepare-launch and verify-works sessions were re-rendered after their corrections. The gate results are in the journal entry of 2026-11-22.
 
 ## P9-20 · Experience check with budgets
 

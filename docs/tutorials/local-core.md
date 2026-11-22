@@ -4,7 +4,7 @@
 
 **What you will have at the end:** one stored initiative, seen from two terminals, and a clear idea of which half of wholeloop the core is. The core does not draft anything; drafting is the skill's job, in your coding client, and [first framing](./first-framing.md) covers it.
 
-![The local core tour: status finds no work, a first next call asks who owns the work, a second one with an owner returns the preflight, and status then shows the stored initiative](../assets/terminal/core-tour.gif)
+![The local core tour: status finds no work, a first next call asks who owns the work, a second one with an owner starts framing it, and status then shows the initiative in progress](../assets/terminal/core-tour.gif)
 
 ## Before you start
 

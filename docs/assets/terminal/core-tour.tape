@@ -1,11 +1,10 @@
 # The core without a model: a missing fact becomes a question, and the work is stored.
-# Render from the repository root, with the released wl and jq on PATH:
+# Render from the repository root, with wl and git on PATH:
 #   vhs docs/assets/terminal/core-tour.tape
 # Everything is written under a new temporary home, never your own.
 Output docs/assets/terminal/core-tour.gif
 
 Require wl
-Require jq
 Require git
 Set Shell bash
 Set FontSize 15
@@ -26,12 +25,12 @@ Sleep 300ms
 Enter
 Sleep 1500ms
 
-Type "wl next 'Find tasks by title' --json | jq '.questions[].prompt'"
+Type "wl next 'Find tasks by title'"
 Sleep 400ms
 Enter
 Sleep 2s
 
-Type "wl next 'Find tasks by title' --owner 'Demo Owner' --json | jq '.contract.preflight'"
+Type "wl next 'Find tasks by title' --owner 'Demo Owner'"
 Sleep 400ms
 Enter
 Sleep 3s

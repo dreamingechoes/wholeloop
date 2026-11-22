@@ -13,6 +13,9 @@
 # Repository-only experience budgets and quota refusal (P9-20):
 # src/experience/{transcript,report,budgets}.ts and scripts/check-experience.mjs,
 # enforced by test/unit/experience/experience.test.ts in the ordinary fixture suite.
+# Repository-only documented commands (P9-19): every wl line in pages, the README and
+# illustrative sessions names a registered command and option, checked by
+# src/docs/commands.ts#checkCommands through wl docs check, tested in test/unit/docs/commands.test.ts.
 version: 1
 rules:
   - id: quiet-step-inputs

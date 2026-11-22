@@ -2,7 +2,7 @@
 
 > **TL;DR** — Documentation is part of the product. Write for a smart newcomer with no context: short paragraphs, the key term in bold, a real example with its real output, and a diagram when an idea has moving parts. Keep the history of decisions in the ADRs, not in the pages people read to get something done. CI checks the structure; this page explains the rest.
 
-`npm run check` enforces the mechanical part on every change: `wl docs check` (navigation footers, the nav list, status notes, links, anchors and the status of referenced ADRs), markdownlint and the Mermaid parse check.
+`npm run check` enforces the mechanical part on every change: `wl docs check` (navigation footers, the nav list, status notes, links, anchors, the status of referenced ADRs, and every documented `wl` command and option), markdownlint and the Mermaid parse check.
 
 ## Contents
 
@@ -69,7 +69,7 @@ Both are [VHS](https://github.com/charmbracelet/vhs) scripts rendered to a GIF n
 - **Real recordings** set their own disposable `HOME` and state directories, so no personal path appears.
 - **Illustrative recordings** replay, with `replay.sh`, the exact example session printed on the page. The transcript in `sessions/` is a copy of that block: change both together and render again. A model's wording changes from run to run, so a session is never presented as observed output.
 - Keep each recording under 30 seconds and its GIF under 1 MB. The README links recordings by their absolute `raw.githubusercontent.com` URL, like the diagrams, so npm can show them; pages under `docs/` use relative paths.
-- Re-render a recording when its commands, output or transcript change. No gate checks them, so mention it in the change.
+- Re-render a recording when its commands, output or transcript change. `wl docs check` checks the `wl` commands and options a session or page names, outside Mermaid diagrams and decision records; nothing checks the recordings themselves, so mention the ones you rendered in the change.
 
 ## Diagrams
 

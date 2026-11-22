@@ -21,6 +21,21 @@ export function readTree(root: string): Tree {
   return { files, exists: (path) => existsSync(join(root, path)) }
 }
 
+/** Illustrative step sessions are plain text, so the Markdown tree does not include them. */
+export function readSessions(root: string): Map<string, string> {
+  const dir = join(root, 'docs/assets/terminal/sessions')
+  if (!existsSync(dir)) return new Map()
+  return new Map(
+    readdirSync(dir)
+      .filter((name) => name.endsWith('.txt'))
+      .sort()
+      .map((name) => [
+        `docs/assets/terminal/sessions/${name}`,
+        readFileSync(join(dir, name), 'utf8'),
+      ]),
+  )
+}
+
 export function readNavYaml(root: string): string {
   return readFileSync(join(root, 'docs', 'nav.yml'), 'utf8')
 }

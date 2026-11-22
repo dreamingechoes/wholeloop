@@ -1,5 +1,6 @@
 // `wl docs`: generated navigation, documentation checks and reference sections.
 import { checkLinks, checkNav, type Problem } from '../docs/check.js'
+import { checkCommands } from '../docs/commands.js'
 import { checkDeliveryCases, hasDeliveryCases } from '../docs/delivery-cases.js'
 import { parseNav, renderFooter, withFooter } from '../docs/nav.js'
 import {
@@ -8,9 +9,16 @@ import {
   referenceSections,
   replaceReference,
 } from '../docs/references.js'
-import { readEnforcementYaml, readNavYaml, readTree, writeFile } from '../docs/tree.js'
+import {
+  readEnforcementYaml,
+  readNavYaml,
+  readSessions,
+  readTree,
+  writeFile,
+} from '../docs/tree.js'
 import { parseEnforcement } from '../harness/enforcement.js'
 import type { parseArguments } from './arguments.js'
+import { COMMANDS } from './commands.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
 
@@ -60,6 +68,7 @@ export function docsCheck(root: string, json: boolean, io: Io): number {
     ...checkLinks(tree),
     ...checkReferences(tree),
     ...checkDeliveryCases(tree, registry === undefined ? undefined : parseEnforcement(registry)),
+    ...checkCommands(new Map([...tree.files, ...readSessions(root)]), COMMANDS),
   ]
   if (json) {
     io.out(JSON.stringify({ schema: 'wholeloop/docs-check@1', files: tree.files.size, problems }))
