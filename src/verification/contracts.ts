@@ -2,7 +2,9 @@
 import { isObject, validate } from '../config/schema.js'
 import { type Criterion, parseCriteria } from '../definition/criteria.js'
 import type { CommandAsset } from '../discovery/types.js'
+import startSchema from './schemas/start-v1.json' with { type: 'json' }
 import schema from './schemas/suite-v1.json' with { type: 'json' }
+import type { SuiteStartFailure } from './start.js'
 
 export interface SuitePlan {
   commands: CommandAsset[]
@@ -17,8 +19,10 @@ export type VerificationEventData =
   | { type: 'verify.agreed'; data: { criteria: Criterion[]; by: string; source: string } }
   | { type: 'verify.suite-planned'; data: { run: string; round: number; plan: SuitePlan } }
   | { type: 'verify.suite-finished'; data: { run: string; round: number; result: SuiteResult } }
+  | { type: 'verify.suite-unavailable'; data: SuiteStartFailure }
 export function validVerificationData(type: string, data: Record<string, unknown>): boolean {
   try {
+    if (type === 'verify.suite-unavailable') return !validate(data, startSchema).length
     if (type === 'verify.agreed') {
       if (
         Object.keys(data).some((key) => !['criteria', 'by', 'source'].includes(key)) ||

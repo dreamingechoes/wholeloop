@@ -1323,7 +1323,14 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'verify suite',
     arguments: '',
-    options: ['--for <id>', '--run <id>', '--round <n>', '--commands <json>', '--timeout <ms>'],
+    options: [
+      '--for <id>',
+      '--run <id>',
+      '--round <n>',
+      '--commands <json>',
+      '--timeout <ms>',
+      '--result-version <1|2>',
+    ],
     schema: 'wholeloop/verify-suite@1',
     summary: 'Execute declared checks once in the pinned verify round',
   },

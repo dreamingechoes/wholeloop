@@ -3,6 +3,7 @@ import type { GatePlan } from '../gates/contracts.js'
 import { gateRuns } from '../gates/state.js'
 import type { StateEvent } from '../state/events.js'
 import type { SuitePlan, SuiteResult } from './contracts.js'
+import { type SuiteStartFailure, validStartupFailure } from './start.js'
 
 /** Reject duplicate intents and inconsistent process receipts during every replay. */
 export function verificationRuns(events: readonly StateEvent[]) {
@@ -21,7 +22,14 @@ function replaySuites(events: readonly StateEvent[]) {
   const planned = new Map<string, GatePlan>()
   const runs = new Map<
     string,
-    { subject: string; run: string; round: number; plan: SuitePlan; result?: SuiteResult }
+    {
+      subject: string
+      run: string
+      round: number
+      plan: SuitePlan
+      result?: SuiteResult
+      unavailable?: SuiteStartFailure
+    }
   >()
   const agreed = new Set<string>()
   for (const event of events) {
@@ -50,6 +58,7 @@ function replaySuites(events: readonly StateEvent[]) {
         !entry ||
         entry.subject !== event.subject ||
         entry.result ||
+        entry.unavailable ||
         !result.commands.length ||
         result.commands.length > entry.plan.commands.length ||
         result.commands.some((command, index) => command.ref !== entry.plan.commands[index]?.ref) ||
@@ -60,6 +69,27 @@ function replaySuites(events: readonly StateEvent[]) {
       )
         throw new Error('Suite receipt must match its unique planned execution')
       entry.result = result
+    }
+    if (event.type === 'verify.suite-unavailable') {
+      const entry = runs.get(`${event.data.run}/${event.data.round}`),
+        commands = event.data.commands,
+        last = commands.at(-1),
+        declared = entry?.plan.commands[commands.length - 1]
+      if (
+        !entry ||
+        entry.subject !== event.subject ||
+        entry.result ||
+        entry.unavailable ||
+        !commands.length ||
+        commands.length > entry.plan.commands.length ||
+        commands.some((command, index) => command.ref !== entry.plan.commands[index]?.ref) ||
+        commands.slice(0, -1).some((command) => command.exitCode !== 0 || !!command.signal) ||
+        last?.ref !== event.data.cause.ref ||
+        declared?.argv[0] !== event.data.cause.executable ||
+        !validStartupFailure(event.data)
+      )
+        throw new Error('Startup failure must match its unique unfinished suite intent')
+      entry.unavailable = event.data
     }
   }
   return [...runs.values()]

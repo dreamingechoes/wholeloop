@@ -56,7 +56,19 @@ export class VerificationWorkflow {
     if ((!options.subject || !recorded) && !options.by?.trim())
       questions.push({ id: 'agreement', prompt: 'Who confirmed these verification criteria?' })
     const allocation = worktreeRecords(events).find((entry) => entry.subject === options.subject)
-    const base = options.base ?? allocation?.base.ref
+    const pinned =
+      !options.base && options.subject
+        ? events.findLast(
+            (event) =>
+              event.subject === options.subject &&
+              event.type === 'gate.planned' &&
+              event.data.plan.gate === 'verify',
+          )
+        : undefined
+    // The worktree checkout base can differ from the comparison already agreed for verification.
+    const base =
+      options.base ??
+      (pinned?.type === 'gate.planned' ? pinned.data.plan.base.ref : allocation?.base.ref)
     if (!base)
       questions.push({
         id: 'base',

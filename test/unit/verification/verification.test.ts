@@ -94,6 +94,34 @@ function planned(workflow: VerificationWorkflow) {
 }
 
 describe('real once-per-round suite execution', () => {
+  it('resumes the actual verification workflow through a distinct plan after known startup failure', async () =>
+    fixture(async ({ workflow, engine }) => {
+      const initial = planned(workflow),
+        subject = initial.subject ?? ''
+      await expect(
+        runSuite(engine, subject, initial.plan.run, initial.plan.round, {
+          executor: async (_root, command) => ({
+            receipt: {
+              ref: command.ref,
+              exitCode: 126,
+              signal: '',
+              stdout: 'a'.repeat(64),
+              stderr: 'b'.repeat(64),
+            },
+            output: { ref: command.ref, stdout: '', stderr: '' },
+          }),
+        }),
+      ).rejects.toThrow('exit 126')
+      const next = workflow.begin({ subject })
+      if (!('plan' in next)) throw new Error('Expected a replacement verification plan')
+      expect(next.plan.run).not.toBe(initial.plan.run)
+      expect(next.plan.budget).toBe(initial.plan.budget)
+      expect((await runSuite(engine, subject, next.plan.run, next.plan.round)).result.status).toBe(
+        'passed',
+      )
+      engine.store.rebuild()
+    }))
+
   it('shares a failed trusted-host receipt once without replacing the pinned round policy', async () =>
     fixture(async ({ workflow, engine }) => {
       const { subject, plan } = planned(workflow)

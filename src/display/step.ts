@@ -147,6 +147,13 @@ export function stepDisplay(
   ]
   const produced: string[] = []
   const next: string[] = []
+  if (command === 'verify suite') {
+    for (const finding of list(payload.findings)) {
+      const entry = record(finding)
+      open.push(value(entry.text), ...phrases(entry.evidence))
+    }
+    if (payload.roundSpent === false) row('Evaluation', 'Not started; budget retained')
+  }
   if (value(payload.schema).includes('-schema@')) row('Format', 'Available with --json')
   else {
     row('Answer', receipt.answer)

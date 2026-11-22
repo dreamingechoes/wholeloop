@@ -119,7 +119,7 @@ Next      builder, round 2 of 4
 ```bash
 wl verify begin feature/orders --base main --owner Owner --by Owner --criteria criteria.json --json
 wl verify begin --for slice-0123abcd --json
-wl verify suite --for slice-0123abcd --run gate-0123456789abcdef --round 1 --json
+wl verify suite --for slice-0123abcd --run gate-0123456789abcdef --round 1 --result-version 2 --json
 wl gate submit --for slice-0123abcd --file criterion-result.json --json
 wl gate verdict --for slice-0123abcd --gate verify --json
 wl verify complete --for slice-0123abcd --json
@@ -138,6 +138,14 @@ wl verify complete --for slice-0123abcd --json
 - The intent is recorded before the suite runs. Concurrent or repeated calls share one receipt.
 - An unfinished run cannot be retried in the same round: inspect it, close the round and carry on within the budget.
 - Raw output appears only in the current response. The store keeps exit codes, signals and digests of the output, and a cached answer says `current: false` if the code changed since.
+
+**A command cannot start.** A missing executable, a spawn error or exit 126/127 names the command and cause, then stops before workers or a code verdict. The planned intent remains recorded so that the same attempt cannot run twice; it does not spend an evaluation of the code. After the environment is corrected by its owner, request a new verification plan. It retains only unused evaluation budget, including after repeated startup failures; earlier failed code rounds stay spent.
+
+- The exception requires an unchanged workspace and no submitted criterion work or votes. It cannot forgive a process that changed files or a round already examined by workers.
+- An ambiguous interrupted intent keeps its existing inspection rule. It is never guessed to be a startup failure.
+- `--result-version 2` returns `wholeloop/verify-suite@2`. Command result fields name their hashes `stdoutSha256` and `stderrSha256`; unavailable results include the cause and `roundSpent: false` (exit 3).
+- Live failed findings include a transient output tail of at most 20 lines and 2048 characters, without terminal controls. The store retains hashes only. A cached receipt cannot recover a tail it did not store.
+- Plain text shows the readable findings by default. With `--json`, omitting the version flag preserves the original v1 response and hash field names; explicit version 1 also retains them. Canonical skills select version 2 in every client.
 
 **Changed tests.** When the change touches test files, verification adds two checks: a deterministic lint for tests that cannot fail, such as `expect(true).toBe(true)` or `assert.ok(true)`, and a separate review of the changed tests by a verifier. The lint does not prove a whole test can fail, and it is not mutation testing.
 
