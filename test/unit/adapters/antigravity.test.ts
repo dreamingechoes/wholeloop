@@ -11,7 +11,7 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join, resolve } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { bundledCanonical } from '../../../src/adapters/canonical.js'
 import { generateAdapter } from '../../../src/adapters/generate.js'
@@ -24,7 +24,7 @@ import { lineCount } from '../../../src/harness/files.js'
 import { frontmatter } from '../../../src/harness/frontmatter.js'
 import { inspectInstallation } from '../../../src/installation/inspect.js'
 import { manageInstallation } from '../../../src/installation/manage.js'
-import { installLocations } from '../../../src/installation/plan.js'
+import { installLocations, sharedLauncher } from '../../../src/installation/plan.js'
 import { canonicalPath } from '../../../src/state/paths.js'
 import { VERSION } from '../../../src/version.js'
 
@@ -136,7 +136,15 @@ describe('Antigravity native adapter and transport', () => {
         expect(
           existsSync(join(installLocations('codex', context).skills, 'wl-next/SKILL.md')),
         ).toBe(true)
-        const launcher = join(locations.skills, 'wl-agy-next/scripts/wl.mjs')
+        // A user installation shares one launcher, named in every installed skill (P9-24).
+        const shared = sharedLauncher('antigravity', context)
+        const launcher = shared ?? join(locations.skills, 'wl-agy-next/scripts/wl.mjs')
+        if (shared) {
+          expect(readFileSync(join(locations.skills, 'wl-agy-next/SKILL.md'), 'utf8')).toContain(
+            `installed launcher at ${shared}`,
+          )
+          expect(existsSync(join(locations.skills, 'wl-agy-next/scripts'))).toBe(false)
+        }
         const launched = spawnSync(process.execPath, [launcher, 'adapter', 'root', '--json'], {
           cwd: root,
           encoding: 'utf8',

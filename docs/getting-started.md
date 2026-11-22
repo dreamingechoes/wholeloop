@@ -74,15 +74,17 @@ Installation record:
 Restart the client and check that the skills appear.
 Git guards are installed per repository: node ~/.local/state/wholeloop/distributions/22d5c1ca…/claude/bin/wl.mjs guard hooks install --repo '<repository>' --store ~/.local/state/wholeloop --json
 To run wl without asking each time — review only; no client settings were changed:
-  claude: 17 rules for ~/.claude/settings.json
-Review only; nothing was written. It allows exactly these launchers, with any arguments, and nothing else.
+  claude: 1 rule for ~/.claude/settings.json
+Review only; nothing was written. It allows exactly this launcher, with any arguments, and nothing else.
 Add --json for the full result.
 
 {
   "permissions": {
     "allow": [
-      "Bash(~/.claude/skills/wl-build-slice/scripts/wl.mjs:*)",
-      …
+      "Bash(~/.claude/wholeloop/wl.mjs:*)"
+    ]
+  }
+}
 ```
 
 | Flag | What it does |
@@ -105,7 +107,7 @@ For project scope, change into the application first and use `--scope project`. 
 - After a **user-scope** install, the command shows `<repository>`. Run it once for each application repository you want guarded, with that repository's path.
 - After a **project-scope** install, the command already names the repository.
 
-**About the allow rule.** Each step runs the `wl` launcher of its skill as a shell command, and most clients ask before every command. Install prints the narrowest rule that lets the client run exactly those launchers, and nothing else, without asking. It never adds the rule for you, because that widens what runs without your approval: read it, then add it to the named file yourself if you want it. Copilot takes it as flags when you start the client, and Antigravity has no such rule, so it keeps asking. Whether each client accepts its rule is still being checked on every client ([client experience pass](../roadmap/client-experience-pass.md)).
+**About the allow rule.** Each step runs wholeloop's launcher as a shell command, and most clients ask before every command. A user installation puts one launcher per client at `wholeloop/wl.mjs` beside the client's skills directory, so install prints one narrow rule that lets the client run exactly that launcher, and nothing else, without asking. A project installation keeps a launcher in each skill, so the skills still work when the repository moves, and its rule names each one. It never adds the rule for you, because that widens what runs without your approval: read it, then add it to the named file yourself if you want it. Copilot takes it as flags when you start the client, and Antigravity has no such rule, so it keeps asking. Whether each client accepts its rule is still being checked on every client ([client experience pass](../roadmap/client-experience-pass.md)).
 
 [Client setup](./platforms/local-onboarding.md) covers each client's directories, skill names and version differences.
 

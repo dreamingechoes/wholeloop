@@ -32,12 +32,27 @@ export function portableManifest(version: string) {
     ...(claudeAdapter.manifest(version) as Record<string, unknown>),
   }
 }
+/** The two preamble sentences an installation replaces when it pins one launcher (P9-24). */
+export const SKILL_LAUNCHER_LOCATION =
+  'Use the exact directory of this loaded SKILL.md reported by the client. Its scripts/wl.mjs launcher imports the packaged core, including through an installed symlink.'
+export const SKILL_LAUNCHER_FALLBACK =
+  'If the skill directory is unavailable, ask; never guess PATH.'
+/** Names the one installed launcher instead of the skill's own copy; nothing else changes. */
+export function pinLauncher(content: string, launcher: string) {
+  if (!content.includes(SKILL_LAUNCHER_LOCATION) || !content.includes(SKILL_LAUNCHER_FALLBACK))
+    throw new Error('Installed skill is missing its launcher preamble')
+  return content
+    .replace(
+      SKILL_LAUNCHER_LOCATION,
+      `Run wholeloop through its installed launcher at ${launcher}, which imports the packaged core.`,
+    )
+    .replace(SKILL_LAUNCHER_FALLBACK, 'Never use another wl found on PATH.')
+}
 export function renderPortableSkill(content: string) {
   const metadata = frontmatter(content) ?? {}
   if (`wl-${String(metadata.name)}`.length > 64)
     throw new Error('Namespaced skill names must fit the 64-character skill budget')
-  const preamble =
-    'Use the exact directory of this loaded SKILL.md reported by the client. Its scripts/wl.mjs launcher imports the packaged core, including through an installed symlink. Invoke the first normal command directly with --with-context before the command and --json: context.root locates resources/protocols/, context.roles names installed roles, and result is the unchanged command payload. Later calls use the same launcher without --with-context. If the skill directory is unavailable, ask; never guess PATH. Supply workers only their assignment and required protocol text, never conversation history.\n\n'
+  const preamble = `${SKILL_LAUNCHER_LOCATION} Invoke the first normal command directly with --with-context before the command and --json: context.root locates resources/protocols/, context.roles names installed roles, and result is the unchanged command payload. Later calls use the same launcher without --with-context. ${SKILL_LAUNCHER_FALLBACK} Supply workers only their assignment and required protocol text, never conversation history.\n\n`
   return {
     mode: 0o644 as const,
     content: `---\n${yaml({ ...metadata, name: `wl-${String(metadata.name)}` })}---\n${preamble}${strip(content)}`,

@@ -510,7 +510,7 @@ describe('owned native installation and retained external history', () => {
           context: { ...context, store: join(dir, "state's # ? % $(wholeloop-unsafe-probe)") },
         }
         installed(selected)
-        const launcher = join(context.home, '.claude/skills/wl-next/scripts/wl.mjs')
+        const launcher = join(context.home, '.claude/wholeloop/wl.mjs')
         const root = spawnSync(process.execPath, [launcher, 'adapter', 'root', '--json'], {
           cwd: context.root,
           env,
@@ -608,7 +608,10 @@ describe('owned native installation and retained external history', () => {
         const locations = installLocations(target, context)
         const skill = readdirSync(locations.skills).find((name) => name.endsWith('frame-problem'))
         expect(skill).toBeDefined()
-        const launcher = join(locations.skills, skill ?? 'missing', 'scripts/wl.mjs')
+        const launcher = join(dirname(locations.skills), 'wholeloop/wl.mjs')
+        expect(
+          readFileSync(join(locations.skills, skill ?? 'missing', 'SKILL.md'), 'utf8'),
+        ).toContain(`installed launcher at ${launcher}`)
         const frame = spawnSync(
           process.execPath,
           [

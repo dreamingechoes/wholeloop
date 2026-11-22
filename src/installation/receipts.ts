@@ -54,6 +54,12 @@ export function allowed(file: OwnedFile, component: Component, context: InstallC
     file.path === join(component.locations.rules, 'wl-wholeloop.mdc')
   )
     return true
+  // The one user-scope launcher sits beside the client's skills directory (P9-24).
+  if (
+    context.scope === 'user' &&
+    file.path === join(dirname(component.locations.skills), 'wholeloop', 'wl.mjs')
+  )
+    return true
   const skill = file.path.slice(component.locations.skills.length + 1)
   if (
     inside(component.locations.skills, file.path) &&

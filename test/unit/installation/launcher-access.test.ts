@@ -1,6 +1,6 @@
 // Install shows, never writes, the narrowest rule that lets each client run its wl launchers (P9-21).
 import { spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { parse as parseToml } from 'smol-toml'
@@ -12,6 +12,13 @@ import {
   type LauncherAccess,
   launcherAccess,
 } from '../../../src/installation/launcher-access.js'
+import { manageInstallation } from '../../../src/installation/manage.js'
+import {
+  type InstallContext,
+  installLocations,
+  sharedLauncher,
+} from '../../../src/installation/plan.js'
+import { VERSION } from '../../../src/version.js'
 
 const launchers = [
   '/home/p/.x/skills/wl-next/scripts/wl.mjs',
@@ -83,7 +90,7 @@ describe('launcher allow rules', () => {
 })
 
 describe('installed launchers', () => {
-  it('match the launchers install writes, and install changes no client settings', () => {
+  it('name the one user launcher install writes, and install changes no client settings', () => {
     const dir = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-launcher-access-')))
     const home = join(dir, 'home'),
       root = join(dir, 'repo')
@@ -120,13 +127,70 @@ describe('installed launchers', () => {
         expect(entry.applied).toBe(false)
         if (entry.file) expect(existsSync(entry.file), entry.file).toBe(false)
         if (!entry.snippet) continue
-        const paths = [...entry.snippet.matchAll(/\/[^\s"'()*]+\/scripts\/wl\.mjs/g)].map(
+        // One launcher per client after P9-24, so one rule instead of seventeen.
+        const paths = [...entry.snippet.matchAll(/\/[^\s"'()*]+\/wholeloop\/wl\.mjs/g)].map(
           (match) => match[0],
         )
-        expect(paths).toHaveLength(17)
+        expect(entry.rules).toBe(1)
+        expect(paths).toHaveLength(1)
         for (const path of paths) expect(existsSync(path), path).toBe(true)
       }
       expect(access.find(({ target }) => target === 'antigravity')?.snippet).toBeNull()
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('replaces per-skill launchers on upgrade and keeps them for project installs', () => {
+    const dir = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-launcher-upgrade-')))
+    const context: InstallContext = {
+      root: join(dir, 'repo'),
+      home: join(dir, 'home'),
+      store: join(dir, 'store'),
+      scope: 'user',
+      env: {},
+    }
+    mkdirSync(context.root)
+    mkdirSync(context.home)
+    const install = (overrides: Partial<InstallContext>) =>
+      manageInstallation('install', {
+        context: { ...context, ...overrides },
+        targets: ['claude'],
+        canonical: bundledCanonical(),
+        core: readFileSync(resolve('dist/wl.mjs'), 'utf8'),
+        version: VERSION,
+      })
+    try {
+      const skills = installLocations('claude', context).skills
+      const old = join(skills, 'wl-next/scripts/wl.mjs')
+      install({ launchers: 'per-skill' })
+      expect(existsSync(old)).toBe(true)
+      const upgraded = install({})
+      expect(upgraded.status).toBe('installed')
+      const shared = sharedLauncher('claude', context) ?? ''
+      expect(shared).toBe(join(context.home, '.claude/wholeloop/wl.mjs'))
+      expect(existsSync(shared)).toBe(true)
+      expect(existsSync(old)).toBe(false)
+      expect(readFileSync(join(skills, 'wl-next/SKILL.md'), 'utf8')).toContain(
+        `Run wholeloop through its installed launcher at ${shared}`,
+      )
+      expect(
+        manageInstallation('uninstall', {
+          context,
+          targets: ['claude'],
+          canonical: bundledCanonical(),
+          core: readFileSync(resolve('dist/wl.mjs'), 'utf8'),
+          version: VERSION,
+        }).status,
+      ).toBe('uninstalled')
+      expect(existsSync(shared)).toBe(false)
+      expect(existsSync(join(context.home, '.claude/wholeloop'))).toBe(false)
+      // Project skills keep a launcher beside each skill, so a moved checkout still works.
+      const project = { ...context, scope: 'project' as const }
+      expect(sharedLauncher('claude', project)).toBeUndefined()
+      install({ scope: 'project' })
+      expect(existsSync(join(context.root, '.claude/skills/wl-next/scripts/wl.mjs'))).toBe(true)
+      expect(installedLauncherAccess(['claude'], project, bundledCanonical())[0]?.rules).toBe(17)
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
