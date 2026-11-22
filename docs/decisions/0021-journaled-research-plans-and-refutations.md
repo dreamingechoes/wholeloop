@@ -66,12 +66,13 @@ The journal is larger because it retains structured evidence and examinations. F
 
 ## Verification
 
+- `test/unit/research/citations.test.ts` exercises real SHA-1/SHA-256 repositories, exact historical blobs, missing files, invalid ranges and edited quotes, bounded batches, filters and symlink refusal, atomic CLI submissions, all seven renderers and linked replay without Git. Structural receipts leave semantic examinations and historical unchecked inputs intact.
 - `test/unit/research/conclusion.test.ts` snapshots answer-first artifacts, confidence and disputes; it checks stale input, direct-core bypass attempts, replay, bounded prose, terminal controls, short titles and real CLI flags.
 - `test/unit/adapters/worker-roles.test.ts` checks all seven role configurations and rejects injected write/shell capabilities. Codex inherited permissions remain explicit, and actual native enforcement stays in manual verification.
 
 - `test/unit/research/source-choice.test.ts` covers every client, all access labels, no jobs before selection, source/identity validation, unknown MCP deduplication, run/project/user preferences, user preferences across repositories, explicit empty lists, idempotent settings and built CLI flags.
 - `test/unit/research/research.test.ts` checks configured-only plans, immutable run coverage, structured results and replay. Framing and sharing fixtures make their source choice explicitly before adopting a brief.
-- `test/unit/contracts/compatibility.test.ts` retains all old fingerprints and registers only the new choice schema and output variant. Live authentication, source relevance and native access remain client-conformance evidence.
+- `test/unit/contracts/compatibility.test.ts` retains all old fingerprints and registers only additive contract identities, including the new citation receipt. Live authentication, source relevance and native access remain client-conformance evidence.
 
 ## Links
 
