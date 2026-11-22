@@ -26,18 +26,18 @@ import { researchState } from '../../../src/research/report.js'
 import { ResearchWorkflow } from '../../../src/research/workflow.js'
 import { StateStore } from '../../../src/state/store.js'
 
-function fixture(action: (context: ReturnType<typeof setup>) => void) {
+function fixture(action: (context: ReturnType<typeof setup>) => void, sha256 = false) {
   const dir = mkdtempSync(join(tmpdir(), 'wholeloop-code-citations-')),
     path = process.env.PATH
   try {
-    action(setup(dir))
+    action(setup(dir, sha256))
   } finally {
     if (path === undefined) delete process.env.PATH
     else process.env.PATH = path
     rmSync(dir, { recursive: true, force: true })
   }
 }
-function setup(dir: string) {
+function setup(dir: string, sha256: boolean) {
   const root = join(dir, 'repo with spaces')
   mkdirSync(root)
   const realGit = (process.env.PATH ?? '')
@@ -83,7 +83,7 @@ function setup(dir: string) {
     mkdirSync(dirname(join(root, path)), { recursive: true })
     writeFileSync(join(root, path), body)
   }
-  git('init', '-b', 'main')
+  git('init', '-b', 'main', ...(sha256 ? ['--object-format=sha256'] : []))
   put('src/example.ts', 'export const answer = 42\nexport function empty() {\n  return 400\n}\n')
   put('folder with spaces/café.ts', 'alpha\r\nbeta\r\n')
   git('add', '.')
@@ -136,6 +136,15 @@ function setup(dir: string) {
   }
   return { dir, root, git, put, commit, result, engine, workflow, begin, proxy }
 }
+
+it('checks an actual SHA-256 Git repository with complete object IDs', () =>
+  fixture(({ root, commit, result }) => {
+    expect(commit).toHaveLength(64)
+    expect(checkCodeCitations(root, result())).toMatchObject({
+      problems: [],
+      checks: [{ status: 'verified' }],
+    })
+  }, true))
 
 it.each([
   ['valid', 'src/example.ts:1-4', 'return 400', ''],
@@ -368,7 +377,7 @@ it('rejects an invalid source result atomically and gives only core checks to th
   }))
 
 it('refuses forged quotation receipts and source widening while leaving old input schemas intact', () =>
-  fixture(({ result, engine, workflow, begin, commit }) => {
+  fixture(({ result, engine, workflow, begin }) => {
     const { id, plan } = begin(),
       value = result()
     expect(() =>
@@ -430,6 +439,58 @@ it('refuses forged quotation receipts and source widening while leaving old inpu
     expect(() => workflow.submit(web, { ...value, angle: 'native-web:source.web' })).toThrow(
       'assigned source.code',
     )
+  }))
+
+it('cannot bind a receipt to a result that occurs later in the same transaction', () =>
+  fixture(({ engine, begin, result }) => {
+    const { id, plan } = begin(),
+      value = result(),
+      evidence = value.claims[0]?.evidence[0],
+      before = engine.store.events()
+    if (!evidence) throw new Error('Expected fixture evidence')
+    expect(() =>
+      engine.store.transaction((_events, append) => {
+        append(id, {
+          type: 'research.citations-checked',
+          data: {
+            run: plan.run,
+            angle: value.angle,
+            checks: [
+              {
+                claim: 'empty-input',
+                evidence: 0,
+                ref: evidence.ref,
+                excerptSha256: excerptHash(evidence.excerpt),
+                status: 'verified',
+              },
+            ],
+          },
+        })
+        append(id, { type: 'research.submitted', data: { run: plan.run, result: value } })
+      }),
+    ).toThrow('one earlier matching')
+    expect(engine.store.events()).toEqual(before)
+  }))
+
+it('keeps historical unproved submissions unchecked without opening Git on replay', () =>
+  fixture(({ engine, workflow, begin, result, proxy, commit }) => {
+    const { id, plan } = begin()
+    engine.store.transaction((_events, append) =>
+      append(id, {
+        type: 'research.submitted',
+        data: {
+          run: plan.run,
+          result: result(`src/example.ts:1@${commit}`, 'old unchecked quote'),
+        },
+      }),
+    )
+    const log = proxy(true)
+    engine.store.rebuild()
+    const next = workflow.plan(id)
+    expect(next.examinations).toHaveLength(3)
+    expect(next.examinations.every((job) => job.input.codeCitations === undefined)).toBe(true)
+    expect(researchState(engine.store.events(), id, plan.run).citationChecks).toEqual([])
+    expect(existsSync(log)).toBe(false)
   }))
 
 it('checks the actual CLI before recording input and retains structured proof on success', () =>
