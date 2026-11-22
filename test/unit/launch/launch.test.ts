@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join, resolve } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { stringify } from 'yaml'
 import { runLaunch } from '../../../harness/workflows/launch.js'
@@ -21,6 +21,7 @@ import { clientProviderHost } from '../../../src/providers/transport.js'
 import { SCOPE_SECTIONS } from '../../../src/scopes/contract.js'
 import { parseSpec } from '../../../src/spec/contract.js'
 import { StateStore } from '../../../src/state/store.js'
+import { installSpecProvider } from '../../support/spec-providers.js'
 
 const spec = readFileSync(new URL('../../fixtures/spec/spec.md', import.meta.url), 'utf8')
 const measurement = (): MeasurementPlan => {
@@ -49,6 +50,7 @@ async function fixture(
     join(dir, 'user/config.yml'),
     join(dir, 'home'),
   )
+  installSpecProvider(dirname(engine.userFile))
   try {
     await run({ dir, root, engine, workflow: new LaunchWorkflow(engine) })
   } finally {

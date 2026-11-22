@@ -538,6 +538,8 @@ rules:
     enforcers: [src/spec/contract.ts#checkSpec, test/unit/spec/spec.test.ts]
   - id: spec-pinned-measurement
     enforcers: [src/spec/schemas/spec-v1.json, src/spec/contract.ts, test/unit/spec/spec.test.ts]
+  - id: spec-metric-provider-choice
+    enforcers: [src/spec/providers.ts, src/flow/engine.ts, src/cli/spec.ts, test/unit/spec/providers.test.ts]
   - id: spec-human-approval
     enforcers: [src/flow/engine.ts#decide, src/flow/plan.ts#decisions, test/unit/spec/spec.test.ts]
   - id: framing-explicit-unknowns

@@ -218,7 +218,7 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-11 · Metric providers asked and validated
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-05 · **Release:** 1.2.0
+**Status:** 🔄 · **Size:** M · **Depends on:** P9-05 · **Release:** 1.2.0
 
 **Goal** — A specification names a measurement tool the person chose and the registry knows.
 

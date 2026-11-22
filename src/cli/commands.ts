@@ -1528,7 +1528,7 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'spec check',
     arguments: '<file>',
-    options: [],
+    options: ['--client <id>'],
     schema: 'wholeloop/spec-check@1',
     summary: 'Check stories criteria metrics and rollout structure',
   },

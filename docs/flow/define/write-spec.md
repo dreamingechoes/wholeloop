@@ -42,7 +42,7 @@ flowchart TD
 ```
 
 1. **Your format first.** If the repository or team has a spec skill or template, the `spec.template` slot binds to it and the harness adds only what it needs on top (criteria, measurement plan). Otherwise the built-in template applies ([repo skills](../../configuration/repo-skills.md)).
-2. **Metrics come with their query.** Each one names the **provider** that answers it (`posthog`, `metabase`, `sentry`…), today's value, the value we're aiming for, the time window and the stored query. [`measure-impact`](../learn/measure-impact.md) replays exactly that later — nobody has to reinvent the measurement after launch. If no provider can answer a metric yet, "add the tracking" becomes work for the first slice.
+2. **Choose where each metric lives.** The step offers registered tools with access labels for your current client, asks which one holds each metric and reuses an explicit remembered choice. You can ask to remember a choice for this repository. Each metric names that provider (`posthog`, `metabase`, `sentry`…), today's value, the value we're aiming for, the time window and the stored query. [`measure-impact`](../learn/measure-impact.md) replays exactly that later. If the chosen tool needs tracking before it can answer, "add the tracking" becomes work for the first slice; an unknown baseline stays explicit.
 3. **The challenger reads the criteria like a tester would.** Two criteria that contradict each other; a criterion you couldn't write a failing test for; a statement about today's behaviour that the code says is false; a criteria set that would pass even if the feature did something extra and unwanted.
 4. **A machine checks the shape, not a reviewer's mood.** `wl step complete` rejects a spec with a story lacking criteria, a metric lacking a provider or window, or wording no test can verify ("fast", "intuitive", "better").
 5. **Technical notes live in a separate appendix** so the main spec stays readable for everyone: what else touches the same data, a suggested flag name, and the candidate scopes [`cut-scopes`](./cut-scopes.md) will start from.
@@ -119,6 +119,8 @@ wl step begin write-spec --for init-0123abcd --json
 wl step begin write-spec --input "Find old orders" --owner Alex --impact "Reduce retrieval time" --json
 wl spec schema --json
 wl spec check /path/to/spec.md --json
+wl spec check /path/to/spec.md --client codex --json
+wl answer metric:source.product-analytics=posthog --remember project --json
 wl step complete write-spec --for init-0123abcd --artifact /path/to/spec.md --json
 wl answer decision.approve-spec=approved --for init-0123abcd --by Alex --json
 ```
@@ -134,6 +136,14 @@ wl answer decision.approve-spec=approved --for init-0123abcd --by Alex --json
 - **Rollout.** Each stage records its audience, a growing exposure, exit conditions and rollback; a flagged rollout also proposes the flag name. Validating the plan runs no query and changes no flag.
 
 **The template.** `templateSource` in the begin payload says which template applies: your repository's guidance first, otherwise the manifest `templates.spec` selects (default `spec`). Required sections from a custom template add to the core ones.
+
+**Measurement tools.** Ready entry returns `metricProviders.capabilities`. Each `source.*` query capability has its providers, access labels and an explicitly remembered `selected` provider, or `null`. A removed or incompatible preference needs a new choice.
+
+- The labels distinguish native access, available MCP in this client, configuration in another client, an executable alone and unavailable access ([source selection](./research.md)). They do not prove authentication.
+- `spec check` rejects invented providers and capability or operation mismatches, including at completion. An undetected registered provider produces a nonblocking warning.
+- Use `--client` when checking outside an attributed client; it cannot override an executing adapter's identity.
+- Register a custom tool through a validated [provider extension](../../extending/providers.md), rather than inventing a provider name in the specification.
+- Validation runs no query and changes no preference. Previously recorded artifacts remain readable if a provider is later removed.
 
 **Approval follows the revision.**
 

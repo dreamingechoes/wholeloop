@@ -1,6 +1,6 @@
 ---
 name: write-spec
-description: Turn a framed problem or standalone idea into a testable specification with stories, criteria, a agreed measurement plan and an explicit human approval.
+description: Turn a framed problem or standalone idea into a testable specification with stories, criteria, an agreed measurement plan and an explicit human approval.
 metadata:
   wholeloop.step: write-spec
 ---
@@ -12,7 +12,7 @@ Read worker-handoffs, destination-publication, ask-never-guess, output-contract 
 2. Show display.text; use the style block privately. Read existing framing/research artifacts from `have`, including their unresolved questions. Preserve the initiative ID.
 3. Use `templateSource`: for repository guidance, load its `ref` before drafting; for a manifest, fill its `content` and preserve all returned required headings. Repository guidance takes priority. Core criteria/measurement metadata remains additive to the team's format.
 4. Read `wl spec schema --json`. The artifact's YAML front matter uses `schema: wholeloop/spec@1`, impact, stories, metrics and rollout. Each story names its actor, desired behavior, benefit and criteria with falsifiable tests. Remove vague wording rather than accepting "fast", "intuitive" or "better".
-5. For every metric, pin provider, query operation, stored query, unit, baseline, target and measurement window/timezone. A known baseline cites evidence. An unknown baseline names missing evidence, an answerer and an existing story that adds the tracking. No metrics requires an explicit measurement exception with a reason and accountable person; it is not a silent omission.
+5. Use the returned metricProviders offers and access labels; ask where each metric lives rather than choosing a detected tool. Reuse an explicitly remembered matching choice, and ask once for any missing one. Only when requested, remember it for this repository through `wl answer metric:<source-capability>=<provider-id> --remember project --json`. No detection label proves authentication. For every metric, pin the chosen provider, query operation, stored query, unit, baseline, target and measurement window/timezone. A known baseline cites evidence. An unknown baseline names missing evidence, an answerer and an existing story that adds the tracking. No metrics requires an explicit measurement exception with a reason and accountable person; it is not a silent omission.
 6. Write the readable problem/users/stories/criteria/metrics/rollout/measurement sections and technical appendix. Keep technical detail in the appendix; show dependencies, affected paths, proposed flags and candidate scopes there.
 7. Run `wl challenge plan spec --file <draft-file> --json`. Give the returned fixed coverage and exact artifact to `wl-challenger` to inspect the criteria as a tester: contradictions, missing boundaries and behavior that could pass while doing something unwanted. Use the challenge style without dropping coverage. Resolve findings with evidence or explicit questions; do not invent a baseline or claim to have run a query.
 8. Run `wl spec check <draft-file> --json`, then `wl step complete write-spec

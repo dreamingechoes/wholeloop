@@ -17,6 +17,7 @@ import { blockingDependencies } from '../../../src/slices/routing.js'
 import { contextPack } from '../../../src/state/resume.js'
 import { StateStore } from '../../../src/state/store.js'
 import { next } from '../../../src/utilities/next.js'
+import { installSpecProvider } from '../../support/spec-providers.js'
 
 const source = readFileSync(new URL('../../fixtures/slicing/plan.md', import.meta.url), 'utf8')
 const spec = readFileSync(new URL('../../fixtures/spec/spec.md', import.meta.url), 'utf8')
@@ -54,6 +55,7 @@ function fixture(run: (dir: string, engine: FlowEngine) => void | Promise<void>)
     join(dir, 'user/config.yml'),
     join(dir, 'home'),
   )
+  installSpecProvider(dirname(engine.userFile))
   return Promise.resolve()
     .then(() => run(dir, engine))
     .finally(() => rmSync(dir, { recursive: true, force: true }))
