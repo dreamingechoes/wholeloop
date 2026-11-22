@@ -218,14 +218,16 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-11 · Metric providers asked and validated
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P9-05 · **Release:** 1.2.0
+**Status:** ✅ · **Size:** M · **Depends on:** P9-05 · **Release:** 1.2.0
 
 **Goal** — A specification names a measurement tool the person chose and the registry knows.
 
 **Acceptance criteria:**
 
-- [ ] `step begin write-spec` returns the providers offering each `source.*` capability with the access labels of P9-05; the skill asks where each metric lives and remembers it per repository.
-- [ ] `spec check` rejects a provider missing from the registry or lacking the metric's capability, and warns when it is not detected in the current client.
+- [x] `step begin write-spec` returns the providers offering each `source.*` capability with the access labels of P9-05; the skill asks where each metric lives and remembers it per repository.
+- [x] `spec check` rejects a provider missing from the registry or lacking the metric's capability, and warns when it is not detected in the current client.
+
+**Evidence** — `test/unit/spec/providers.test.ts` passes 23 provider, access, preference, completion/replay and seven-client rendering cases. The five targeted files pass 93 tests; the full gate passes 5222 tests in 354 files (`CHECK PASS in 699s`), with 1733 related tests in 65 files passing the fast gate in 225s. Four generated references remain current. [ADR-0023](../docs/decisions/0023-structured-spec-plans-and-revision-approval.md) records explicit preferences, registry checks, nonblocking access warnings and unchanged historical parsing. No live query or native-client pass ran.
 
 **Tests** — Spec-check cases for an invented provider, a capability mismatch and an undetected provider.
 

@@ -125,7 +125,7 @@ wl step complete write-spec --for init-0123abcd --artifact /path/to/spec.md --js
 wl answer decision.approve-spec=approved --for init-0123abcd --by Alex --json
 ```
 
-**The specification file** is Markdown with YAML front matter (`schema: wholeloop/spec@1`). The schema is `src/spec/schemas/spec-v1.json`, and `test/fixtures/spec/spec.md` is a complete fictional example.
+**The specification file** is Markdown with YAML front matter (`schema: wholeloop/spec@1`). The schema is `src/spec/schemas/spec-v1.json`, and `test/fixtures/spec/spec.md` is a complete fictional example. Its fictional `analytics` provider needs a registered extension; use a registered tool ID such as `posthog` for a new specification.
 
 - **Stories.** Each has an ID, an actor, a behaviour, a benefit and uniquely identified criteria with tests that can fail.
 - **Wording lint.** Criteria may not use vague words: fast, quickly, intuitive, better, user-friendly, seamless, robust, scalable, easy and ASAP. It is a structural aid, not proof that the criteria are right.
