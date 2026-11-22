@@ -52,6 +52,7 @@ console.log(JSON.stringify({nonce:v.nonce,read:fs.readFileSync(v.read,'utf8')===
 const payload=JSON.parse(input),a=payload.assignment,b=JSON.parse(a.brief);
 const emit=(ref,body)=>{const proposal={schema:'wholeloop/delivery-worker-proposal@1',assignment:a.assignment,status:'complete',summary:'Synthetic output.',artifacts:[{ref,kind:'report',text:JSON.stringify(body)}],criteria:[],findings:[],unknowns:[]};
 console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:JSON.stringify(proposal)}}));console.log(JSON.stringify({type:'turn.completed'}))};
+if(b.job&&b.job.basis){const j=b.job;emit('artifacts/research.json',{schema:'wholeloop/research-conclusion@1',basis:j.basis,answer:'A title index serves search.',recommendation:'Keep the title index.'});return}
 if(b.job){const j=b.job;emit('artifacts/research.json',a.identity.role==='planner'?{angle:j.angle.id,status:'ok',claims:[{id:'index',text:'A title index serves search.',confidence:'high',loadBearing:true,evidence:[{ref:'https://web.example/index',excerpt:'A title index serves search.'}]}],openQuestions:[]}:{claim:j.claim.id,verifier:j.verifier,outcome:'confirm',reason:'The cited excerpt states the claim.',evidence:[]});return}
 const inner=JSON.parse(payload.inputs[0].content);
 const output={schema:b.response.$id,basis:inner.basis,rationale:'Synthetic judgment of exact cited evidence.',uncertainties:[]};

@@ -88,7 +88,7 @@ flowchart TD
 | **ci** | The run follows the required checks on that exact commit |
 | **merge** | Only with a separate merge grant, after every required check and review passed on the tested commit |
 
-**Research runs** are shorter: plan → research → hand-off of a stored brief. A `local-handoff` run ends after acceptance with a **handoff** stage. **Learning observations** read one measurement checkpoint and hand off a recommendation that changes nothing.
+**Research runs** are shorter: plan → research → hand-off of a stored brief that opens with an authored answer and recommendation, or says plainly that none was authored. A `local-handoff` run ends after acceptance with a **handoff** stage. **Learning observations** read one measurement checkpoint and hand off a recommendation that changes nothing.
 
 ## Endpoint and intervention
 

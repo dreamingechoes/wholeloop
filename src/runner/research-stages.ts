@@ -7,6 +7,12 @@ import { readSourceFile, safeSourceText, sourceHash } from '../delivery/input.js
 import type { NativeProcessRunner } from '../delivery/native-host.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
 import {
+  conclusionBasis,
+  type ResearchConclusion,
+  researchCertainty,
+  validateConclusion,
+} from '../research/conclusion.js'
+import {
   type Angle,
   type AngleResult,
   type Evidence,
@@ -56,9 +62,21 @@ export interface RunnerResearchClaimJob {
   claim: Readonly<{ id: string; text: string; evidence: Evidence[] }>
   verifier: number
 }
+/** The conclusion author sees the stored evidence aggregate and nothing it could query. */
+export interface RunnerResearchConclusionJob {
+  key: string
+  question: string
+  basis: string
+  report: Readonly<ReturnType<typeof researchReport>>
+  certainty: Readonly<ReturnType<typeof researchCertainty>>
+}
 export interface RunnerResearchWorkers {
   angle(job: RunnerResearchAngleJob, signal: AbortSignal): Promise<RunnerResearchObservation>
   examine(job: RunnerResearchClaimJob, signal: AbortSignal): Promise<RunnerResearchObservation>
+  conclude(
+    job: RunnerResearchConclusionJob,
+    signal: AbortSignal,
+  ): Promise<RunnerResearchObservation>
 }
 export interface RunnerResearchOptions {
   identity: RunnerRequest['host']
@@ -72,7 +90,8 @@ interface ResearchArtifact {
   sha256: string
 }
 interface ResearchBinding {
-  version: 1
+  /** Version 2 adds the authored conclusion (P9-23); version 1 runs replay unchanged. */
+  version: 1 | 2
   request: string
   plan: string
   stage: string
@@ -83,13 +102,13 @@ interface ResearchBinding {
 }
 interface ResearchEntry {
   version: 1
-  kind: 'angle' | 'claim'
+  kind: 'angle' | 'claim' | 'conclusion'
   target: string
   attempt: number
   outcome: 'observed' | 'crashed' | 'unavailable'
   reason: string
   evidence?: string
-  value?: AngleResult | Refutation
+  value?: AngleResult | Refutation | ResearchConclusion
 }
 type ResearchOutcome = 'complete' | 'unknowns' | 'blocked'
 interface ResearchSynthesis {
@@ -118,6 +137,7 @@ export function researchSynthesis(
   research: ResearchPlan,
   entries: readonly ResearchEntry[],
   uncertainty: DeliveryPlan['policy']['uncertainty'],
+  concluded = false,
 ) {
   const results: AngleResult[] = []
   for (const angle of research.angles) {
@@ -140,14 +160,39 @@ export function researchSynthesis(
     // The result contract already refuses claims without cited evidence.
     report = researchReport(research, results, votes),
     observed = results.some((result) => result.status === 'ok'),
+    basis = conclusionBasis(research, report),
+    // Only a conclusion written for exactly this evidence counts; any other stays unused.
+    conclusion = concluded
+      ? entries.find(
+          (entry) =>
+            entry.kind === 'conclusion' &&
+            entry.outcome === 'observed' &&
+            (entry.value as ResearchConclusion).basis === basis,
+        )?.value
+      : undefined,
+    attempts = entries.filter((entry) => entry.kind === 'conclusion'),
+    missing =
+      concluded && !conclusion
+        ? (attempts.at(-1)?.reason ?? 'No source produced evidence to conclude from.')
+        : undefined,
+    // A missing conclusion is an unknown, never an inferred answer.
+    open = report.openQuestions.length > 0 || missing !== undefined,
     outcome: ResearchOutcome = !observed
       ? 'blocked'
-      : !report.openQuestions.length
+      : !open
         ? 'complete'
         : uncertainty === 'complete-with-unknowns'
           ? 'unknowns'
           : 'blocked'
-  return { results, votes, report, outcome }
+  return {
+    results,
+    votes,
+    report,
+    outcome,
+    basis,
+    conclusion: conclusion as ResearchConclusion | undefined,
+    missing,
+  }
 }
 
 /** Report-level research: bounded sources, independent challenge, a stored brief and no code authority. */
@@ -199,7 +244,7 @@ export class RunnerResearchStages {
     if (
       Object.keys(binding).sort().join(',') !==
         'at,deadline,invocation,plan,request,research,stage,version' ||
-      binding.version !== 1 ||
+      (binding.version !== 1 && binding.version !== 2) ||
       binding.request !== pinned.digest ||
       binding.plan !== record.basis ||
       binding.stage !== record.id ||
@@ -235,15 +280,18 @@ export class RunnerResearchStages {
       const entry = JSON.parse(
         readSourceFile(this.store.files.root, `${directory}/${name}`, RESEARCH_LIMITS.bytes * 2),
       ) as ResearchEntry
-      this.validateEntry(binding.research, entry)
+      this.validateEntry(binding.research, entry, binding.version)
       return entry
     })
   }
-  private validateEntry(research: ResearchPlan, entry: ResearchEntry) {
+  private validateEntry(research: ResearchPlan, entry: ResearchEntry, version: 1 | 2) {
     const keys = Object.keys(entry).sort().join(',')
     if (
       entry.version !== 1 ||
-      !['angle', 'claim'].includes(entry.kind) ||
+      !(version === 2 ? ['angle', 'claim', 'conclusion'] : ['angle', 'claim']).includes(
+        entry.kind,
+      ) ||
+      (entry.kind === 'conclusion' && entry.target !== 'conclusion') ||
       !Number.isInteger(entry.attempt) ||
       entry.attempt < 0 ||
       entry.attempt > 1 + RESEARCH_LIMITS.repairs ||
@@ -263,7 +311,13 @@ export class RunnerResearchStages {
     )
       throw new DeliveryRunnerError('research-stage-entry')
     safeSourceText(JSON.stringify(entry.value), RESEARCH_LIMITS.bytes)
-    if (entry.kind === 'angle') {
+    if (entry.kind === 'conclusion') {
+      try {
+        validateConclusion(entry.value)
+      } catch {
+        throw new DeliveryRunnerError('research-stage-entry')
+      }
+    } else if (entry.kind === 'angle') {
       validateResult(entry.value)
       if (entry.value.angle !== entry.target) throw new DeliveryRunnerError('research-stage-entry')
     } else {
@@ -312,10 +366,27 @@ export class RunnerResearchStages {
         unknowns: 'completed-with-unknowns',
         blocked: 'blocked',
       }[synthesized.outcome]
-    return `${renderResearchBrief(binding.research, synthesized.report)}
+    const evidence = renderResearchBrief(
+        binding.research,
+        synthesized.report,
+        binding.version === 2 ? synthesized.conclusion : undefined,
+      ),
+      // Version 1 briefs predate the authored conclusion and replay byte for byte.
+      opening =
+        binding.version === 2 && !synthesized.conclusion
+          ? evidence.replace(
+              /^# Research brief\n\n/,
+              `# Research brief\n\n## Answer\n\nNot authored: ${synthesized.missing ?? 'No conclusion was returned.'} No answer was inferred from the evidence below.\n\n`,
+            )
+          : evidence,
+      conclusionMethod =
+        binding.version === 2
+          ? ` One conclusion call wrote the answer and recommendation from the stored evidence alone, with at most ${RESEARCH_LIMITS.repairs} repair attempt(s); it queried no source and ran no command.`
+          : ''
+    return `${opening}
 ## Method
 
-${binding.research.angles.length} planned angle(s), at most ${RESEARCH_LIMITS.angles}; ${binding.research.verifiers} independent verifier(s) per load-bearing claim with a refutation quorum of ${binding.research.refutations}; at most ${RESEARCH_LIMITS.repairs} repair attempt(s) per job, ${RESEARCH_LIMITS.sources} source references and a ${RESEARCH_LIMITS.wallMs / 60000} minute wall deadline. Uncertainty policy: ${plan.policy.uncertainty}.
+${binding.research.angles.length} planned angle(s), at most ${RESEARCH_LIMITS.angles}; ${binding.research.verifiers} independent verifier(s) per load-bearing claim with a refutation quorum of ${binding.research.refutations}; at most ${RESEARCH_LIMITS.repairs} repair attempt(s) per job, ${RESEARCH_LIMITS.sources} source references and a ${RESEARCH_LIMITS.wallMs / 60000} minute wall deadline.${conclusionMethod} Uncertainty policy: ${plan.policy.uncertainty}.
 
 ${binding.research.angles.map((angle) => `- ${angle.id}: ${angle.available ? 'queried' : 'unavailable before query'}`).join('\n') || 'No source angle was planned.'}
 
@@ -380,7 +451,7 @@ ${mirrors.length ? `Identical excerpts under different references count as one s
       throw new DeliveryRunnerError('research-stage-plan-scope')
     const at = new Date().toISOString(),
       binding: ResearchBinding = {
-        version: 1,
+        version: 2,
         request: digest,
         plan: record.basis,
         stage: record.id,
@@ -415,7 +486,7 @@ ${mirrors.length ? `Identical excerpts under different references count as one s
     const expired = () => abort.signal.aborted || Date.now() >= Date.parse(binding.deadline),
       append = (entry: ResearchEntry) => {
         current()
-        this.validateEntry(research, entry)
+        this.validateEntry(research, entry, binding.version)
         this.store.files.atomic(
           `${base}/entries/${String(entries.length).padStart(4, '0')}.json`,
           `${JSON.stringify(entry)}\n`,
@@ -442,7 +513,7 @@ ${mirrors.length ? `Identical excerpts under different references count as one s
         kind: ResearchEntry['kind'],
         target: string,
         call: (key: string) => Promise<RunnerResearchObservation>,
-        admit: (value: AngleResult | Refutation) => string | undefined,
+        admit: (value: AngleResult | Refutation | ResearchConclusion) => string | undefined,
       ) => {
         let attempt = 0
         while (attempt <= RESEARCH_LIMITS.repairs && !expired()) {
@@ -457,17 +528,24 @@ ${mirrors.length ? `Identical excerpts under different references count as one s
               !/^[a-f0-9]{64}$/.test(observed.evidence)
             )
               throw new DeliveryRunnerError('research-worker-observation')
-            const value = structuredClone(observed.value) as AngleResult | Refutation
-            this.validateEntry(research, {
-              version: 1,
-              kind,
-              target,
-              attempt,
-              outcome: 'observed',
-              reason: 'Observed source result.',
-              evidence: observed.evidence,
-              value,
-            })
+            const value = structuredClone(observed.value) as
+              | AngleResult
+              | Refutation
+              | ResearchConclusion
+            this.validateEntry(
+              research,
+              {
+                version: 1,
+                kind,
+                target,
+                attempt,
+                outcome: 'observed',
+                reason: 'Observed source result.',
+                evidence: observed.evidence,
+                value,
+              },
+              binding.version,
+            )
             const refusal = admit(value)
             if (refusal) {
               append({ version: 1, kind, target, attempt, outcome: 'unavailable', reason: refusal })
@@ -575,6 +653,32 @@ ${mirrors.length ? `Identical excerpts under different references count as one s
                   return refusal
                 },
               )
+          // One bounded call authors the answer from the finished evidence; nothing is queried.
+          const finished = researchSynthesis(
+            research,
+            entries,
+            pinned.basis.plan.policy.uncertainty,
+          )
+          if (finished.results.some((result) => result.status === 'ok'))
+            await job(
+              'conclusion',
+              'conclusion',
+              (key) =>
+                workers.conclude(
+                  structuredClone({
+                    key,
+                    question: research.question,
+                    basis: finished.basis,
+                    report: finished.report,
+                    certainty: researchCertainty(finished.report),
+                  }),
+                  abort.signal,
+                ),
+              (value) =>
+                (value as ResearchConclusion).basis === finished.basis
+                  ? undefined
+                  : 'The conclusion was written for different evidence.',
+            )
         },
       )
     } finally {
@@ -582,7 +686,12 @@ ${mirrors.length ? `Identical excerpts under different references count as one s
       context.signal.removeEventListener('abort', cancel)
     }
     current()
-    const synthesized = researchSynthesis(research, entries, pinned.basis.plan.policy.uncertainty),
+    const synthesized = researchSynthesis(
+        research,
+        entries,
+        pinned.basis.plan.policy.uncertainty,
+        binding.version === 2,
+      ),
       completedAt = new Date().toISOString(),
       body = this.brief(binding, pinned.basis.plan, synthesized, completedAt)
     safeSourceText(body, 8 * 1024 * 1024)
@@ -651,6 +760,7 @@ ${mirrors.length ? `Identical excerpts under different references count as one s
         binding.research,
         entries,
         pinned.basis.plan.policy.uncertainty,
+        binding.version === 2,
       )
     const evidence: Record<string, unknown> = { binding, entries, synthesis: synthesis ?? null }
     if (!synthesis) {

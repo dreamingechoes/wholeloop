@@ -152,9 +152,10 @@ describe('unattended research route (P6-33)', () => {
         expect(receipt).toMatchObject({ state: 'completed', outcome: 'research-report-complete' })
         const record = store.stage(digest, 'research')
         if (!record) throw new Error('Research stage required')
-        // Two angles and three refuters per claim precede the two decision processes.
+        // Two angles, three refuters per claim and one conclusion precede the two decisions.
         const calls = new RunnerNativeScope(store.files, record.invocation).inspect()
-        expect(calls).toHaveLength(2 + 2 * 3 + 2)
+        expect(calls).toHaveLength(2 + 2 * 3 + 1 + 2)
+        expect(brief(store, digest).text).toMatch(/^# Research brief\n\n## Answer\n\nA title index/)
         expect(calls.every((call) => call.observed.invocationState === 'stopped')).toBe(true)
         expect(brief(store, digest).text).toContain('https://forum.example/index')
         expect(store.lifecycle.authority.inspect(request.grant).grant.effects).toEqual([
@@ -293,7 +294,8 @@ describe('unattended research route (P6-33)', () => {
         // An unavailable provider is never queried; each job has at most two repairs.
         expect(calls.angles).toEqual(Array(1 + RESEARCH_LIMITS.repairs).fill('docs:source.web'))
         const stored = brief(store, digest)
-        expect(stored.entries).toBe(entries + 1 + (repaired ? 3 : 0))
+        // A repaired source adds three examinations and one conclusion.
+        expect(stored.entries).toBe(entries + 1 + (repaired ? 3 + 1 : 0))
         expect(stored.text).toContain('offline:source.web: unavailable before query')
         if (!repaired) {
           expect(stored.synthesis.outcome).toBe('blocked')
@@ -484,7 +486,7 @@ describe('unattended research route (P6-33)', () => {
           state: 'paused',
           stages: [],
         })
-        expect(calls).toEqual({ angles: [], claims: [] })
+        expect(calls).toEqual({ angles: [], claims: [], conclusions: [] })
       },
       { intervention: 'supervised' },
     )

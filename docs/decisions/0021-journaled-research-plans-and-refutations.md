@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-22 (P9-23).** Unattended research now ends with the same answer-first brief as supervised completion: the conclusion is bound to the plan and aggregate digest by `conclusionBasis`, validated by the same contract, and rendered by the same brief renderer, so prose never replaces or edits a claim, refutation or open question. [ADR-0184](./0184-unattended-research-host.md) records the controller's call, its bounds and the missing-conclusion outcome.
+
 **Amended 2026-11-22 (P9-14).** Versioned local code citations are now checked against committed Git blobs before a source result is accepted. File availability, line bounds and literal excerpts are deterministic work; independent examiners still decide what the quoted code proves. A new journal receipt binds structural checks to the exact submitted quotations without changing frozen plan/result schemas, lowering the quorum or rechecking historical artifacts against a mutable checkout.
 
 **Amended 2026-11-21 (P9-06).** Public research completion now asks the conductor for an Answer and Recommendation bound to the exact plan and aggregate digest. The core retains its evidence rendering, derives confidence and unchecked work, and stores the authored prose in the existing completed artifact event. No extra state file or evidence-replacement path is introduced; generic completion cannot bypass this boundary.
