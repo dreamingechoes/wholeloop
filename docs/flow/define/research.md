@@ -147,6 +147,8 @@ Next
 
 **"A source I need is not in the list."** Write a provider manifest for it, usually a few lines pointing at an MCP server ([how](../../extending/providers.md)).
 
+**"Can a small question cost less?"** Yes, if you choose it. When you pick sources you also choose a rigor: **standard** (the default) gives every load-bearing claim three independent verifiers, **quick** skips them so claims are marked "not independently verified", and **deep** uses five. The step proposes one from the sources you chose, but it stays standard unless you pick another, and your interaction profile never changes it. The plan and the brief's result say which rigor ran.
+
 **"Why was a claim dropped that looked right to me?"** The receipt links each dropped claim with the verifiers' reasons. If they were wrong, that is a calibration case worth adding to the eval corpus.
 
 ## Code citations checked before submission

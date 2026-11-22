@@ -1,6 +1,7 @@
 // Renders a synthesized research report and brief; the CLI workflow and the runner share it.
 
 import type { StateEvent } from '../state/events.js'
+import type { Rigor } from '../workers/rigor.js'
 import { type CitationCheck, verifyCitationReceipt } from './citation-proof.js'
 import {
   conclusionBasis,
@@ -42,7 +43,10 @@ export function researchState(events: readonly StateEvent[], subject: string, ru
       }
     }
   }
-  return { plan: planned.data.plan, results, votes, citationChecks }
+  // Plans recorded before rigor existed ran at standard coverage.
+  const chosen = relevant.find((entry) => entry.type === 'research.rigor')
+  const rigor = chosen?.type === 'research.rigor' ? chosen.data : undefined
+  return { plan: planned.data.plan, results, votes, citationChecks, ...(rigor ? { rigor } : {}) }
 }
 
 export function researchReport(
@@ -50,6 +54,7 @@ export function researchReport(
   results: readonly AngleResult[],
   votes: readonly Refutation[],
   citationChecks: readonly (CitationCheck & { angle: string })[] = [],
+  rigor: Rigor = 'standard',
 ) {
   if (new Set(results.map((result) => result.angle)).size !== results.length)
     throw new Error('Duplicate angle result')
@@ -116,7 +121,10 @@ export function researchReport(
       if (incomplete)
         openQuestions.push({
           question: `Is claim ${id} supported?`,
-          missing: `${plan.verifiers - examinations.length} independent verifier response(s) missing`,
+          missing:
+            rigor === 'quick'
+              ? 'Not independently verified: quick rigor was chosen for this run'
+              : `${plan.verifiers - examinations.length} independent verifier response(s) missing`,
           who: plan.owner,
         })
       claims.push({

@@ -2,6 +2,7 @@
 import { isObject, validate } from '../config/schema.js'
 import type { StateEvent } from '../state/events.js'
 import { type SuiteStartFailure, validStartupFailure } from '../verification/start.js'
+import { type RunRigor, validRigorData } from '../workers/rigor.js'
 import type {
   GateClassification,
   GateKind,
@@ -33,12 +34,15 @@ export interface GateRun {
   budget: number
   rounds: GateRound[]
   unavailable?: SuiteStartFailure
+  /** Absent for runs recorded before rigor existed; they ran at standard coverage. */
+  rigor?: RunRigor
 }
 
 export const remainingStartupBudget = (run: GateRun) => run.budget - (run.rounds.length - 1)
 
 export function validGateData(type: string, data: Record<string, unknown>): boolean {
   if (type === 'gate.classified') return !validate(data, severitySchema).length
+  if (type === 'gate.rigor') return validRigorData(data)
   const schema = Object.entries(schemas.properties).find(([key]) => key === type)?.[1]
   if (!schema || validate(data, schema).length) return false
   try {
@@ -144,6 +148,13 @@ export function gateRuns(events: readonly StateEvent[]): GateRun[] {
       if (!run || run.subject !== entry.subject) throw new Error('Gate event needs its planned run')
       const current = run.rounds.at(-1)
       if (!current) throw new Error('Gate event needs a round')
+      if (entry.type === 'gate.rigor') {
+        // Chosen once, with the first round of its run, before any result.
+        if (run.rigor || run.rounds.length !== 1 || current.results.length || current.votes.length)
+          throw new Error('Rigor is chosen once, with the first round of its run')
+        run.rigor = entry.data
+        continue
+      }
       if (entry.type === 'gate.extended') {
         if (
           !entry.data.reason.trim() ||

@@ -1,4 +1,5 @@
 // The journal's event types, items and messages, and the replay that validates them.
+
 import { randomBytes, randomUUID } from 'node:crypto'
 import { isAbsolute } from 'node:path'
 import { type BuildEventData, validBuildData } from '../build/contracts.js'
@@ -45,6 +46,7 @@ import { type Repository, type SliceDefinition, validateSlice } from '../slices/
 import { type SyncEventData, syncState, validSyncData } from '../sync/contracts.js'
 import { type VerificationEventData, validVerificationData } from '../verification/contracts.js'
 import { replayVerification } from '../verification/state.js'
+import { type RunRigor, validRigorData } from '../workers/rigor.js'
 import {
   validWorktreeData,
   type WorktreeEventData,
@@ -151,6 +153,7 @@ export type EventData =
   | { type: 'research.submitted'; data: { run: string; result: AngleResult } }
   | { type: 'research.examined'; data: { run: string; vote: Refutation } }
   | { type: 'research.citations-checked'; data: CitationReceipt }
+  | { type: 'research.rigor'; data: RunRigor }
   | { type: 'item.created'; data: ItemInput }
   | { type: 'item.updated'; data: ItemPatch }
   | { type: 'item.closed'; data: Record<string, never> }
@@ -322,6 +325,8 @@ function validData(type: string, data: Record<string, unknown>): boolean {
 
     case 'research.citations-checked':
       return validCitationReceipt(data)
+    case 'research.rigor':
+      return validRigorData(data) && runId(data.run)
     case 'research.planned':
     case 'research.submitted':
     case 'research.examined': {

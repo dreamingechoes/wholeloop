@@ -1,5 +1,6 @@
 // Gate plans, findings, votes, results and their events.
 import { validate } from '../config/schema.js'
+import type { RunRigor } from '../workers/rigor.js'
 import type { GateInputs, GateUnit } from './lenses.js'
 import planSchema from './schemas/plan-v1.json' with { type: 'json' }
 import resultSchema from './schemas/result-v1.json' with { type: 'json' }
@@ -66,6 +67,7 @@ export type GateEventData =
   | { type: 'gate.planned'; data: { plan: GatePlan } }
   | { type: 'gate.submitted'; data: { run: string; round: number; result: GateResult } }
   | { type: 'gate.examined'; data: { run: string; round: number; vote: GateVote } }
+  | { type: 'gate.rigor'; data: RunRigor }
   | {
       type: 'gate.classified'
       data: { run: string; round: number } & GateClassification

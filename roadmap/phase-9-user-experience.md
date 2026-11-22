@@ -311,15 +311,17 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-17 · Proportional depth and gate cost
 
-**Status:** 🔄 · **Size:** L · **Depends on:** P9-13, P9-14 · **Release:** 1.2.0 · **Decision:** [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md)
+**Status:** ✅ · **Size:** L · **Depends on:** P9-13, P9-14 · **Release:** 1.2.0 · **Decision:** [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md)
 
 **Goal** — A small question or change costs little, and any reduced check is recorded and visible.
 
 **Acceptance criteria:**
 
-- [ ] Research and gates take a rigor of `quick`, `standard` (default, today's coverage) or `deep`, proposed by the step from the question or change and confirmed by the person; the profile never sets it, and the chosen rigor and its coverage appear in the result.
-- [ ] Findings carry a severity; only blockers fail a round; others reach the person in the hand-back; mandatory lenses keep fail-safe behaviour.
-- [ ] Optional review lenses apply by change size and paths; verifier counts below three exist only under new schema versions.
+- [x] Research and gates take a rigor of `quick`, `standard` (default, today's coverage) or `deep`, proposed by the step from the question or change and confirmed by the person; the profile never sets it, and the chosen rigor and its coverage appear in the result.
+- [x] Findings carry a severity; only blockers fail a round; others reach the person in the hand-back; mandatory lenses keep fail-safe behaviour.
+- [x] Optional review lenses apply by change size and paths; verifier counts below three exist only under new schema versions.
+
+**Evidence** — `CHECK PASS in 768s`, 5363 tests in 361 files; the related fast gate passed 4252 tests in 271 files apart from three build-scheduling expectations, which the size rule changed (a one-line change now plans four review lenses at every pace) and which were updated. `test/unit/gates/severity.test.ts`, `test/unit/gates/applicability.test.ts` and new cases in `test/unit/research/source-choice.test.ts` cover advisory aggregation and replay, refusals on mandatory lenses, the applicability table, actual planned lenses for tiny, documentation-only and unknown-size changes, gate rigor by default, quick and deep with a fixed run choice, the research rigor question, quick research without examinations and with unverified claims, and deep quorums. Criterion 1 holds as [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md) states it: standard is the default and today's coverage, while quick and deep are always passed explicitly by the person; the proposal is shown, never applied. Criterion 3 holds without any verifier count below three, so no plan schema version was needed; only two additive event identities joined the compatibility baseline. Headless and runner routes keep every finding a blocker and run at standard. No native client or model was used.
 
 **Tests** — Gate aggregation tables per severity; lens applicability tables; schema compatibility tests.
 

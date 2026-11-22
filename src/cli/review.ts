@@ -1,8 +1,10 @@
 // `wl review`: review inputs and comment drafts.
+
 import { FlowEngine } from '../flow/engine.js'
 import { reviewCommentPlan } from '../review/comments.js'
 import { ReviewWorkflow } from '../review/workflow.js'
 import { StateStore } from '../state/store.js'
+import { checkRigor } from '../workers/rigor.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { roundOverrides } from './gate.js'
@@ -38,6 +40,7 @@ export function reviewCommand(
         ...(value('--base') ? { base: value('--base') as string } : {}),
         ...(value('--owner') ? { owner: value('--owner') as string } : {}),
         ...(rounds !== undefined ? { rounds } : {}),
+        ...(value('--rigor') ? { rigor: checkRigor(value('--rigor')) } : {}),
       })
     } else {
       if (positional.length || !value('--for')) throw new Error('Provide --for <id>')

@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-22 · P9-17 ✅ · Proportional depth with explicit rigor
+
+- **Severity:** inspectors of optional review lenses classify findings as blocker, should or nit. Should and nit findings become `gate.classified` events, appear in the report's dropped list with an Advisory reason, are never cross-examined, leave the cost preview and do not fail the round; the hand-back shows each as "Not blocking". Mandatory lenses and verification units refuse a lower severity at submission and in replay. Headless and runner routes keep every finding a blocker.
+- **Applicability:** optional built-in lenses step aside for documentation-only changes (design fit, performance, simplicity) and for one-file changes of ten lines or fewer (simplicity, change shape), with the reason in the plan. A new untracked or binary file leaves the size unknown and keeps every lens.
+- **Rigor:** research and gates record `quick`, `standard` or `deep` once per run (`gate.rigor`, `research.rigor`), passed with `--rigor`. Standard is the default and today's coverage; a proposal from change size or chosen sources is shown, never applied, and no profile sets it. Quick skips optional lenses or leaves research claims "not independently verified" and refuses their examinations; deep raises the quorum to five. Plans, verdicts and research results show the rigor and its coverage.
+- **Decision:** [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md) records the rules. Rejected: new result, report and plan schema versions; refuters voting on severity; quick with one or two verifiers; asking rigor before every gate. No verifier count below three exists, so no schema version was added; only the new event identities `gate-severity@1` and `run-rigor@1` joined the baseline, and historical reports replay identically.
+- **Documentation:** the review, verify, research and flow pages explain severity, applicability and rigor; the research, verify and review skills and the gate-rounds protocol carry the rules for all seven clients, with enforcers. Counts are 121/139, with four Phase 9 tasks open.
+- **Verified:** `CHECK PASS in 768s`, 5363 tests in 361 files; the related fast gate first failed on three build-scheduling expectations that the size rule legitimately changed (four review lenses for a one-line change at every pace); they were updated. New cases cover advisory aggregation and replay, refusals, the applicability table, real planned lenses for tiny, documentation-only and unknown changes, gate and research rigor including fixed run choices, quick research without examinations and deep quorums. A replay digest test was updated for the additive classifications field. No model, native client or hosted trial was used.
+
+---
+
 ## 2026-11-22 · P9-16 ✅ · Project code in Docker unless the person chooses otherwise
 
 - **Changed:** supervised `wl verify suite` and the new `wl exec` worker command run project commands in one warm container per slice workspace: the person's cached image, the worktree mounted at `/workspace`, the person's user ID, no network, no capabilities or privilege escalation, bounded processes, memory and CPU, and only `HOME=/tmp`. The container is reused while the slice lives and removed when its worktree stops or on `wl exec --stop`. A new `verify.suite-execution` event records with the suite intent whether a round ran in Docker (image and identifier) or on the host and who chose it; results show **Ran in** and `verify begin` shows **Project code** before anything runs.

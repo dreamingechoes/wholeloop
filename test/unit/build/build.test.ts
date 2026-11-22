@@ -494,7 +494,8 @@ describe('build routing and host conformance fixtures', () => {
           gateRuns(engine.store.events())
             .map((run) => run.rounds[0]?.plan.units.length)
             .sort(),
-        ).toEqual([2, 2, 6, 6])
+          // A one-line change skips simplicity and change-shape at every pace (ADR-0258).
+        ).toEqual([2, 2, 4, 4])
         if (pace === 'guided')
           expect(order.indexOf(`build:${slices[1]}`)).toBeGreaterThan(
             order.lastIndexOf(`gate:${slices[0]}:review`),

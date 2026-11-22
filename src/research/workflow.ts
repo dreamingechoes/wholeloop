@@ -1,4 +1,5 @@
 // The research step workflow: plan, angle results, refutations and the report.
+
 import { join } from 'node:path'
 import { ADAPTERS } from '../adapters/generate.js'
 import { CliError } from '../cli/errors.js'
@@ -13,6 +14,16 @@ import { sourceCandidates } from '../providers/source-access.js'
 import { currentClientAttribution } from '../state/attribution-context.js'
 import type { StateEvent } from '../state/events.js'
 import { clientModels } from '../workers/models.js'
+import {
+  checkRigor,
+  DEEP_VERIFIERS,
+  proposeResearchRigor,
+  type Rigor,
+  rigorChoice,
+  rigorCoverage,
+  rigorView,
+  STANDARD_RIGOR,
+} from '../workers/rigor.js'
 import { researchAssignments } from './assignments.js'
 import { checkCodeCitations, localCodeRevision } from './citations.js'
 import {
@@ -61,6 +72,7 @@ export class ResearchWorkflow {
       client?: string
       path?: string
       env?: NodeJS.ProcessEnv
+      rigor?: Rigor
     } = {},
   ) {
     const declared = currentClientAttribution()?.client
@@ -89,6 +101,11 @@ export class ResearchWorkflow {
       )
       let remembered: { scope: string; file: string } | undefined
       if (existing?.type === 'research.planned') {
+        const pinnedRigor = researchState(events, subject, run).rigor?.rigor ?? 'standard'
+        if (options.rigor !== undefined && checkRigor(options.rigor) !== pinnedRigor)
+          throw new CliError(
+            `Rigor is fixed at ${pinnedRigor} for this research run; begin a new run to change it`,
+          )
         const pinned = [...new Set(existing.data.plan.angles.map((angle) => angle.provider))].sort()
         if (options.sources !== undefined) {
           const selected = [...options.sources].sort()
@@ -149,31 +166,48 @@ export class ResearchWorkflow {
           sources: selected ?? [],
           candidates: choices.candidates,
         })
+        const suggested = choices.candidates
+          .filter(
+            (candidate) =>
+              candidate.access === 'native' &&
+              candidate.available &&
+              candidate.capabilities.length === 1 &&
+              ((candidate.id === 'native-code' && candidate.capabilities[0] === 'source.code') ||
+                (candidate.id === 'native-web' && candidate.capabilities[0] === 'source.web')),
+          )
+          .map((candidate) => candidate.id)
+        // Rigor is asked with the sources, before any worker starts. The frozen sources payload
+        // carries it as an open question; the plan stays standard unless the person chooses.
+        const proposal = proposeResearchRigor(suggested.length)
         if (selected === undefined)
           return {
             ...plan,
+            openQuestions: [
+              ...plan.openQuestions,
+              {
+                question: 'Which rigor should this research use?',
+                missing: `Proposed: ${proposal}. ${rigorCoverage('research', 'quick', plan.verifiers)}; ${rigorCoverage('research', 'standard', plan.verifiers)} (default); ${rigorCoverage('research', 'deep', DEEP_VERIFIERS)}.`,
+                who: plan.owner,
+              },
+            ],
             schema: 'wholeloop/research-sources@1' as const,
             status: 'needs-sources' as const,
             client: client ?? 'unknown',
             ...choices,
-            suggested: choices.candidates
-              .filter(
-                (candidate) =>
-                  candidate.access === 'native' &&
-                  candidate.available &&
-                  candidate.capabilities.length === 1 &&
-                  ((candidate.id === 'native-code' &&
-                    candidate.capabilities[0] === 'source.code') ||
-                    (candidate.id === 'native-web' && candidate.capabilities[0] === 'source.web')),
-              )
-              .map((candidate) => candidate.id),
+            suggested,
             jobs: [],
             examinations: [],
             remember: ['run', 'project', 'user'],
           }
         if (options.remember && scope !== 'run') remembered = remember(selected)
+        const choice = rigorChoice(options.rigor, proposeResearchRigor(selected.length))
+        if (choice.rigor === 'deep' && plan.verifiers < DEEP_VERIFIERS) {
+          plan.verifiers = DEEP_VERIFIERS
+          plan.refutations = Math.floor(DEEP_VERIFIERS / 2) + 1
+        }
         append(subject, { type: 'research.planned', data: { run, plan } })
         existing = events.at(-1)
+        append(subject, { type: 'research.rigor', data: { run, ...choice } })
       }
       const state = researchState(events, subject, run)
       if (existing?.type !== 'research.planned') throw new Error('Research plan was not pinned')
@@ -201,7 +235,9 @@ export class ResearchWorkflow {
             ? localCodeRevision(this.engine.root)
             : undefined,
           models,
+          state.rigor?.rigor,
         ),
+        rigor: rigorView('research', state.rigor ?? STANDARD_RIGOR, state.plan.verifiers),
       }
     })
   }
@@ -241,6 +277,8 @@ export class ResearchWorkflow {
     return this.engine.store.transaction((events, append) => {
       const run = activeRun(events, subject)
       const state = researchState(events, subject, run)
+      if (state.rigor?.rigor === 'quick')
+        throw new CliError('Quick rigor leaves claims unverified; they are not cross-examined')
       researchReport(state.plan, state.results, [...state.votes, value], state.citationChecks)
       append(subject, { type: 'research.examined', data: { run, vote: value } })
       return {
@@ -257,7 +295,13 @@ export class ResearchWorkflow {
     const events = this.engine.store.events()
     const run = activeRun(events, subject)
     const state = researchState(events, subject, run)
-    const report = researchReport(state.plan, state.results, state.votes, state.citationChecks)
+    const report = researchReport(
+      state.plan,
+      state.results,
+      state.votes,
+      state.citationChecks,
+      state.rigor?.rigor,
+    )
     const basis = conclusionBasis(state.plan, report)
     if (conclusion === undefined)
       return {
@@ -269,6 +313,7 @@ export class ResearchWorkflow {
         question: state.plan.question,
         report,
         certainty: researchCertainty(report),
+        rigor: rigorView('research', state.rigor ?? STANDARD_RIGOR, state.plan.verifiers),
         inputSchema: structuredClone(conclusionSchema),
         text: renderResearchBrief(state.plan, report),
       }
@@ -286,6 +331,7 @@ export class ResearchWorkflow {
     return {
       schema: 'wholeloop/research-complete@1' as const,
       report,
+      rigor: rigorView('research', state.rigor ?? STANDARD_RIGOR, state.plan.verifiers),
       receipt: {
         ...completed,
         ...summary,

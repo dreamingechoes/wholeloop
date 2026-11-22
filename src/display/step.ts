@@ -185,6 +185,13 @@ export function stepDisplay(
       return `Docker container · ${value(entry.image) || 'image not chosen yet'}`
     return ''
   }
+  // Rigor is the person's choice; a different proposal is surfaced, never applied silently.
+  const rigor = record(payload.rigor)
+  row('Rigor', rigor.coverage)
+  if (rigor.source === 'default' && rigor.proposed && rigor.proposed !== rigor.rigor)
+    open.push(
+      `Proposed rigor for this run: ${value(rigor.proposed)}. It stays ${value(rigor.rigor)} unless you choose otherwise.`,
+    )
   row('Project code', placement(payload.projectCode))
   row('Ran in', placement(payload.execution))
   if (command === 'verify suite') {
