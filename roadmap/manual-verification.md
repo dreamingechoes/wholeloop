@@ -28,6 +28,8 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 - [ ] P9-13: during the P9-21 native passes, observe the core cost preview before each investigation, framing challenge, inspection and independent examination batch. Confirm that requested tiers are distinguished from the actual client model and that token, time and price remain unknown without usage evidence. Planned-call fixtures, seven-client rendering and synthetic headless process ordering pass; they do not establish native presentation or account quota.
 
+- [ ] P9-15: for each of the seven clients, install with one tier mapped to a model the account can use (`wl setup --models <client>:standard=<model> --scope user`, then `wl install --target <client> --scope user`) and observe that a verifier or reviewer actually runs on that model, and that an unavailable model name gives the client's own error rather than a silent fallback. Record whether Copilot and Gemini honour the `model` header of a custom agent. Rendering, scoped installation, doctor and preview fixtures pass for all seven clients; they do not establish that a client loads the field or which model it then runs.
+
 ### P9-20 baseline capture
 
 - [ ] On P9-20 revision `2927dc0d329ed60ef931ff2c5174066a334378a9`, before the UX fixes, run the six-step evaluation on Codex and Claude Code using dedicated signed-in homes; retain native traces, client versions and the source revision outside repositories. No live experience run has been performed. See [evaluation instructions](../test/evals/experience/README.md).

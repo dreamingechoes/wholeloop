@@ -7,6 +7,7 @@ import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
 import { itemId, type StateEvent } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
+import { workerModels } from '../workers/models.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import { git, namedBase } from '../worktrees/git.js'
 import { WorktreeManager } from '../worktrees/manager.js'
@@ -121,6 +122,7 @@ export class ReviewWorkflow {
         results: state?.results ?? [],
         votes: state?.votes ?? [],
         review,
+        models: workerModels(this.engine),
       }),
     }
   }
@@ -144,6 +146,7 @@ export class ReviewWorkflow {
         results: state?.results ?? [],
         votes: state?.votes ?? [],
         review,
+        models: workerModels(this.engine),
       }),
     }
   }

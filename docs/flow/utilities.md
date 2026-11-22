@@ -98,6 +98,7 @@ Status also retains owners, step plans, measurement schedules and unread message
 | --- | --- | --- |
 | **Profile** | verbosity, depth, challenge, pace, stops, teaching, language, or a preset | the scope you choose |
 | **Providers** | which tool fulfils each capability: documents, tracker, code host, sources | the scope you choose |
+| **Worker models** | the model each worker tier runs on in the client you are using ([worker models](../configuration/README.md#worker-models)) | the scope you choose |
 
 Two related tasks are **not** part of setup, on purpose:
 
@@ -121,6 +122,8 @@ $ wl setup
       "prompt": "Where should these choices be remembered?",
       …
 ```
+
+Questions about worker models appear only when your client runs setup, one per tier, because a model name belongs to one client; in a terminal, pass `--models <client>:<tier>=<model>` instead. Skipping a model question keeps the current choice.
 
 Every choice is validated before anything is written, and saving needs an explicit `--scope`:
 
@@ -199,6 +202,7 @@ wl status --json
 wl status init-0123abcd --json
 wl setup --json
 wl setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
+wl setup --models codex:standard=gpt-6-luna --scope user --json
 ```
 
 **`wl next`** begins framing from a sentence, and reuses an initiative whose title matches, ignoring case and spacing. A missing owner becomes a question before anything is created. With no input, it picks the only open item or asks which one to continue; with an ID, it reuses the unfinished run. After framing, it can begin the specification, and then stops at its approval. Running several steps in one request (`--through`) is planned, not available.

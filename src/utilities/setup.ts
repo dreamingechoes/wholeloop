@@ -6,13 +6,33 @@ import { loadConfig, userConfigPath } from '../config/load.js'
 import { resolveConfig } from '../config/resolve.js'
 import { writeSettings } from '../config/write.js'
 import { loadProviders, resolveProvider } from '../providers/load.js'
+import {
+  builtInModel,
+  configuredModels,
+  MODEL_TIERS,
+  modelAnswer,
+  parseModelChoices,
+} from '../workers/models.js'
 
 export function setup(
   root: string,
-  options: { scope?: string; profile?: string; docs?: string; tracker?: string },
+  options: {
+    scope?: string
+    profile?: string
+    docs?: string
+    tracker?: string
+    models?: string
+    client?: string
+  },
   userFile = userConfigPath(),
 ) {
   const loaded = loadConfig({ root, userFile })
+  let models: Record<string, string> = {}
+  try {
+    if (options.models) models = parseModelChoices(options.models)
+  } catch (error) {
+    throw new CliError((error as Error).message)
+  }
   const registry = loadProviders({
     root,
     user: dirname(userFile),
@@ -28,14 +48,18 @@ export function setup(
     throw new CliError(`Unknown profile: ${options.profile}`)
   if (options.docs) resolveProvider(registry, 'docs.create', options.docs)
   if (options.tracker) resolveProvider(registry, 'tracker.create-item', options.tracker)
-  const requested = Boolean(options.profile || options.docs || options.tracker)
+  const requested = Boolean(
+    options.profile || options.docs || options.tracker || Object.keys(models).length,
+  )
   if (!requested || !options.scope) {
-    const question = (id: string, prompt: string, choices: string[]) => ({
+    const question = (id: string, prompt: string, choices: string[], freeText = false) => ({
       id,
       prompt,
       multi: false,
       options: choices.map((value) => ({ value, label: value })),
+      ...(freeText ? { freeText: true } : {}),
     })
+    const current = configuredModels(loaded.values.answers, options.client)
     return {
       code: EXIT.input,
       payload: {
@@ -59,6 +83,19 @@ export function setup(
                     .filter(({ manifest }) => manifest.operations['tracker.create-item'])
                     .map(({ manifest }) => manifest.id),
                 ),
+                // Only the executing client: model names belong to one client and account.
+                ...(options.client
+                  ? MODEL_TIERS.map((tier) =>
+                      question(
+                        modelAnswer(options.client as string, tier),
+                        `Which model should ${options.client} use for ${tier} workers? Skip to keep ${current[tier] ?? builtInModel(options.client as string, tier)}.`,
+                        options.client === 'claude'
+                          ? ['inherit', 'haiku', 'sonnet', 'opus']
+                          : ['inherit'],
+                        true,
+                      ),
+                    )
+                  : []),
               ]
             : []),
           ...(!options.scope
@@ -94,6 +131,7 @@ export function setup(
           },
         }
       : {}),
+    ...(Object.keys(models).length ? { answers: models } : {}),
   }
   const effective = resolveConfig(
     [
@@ -108,6 +146,7 @@ export function setup(
       ...(override.profile ? [{ path: ['profile'], value: override.profile }] : []),
       ...(options.docs ? [{ path: ['providers', 'docs'], value: options.docs }] : []),
       ...(options.tracker ? [{ path: ['providers', 'tracker'], value: options.tracker }] : []),
+      ...Object.entries(models).map(([key, value]) => ({ path: ['answers', key], value })),
     ])
   }
   return {

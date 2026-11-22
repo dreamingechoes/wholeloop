@@ -4,6 +4,7 @@ import type { ReviewContext } from '../review/contracts.js'
 import type { SuiteResult } from '../verification/contracts.js'
 import { workerAssignment } from '../workers/assignment.js'
 import { assignmentCost } from '../workers/cost.js'
+import type { WorkerModels } from '../workers/models.js'
 import { GATE_SCHEMAS, type GatePlan, type GateResult, type GateVote } from './contracts.js'
 
 export interface SuiteObservation {
@@ -21,6 +22,7 @@ export function gateAssignments(
     votes: readonly GateVote[]
     review?: ReviewContext
     suite?: SuiteObservation
+    models?: WorkerModels | undefined
   },
 ) {
   const { review, suite } = observations
@@ -109,5 +111,8 @@ export function gateAssignments(
       }),
     ),
   }
-  return { ...assignments, cost: assignmentCost(assignments.jobs, assignments.examinations) }
+  return {
+    ...assignments,
+    cost: assignmentCost(assignments.jobs, assignments.examinations, observations.models),
+  }
 }

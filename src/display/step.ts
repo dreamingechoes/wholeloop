@@ -142,9 +142,14 @@ export function stepDisplay(
     row(
       'Requested tier',
       list(cost.modelTiers)
-        .map((entry) => `${value(record(entry).tier)} × ${value(record(entry).workers)}`)
+        .map((entry) => {
+          const model = value(record(entry).model)
+          return `${value(record(entry).tier)} × ${value(record(entry).workers)}${model ? ` (${model === 'inherit' ? 'session model' : model})` : ''}`
+        })
         .join(' · ') || 'None',
     )
+    // Configured, not observed: the client loads the model only into roles installed after the choice.
+    row('Models', cost.modelClient ? `configured for ${value(cost.modelClient)}` : '')
     const estimate = record(cost.estimate)
     row(
       'Estimate',

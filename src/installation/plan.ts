@@ -9,6 +9,7 @@ import { renderPortableSkill } from '../adapters/portable.js'
 import { markEntrypoint } from '../harness/entrypoints.js'
 import { frontmatter } from '../harness/frontmatter.js'
 import { canonicalPath } from '../state/paths.js'
+import type { ModelMap } from '../workers/models.js'
 
 export interface InstallContext {
   root: string
@@ -17,6 +18,8 @@ export interface InstallContext {
   scope: 'user' | 'project'
   env?: NodeJS.ProcessEnv
   opencodeVersion?: string
+  /** Tier mappings per client from this scope's own configuration file (P9-15). */
+  models?: Readonly<Record<string, ModelMap>>
 }
 export interface InstalledFile extends RenderedFile {
   path: string
@@ -136,6 +139,7 @@ export function installationPlan(
     core,
     version,
     target === 'opencode' ? context.opencodeVersion : undefined,
+    context.models?.[target],
   )
   const locations = installLocations(target, context)
   const files: InstalledFile[] = []

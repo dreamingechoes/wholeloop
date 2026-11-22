@@ -8,6 +8,7 @@
 - [Who wins](#who-wins)
 - [Example — project file](#example--project-file)
 - [Example — user file](#example--user-file)
+- [Worker models](#worker-models)
 - [Inspect configuration](#inspect-configuration)
 - [Autonomous delivery limits](#autonomous-delivery-limits)
 - [Key reference](#key-reference)
@@ -86,6 +87,36 @@ profile:
   artifact_language: en         # …but write every artifact in English
 targets: [claude, codex, opencode]
 ```
+
+## Worker models
+
+**Choose which model each kind of worker runs on, per client.** Every worker role has a **tier**: `fast`, `standard` or `deep`. Verifiers and reviewers are `standard`, researchers and challengers `deep`. Map a tier to a model you can use in that client, and the roles installed afterwards carry it. Until you map one, nothing changes:
+
+| Client | An unmapped tier uses |
+| --- | --- |
+| Claude Code | its own aliases: `fast` → `haiku`, `standard` → `sonnet`, `deep` → `opus` |
+| Every other client | the model selected in your session |
+
+Save a mapping with `wl setup`, or answer the model questions the `wl-setup` skill asks for the client you are using:
+
+```bash
+wl setup --models claude:standard=haiku,codex:deep=gpt-6.1-sol --scope user
+```
+
+It prints the saved scope and file. Mappings are remembered as answers:
+
+```yaml
+# ~/.config/wholeloop/config.yml
+version: 1
+answers:
+  "model:claude:standard": haiku
+  "model:codex:deep": gpt-6.1-sol
+```
+
+- **A value is `inherit` or a model name** as your client spells it: letters, digits and `. _ : / @ + -`, without spaces. `inherit` uses your session model, which on Claude Code also replaces its alias.
+- **Reinstall to apply it.** `wl install --scope user` reads only your user file and `wl install --scope project` only the project file, so a personal choice never lands in files a repository commits. `wl doctor` reports an installation older than its mapping as out of date.
+- **The cost preview names the configured model** next to each tier, labelled "configured", because the client decides whether that model is available to you. A plugin installed from a marketplace keeps the built-in choice.
+- **Coverage never changes.** A cheaper model runs the same checks; it does not remove any.
 
 ## Inspect configuration
 

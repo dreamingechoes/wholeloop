@@ -13,6 +13,7 @@ import { workspaceSnapshot } from '../gates/snapshot.js'
 import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
 import { canonicalPath, inside } from '../state/paths.js'
+import { workerModels } from '../workers/models.js'
 import type { SuitePlan, SuiteResult } from './contracts.js'
 import {
   namedSuiteHashes,
@@ -316,6 +317,7 @@ export async function runSuite(
       results: state?.results ?? [],
       votes: state?.votes ?? [],
       suite: observation,
+      models: workerModels(engine),
     }),
   }
 }

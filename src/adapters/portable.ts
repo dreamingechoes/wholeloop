@@ -4,7 +4,7 @@ import { stringify as yaml } from 'yaml'
 import { frontmatter } from '../harness/frontmatter.js'
 import { claudeAdapter } from './claude.js'
 import type { Adapter, AdapterCapabilities } from './contracts.js'
-import { agentContext } from './roles.js'
+import { agentContext, mappedModel, tierSentence } from './roles.js'
 
 const strip = (content: string) => content.replace(/^---\n[\s\S]*?\n---\n/, '').trimStart()
 /**
@@ -78,13 +78,15 @@ export const codexAdapter: Adapter = {
   renderAgent: (name, content, options = {}) => {
     const { metadata, capabilities, tier } = definition(content)
     const observer = !capabilities.includes('write')
-    const instructions = `${options.runtime === false ? '' : agentContext(!observer && capabilities.includes('shell'))}Canonical model tier: ${tier}; inherit the current model unless the caller explicitly chooses an available model.\n${observer ? 'This role cannot obtain a separate native sandbox from its custom-agent file. Use a read-only parent or the checked headless gate transport for repository inspection; a prompt alone does not enforce read-only access. Never repair source or report inaccessible evidence as observed.\n' : ''}\n${strip(content)}`
+    const model = mappedModel(options.model)
+    const instructions = `${options.runtime === false ? '' : agentContext(!observer && capabilities.includes('shell'))}${tierSentence(tier, model, `Canonical model tier: ${tier}; inherit the current model unless the caller explicitly chooses an available model.`)}\n${observer ? 'This role cannot obtain a separate native sandbox from its custom-agent file. Use a read-only parent or the checked headless gate transport for repository inspection; a prompt alone does not enforce read-only access. Never repair source or report inaccessible evidence as observed.\n' : ''}\n${strip(content)}`
     return {
       mode: 0o644,
       content: toml({
         name: options.runtime === false ? name : `wl-${name}`,
         description: String(metadata.description),
         developer_instructions: instructions,
+        ...(model ? { model } : {}),
         ...(observer
           ? {
               features: {
@@ -113,6 +115,7 @@ export const opencodeAdapter: Adapter = {
   renderAgent: (name, content, options = {}) => {
     const { metadata, capabilities, tier } = definition(content)
     const writable = capabilities.includes('write')
+    const model = mappedModel(options.model)
     const permission: Record<string, string | typeof OPENCODE_READ> = {
       '*': 'deny',
       external_directory: writable ? 'ask' : 'allow',
@@ -125,7 +128,7 @@ export const opencodeAdapter: Adapter = {
     }
     return {
       mode: 0o644,
-      content: `---\n${yaml({ description: metadata.description, mode: name === 'conductor' ? 'primary' : 'subagent', permission })}---\n${options.runtime === false ? '' : agentContext(writable && capabilities.includes('shell'))}Canonical model tier: ${tier}; inherit the selected session model. Read-only roles receive no shell or edit permission; the conductor supplies observed command/provider results when needed.\n\n${strip(content)}`,
+      content: `---\n${yaml({ description: metadata.description, mode: name === 'conductor' ? 'primary' : 'subagent', ...(model ? { model } : {}), permission })}---\n${options.runtime === false ? '' : agentContext(writable && capabilities.includes('shell'))}${tierSentence(tier, model, `Canonical model tier: ${tier}; inherit the selected session model.`)} Read-only roles receive no shell or edit permission; the conductor supplies observed command/provider results when needed.\n\n${strip(content)}`,
     }
   },
 }
@@ -144,6 +147,7 @@ export const copilotAdapter: Adapter = {
   renderAgent: (name, content, options = {}) => {
     const { metadata, capabilities, tier } = definition(content)
     const writable = capabilities.includes('write')
+    const model = mappedModel(options.model)
     const tools = [
       ...(capabilities.includes('read') ? ['view', 'glob', 'grep'] : []),
       ...(writable ? ['edit', 'create', 'apply_patch'] : []),
@@ -152,7 +156,7 @@ export const copilotAdapter: Adapter = {
     ]
     return {
       mode: 0o644,
-      content: `---\n${yaml({ name: options.runtime === false ? name : `wl-${name}`, description: metadata.description, tools, 'include-custom-instructions': true, infer: false })}---\n${options.runtime === false ? '' : agentContext(writable && capabilities.includes('shell'))}Canonical model tier: ${tier}; inherit the selected session model. Read-only roles receive no shell or write tool; the conductor supplies observed command/provider results when needed.\n\n${strip(content)}`,
+      content: `---\n${yaml({ name: options.runtime === false ? name : `wl-${name}`, description: metadata.description, tools, ...(model ? { model } : {}), 'include-custom-instructions': true, infer: false })}---\n${options.runtime === false ? '' : agentContext(writable && capabilities.includes('shell'))}${tierSentence(tier, model, `Canonical model tier: ${tier}; inherit the selected session model.`)} Read-only roles receive no shell or write tool; the conductor supplies observed command/provider results when needed.\n\n${strip(content)}`,
     }
   },
 }

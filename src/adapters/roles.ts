@@ -27,6 +27,17 @@ export function agentContext(canInvokeCore: boolean) {
     : 'Use only the supplied assignment, required protocol text and observed evidence. Return the exact requested result in your final message; the conductor validates and submits it. If a required tool or input is absent, return unavailable with a reason. Never obtain wider tools or import conversation history.\n\n'
 }
 
+/** A mapped model other than `inherit`; `inherit` renders exactly like the default elsewhere. */
+export const mappedModel = (model?: string) => (model && model !== 'inherit' ? model : undefined)
+
+/** Says which model was configured without claiming the client has it or will honour it. */
+export function tierSentence(tier: string, model: string | undefined, inherited: string) {
+  const mapped = mappedModel(model)
+  return mapped
+    ? `Canonical model tier: ${tier}; configured for this client as model ${mapped}.`
+    : inherited
+}
+
 /** Claude's plugin scope and installed loose-agent scope have distinct callable names. */
 export function roleInvocationName(
   target: string,

@@ -20,6 +20,7 @@ import {
 import { verificationCriteria } from '../verification/contracts.js'
 import { testabilityResult, testPath } from '../verification/testability.js'
 import { workerCost } from '../workers/cost.js'
+import { clientModels, type WorkerModels } from '../workers/models.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import { namedBase, repository } from '../worktrees/git.js'
 import { WorktreeManager } from '../worktrees/manager.js'
@@ -54,6 +55,7 @@ const plannedCost = (
   plan: GatePlan,
   results: readonly GateResult[] = [],
   votes: readonly GateVote[] = [],
+  models?: WorkerModels,
 ) => {
   const completed = new Set(results.map(({ unit }) => unit)),
     examined = new Set(votes.map(({ finding, verifier }) => `${finding}/${verifier}`)),
@@ -64,7 +66,7 @@ const plannedCost = (
     for (const finding of result.findings)
       for (let verifier = 1; verifier <= plan.verifiers; verifier++)
         if (!examined.has(`${result.unit}:${finding.id}/${verifier}`)) roles.push('reviewer')
-  return workerCost(roles)
+  return workerCost(roles, undefined, models)
 }
 const languages = (paths: string[]) =>
   [
@@ -128,6 +130,7 @@ export class GateWorkflow {
       gate === 'verify' ? 'verify-works' : 'review-code',
       first?.run,
     )
+    const models = clientModels(() => config.answers)
     const settings = isObject(config.gates) ? config.gates : {}
     const gateSettings = isObject(settings[gate]) ? settings[gate] : {}
     const inventory = discover(repo.path, this.engine.store.files, this.engine.home)
@@ -315,7 +318,7 @@ export class GateWorkflow {
         return {
           schema: 'wholeloop/gate-plan@1',
           plan: previous.plan,
-          cost: plannedCost(previous.plan, previous.results, previous.votes),
+          cost: plannedCost(previous.plan, previous.results, previous.votes, models),
           budget,
           resumed: true,
         }
@@ -323,7 +326,7 @@ export class GateWorkflow {
         return {
           schema: 'wholeloop/gate-plan@1',
           plan: previous.plan,
-          cost: plannedCost(previous.plan, previous.results, previous.votes),
+          cost: plannedCost(previous.plan, previous.results, previous.votes, models),
           budget,
           resumed: true,
           complete: snapshot.digest === previous.plan.snapshot.digest,
@@ -364,7 +367,7 @@ export class GateWorkflow {
       return {
         schema: 'wholeloop/gate-plan@1',
         plan,
-        cost: plannedCost(plan),
+        cost: plannedCost(plan, [], [], models),
         budget,
         resumed: false,
       }

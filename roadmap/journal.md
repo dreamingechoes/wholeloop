@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-22 · P9-15 ✅ · Worker models per tier and client
+
+- **Changed:** a person can map each canonical tier (`fast`, `standard`, `deep`) to a model per client. Setup asks one question per tier for the executing client, with free text and the current choice named; `wl setup --models <client>:<tier>=<model>` saves it at an explicit scope. Choices are remembered answers `model:<client>:<tier>`, validated as `inherit` or a bounded model identifier; a malformed value is refused, never skipped.
+- **Rendering:** `wl install` reads only the installation scope's own configuration file and writes the mapped value into the native model field of all seven clients, with a sentence naming it as configured. Unmapped output, `wl build`, marketplace plugins and maintainer renders stay byte-identical; Claude Code keeps its haiku/sonnet/opus aliases until a tier is mapped, and explicit `inherit` changes only Claude Code. Doctor compares installations with the same scoped mapping, so a changed choice reads as out of date.
+- **Preview:** research, framing, verification and review previews add the configured model to each mapped tier and a "configured for" line, read only when a packaged client launched the command. Headless previews stay unmapped because headless workers receive no model.
+- **Decision:** [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md) owns the refinement, with a pointer in [ADR-0048](../docs/decisions/0048-native-target-layouts-and-checked-launcher-roots.md). The criterion's "default stays inherit" holds for six clients; changing Claude Code's alias default to inherit was rejected because it would silently move verifiers to the session model, often the most expensive. Also rejected: a new key in the frozen `config@1` schema, merging user and project mappings at installation, mappings in plugin builds or headless recipes, and offering model names nobody chose. Coverage, quorums and authority are unchanged.
+- **Documentation:** configuration gains a worker-models section; setup, the cost-preview guide, platforms and authoring explain the mapping. Manual verification records the native observation for all seven clients, including whether Copilot and Gemini honour the custom-agent model header. One generated reference was regenerated for the new setup option; no recorded command output changed, so no terminal GIF was regenerated. Counts are 119/139, with six Phase 9 tasks open.
+- **Verified:** `CHECK PASS in 714s`, 5321 tests in 358 files; `CHECK PASS (fast) in 532s`, 3173 related tests in 161 files. `test/unit/workers/models.test.ts` passes 20 cases, including all seven renderers, per-scope installation and doctor, and the compiled setup command. Related adapter, installation, worker, display, gate, research and contract suites passed 1377 tests in 39 files. macOS arm64 locally; required CI supplies Linux and Node 20 checks. No native client, model account or live evaluation was used.
+
+---
+
 ## 2026-11-22 · P9-14 ✅ · Structural checks of committed code citations
 
 - **Changed:** research submission validates versioned code references against locally available committed blobs: exact file, valid line range and literal excerpt. Every failure names its claim and refuses the entire angle before any result/check event commits. Pending code jobs receive the observed local revision; successful checks travel only with their own claim to independent examiners and the derived brief.

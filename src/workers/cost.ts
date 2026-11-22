@@ -2,6 +2,7 @@
 import { bundledCanonical } from '../adapters/canonical.js'
 import { isObject } from '../config/schema.js'
 import { frontmatter } from '../harness/frontmatter.js'
+import type { WorkerModels } from './models.js'
 
 type Tier = 'fast' | 'standard' | 'deep' | 'unknown'
 let tiers: ReadonlyMap<string, Tier> | undefined
@@ -19,17 +20,27 @@ function tierFor(role: string): Tier {
   return tiers.get(role.replace(/^wl-/, '')) ?? 'unknown'
 }
 
-export function workerCost(roles: readonly string[], assignments?: readonly object[]) {
+export function workerCost(
+  roles: readonly string[],
+  assignments?: readonly object[],
+  models?: WorkerModels,
+) {
   const groups = new Map<Tier, number>()
   for (const role of roles) {
     const tier = tierFor(role)
     groups.set(tier, (groups.get(tier) ?? 0) + 1)
   }
+  const mapped = (tier: Tier) => (tier === 'unknown' ? undefined : models?.tiers[tier])
   return {
     workers: roles.length,
     modelTiers: [...groups]
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([tier, workers]) => ({ tier, workers })),
+      .map(([tier, workers]) => ({
+        tier,
+        workers,
+        ...(mapped(tier) ? { model: mapped(tier) as string } : {}),
+      })),
+    ...(models && [...groups.keys()].some(mapped) ? { modelClient: models.client } : {}),
     estimate: {
       unit: 'worker-calls' as const,
       value: roles.length,
@@ -44,8 +55,7 @@ export function workerCost(roles: readonly string[], assignments?: readonly obje
       durationMs: null,
       price: null,
     },
-    basis:
-      'Current planned assignments; requested tiers, not observed client models. Later findings, read evidence and client overhead are unknown.',
+    basis: `Current planned assignments; requested tiers${models && [...groups.keys()].some(mapped) ? `, with models configured for ${models.client} that apply to roles installed after the choice` : ''}, not observed client models. Later findings, read evidence and client overhead are unknown.`,
   }
 }
 export type WorkerCost = ReturnType<typeof workerCost>
@@ -53,17 +63,24 @@ export type WorkerCost = ReturnType<typeof workerCost>
 export function assignmentCost(
   jobs: readonly { role: string }[],
   examinations: readonly { role: string }[] = [],
+  models?: WorkerModels,
 ) {
   const assignments = [...jobs, ...examinations]
   return workerCost(
     assignments.map(({ role }) => role),
     assignments,
+    models,
   )
 }
 
 export function costText(cost: WorkerCost): string {
   const tiers =
-      cost.modelTiers.map(({ tier, workers }) => `${tier} × ${workers}`).join(' · ') || 'none',
+      cost.modelTiers
+        .map(
+          ({ tier, workers, model }) =>
+            `${tier} × ${workers}${model ? ` (${model === 'inherit' ? 'session model' : model})` : ''}`,
+        )
+        .join(' · ') || 'none',
     size =
       cost.estimate.declaredInputBytes === null
         ? 'context not prepared'

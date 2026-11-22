@@ -12,6 +12,7 @@ import { loadProviders } from '../providers/load.js'
 import { sourceCandidates } from '../providers/source-access.js'
 import { currentClientAttribution } from '../state/attribution-context.js'
 import type { StateEvent } from '../state/events.js'
+import { clientModels } from '../workers/models.js'
 import { researchAssignments } from './assignments.js'
 import { checkCodeCitations, localCodeRevision } from './citations.js'
 import {
@@ -79,6 +80,7 @@ export class ResearchWorkflow {
       writeSetting(file, ['providers', 'sources'], [...sources].sort())
       return { scope, file }
     }
+    const models = clientModels(() => this.engine.configuration().values.answers, client)
     return this.engine.store.transaction((events, append) => {
       const run = activeRun(events, subject)
       let existing = events.find(
@@ -198,6 +200,7 @@ export class ResearchWorkflow {
           )
             ? localCodeRevision(this.engine.root)
             : undefined,
+          models,
         ),
       }
     })

@@ -69,7 +69,7 @@ metadata:
 
 - Capabilities are abstract (`read`, `write`, `shell`, `web`); each adapter maps them to tool names or permissions.
 - **What a role must not do is removed from its capabilities**, not only written in its prompt.
-- The model tier is a hint (`fast` · `standard` · `deep`) mapped per CLI.
+- The model tier is a hint (`fast` · `standard` · `deep`) mapped per CLI. A person can map each tier to a model per client ([worker models](../configuration/README.md#worker-models)); choose the tier for the role's reasoning load, not for a specific model.
 - **Workers return results in their final message.** Supply the exact assignment, schema, required protocol text and observed inputs. The conductor validates and submits the result. Do not instruct a command-disabled role to invoke the CLI, write a result file or create a replacement worker. The renderer refuses incompatible tool instructions; it does not add permissions.
 - **Name the role explicitly.** Canonical skills use `wl-researcher`, `wl-challenger`, `wl-builder` and the other declared roles. Generation renders each client's actual names. Follow `worker-handoffs`; never fork conversation history or substitute the conductor. The explicitly documented headless route handles an omitted native role.
 

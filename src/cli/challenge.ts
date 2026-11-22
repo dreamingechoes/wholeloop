@@ -7,6 +7,7 @@ import type { Profile } from '../profile/presets.js'
 import { scopeContext } from '../scopes/contract.js'
 import { slicingContext } from '../slices/contract.js'
 import { StateStore } from '../state/store.js'
+import { workerModels } from '../workers/models.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
@@ -55,8 +56,10 @@ export function challengeCommand(
   )
     throw new CliError('--challenge expects supportive|balanced|adversarial')
   const challenge = selected ?? (engine.config().profile as Profile).challenge
+  const models = workerModels(engine)
   const plan = challengePlan(mode as ChallengeMode, readFileSync(file, 'utf8'), {
     challenge: challenge as Profile['challenge'],
+    ...(models ? { models } : {}),
     ...(typeof subject === 'string'
       ? mode === 'slicing'
         ? { slicing: slicingContext(engine.store.events(), subject) }

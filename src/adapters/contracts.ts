@@ -18,6 +18,12 @@ export interface RenderedFile {
 }
 export interface RenderOptions {
   runtime?: boolean
+  /**
+   * The model a person mapped to this role's tier for this client: `inherit` or an identifier.
+   * Absent keeps the adapter's built-in choice, so plugin builds and default installs stay
+   * byte-identical.
+   */
+  model?: string
 }
 export interface Adapter {
   id: string

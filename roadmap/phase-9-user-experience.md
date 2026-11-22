@@ -278,14 +278,16 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-15 · Model tier per role and client
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-03 · **Release:** 1.2.0
+**Status:** ✅ · **Size:** M · **Depends on:** P9-03 · **Release:** 1.2.0 · **Decision:** [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md)
 
 **Goal** — Verifiers and challengers do not have to run on the most expensive model.
 
 **Acceptance criteria:**
 
-- [ ] Configuration maps the canonical tiers to a model per client; setup asks once; the default stays "inherit".
-- [ ] Rendered agents carry the mapped model where the client supports it and say so in the cost preview.
+- [x] Configuration maps the canonical tiers to a model per client; setup asks once; the default stays "inherit".
+- [x] Rendered agents carry the mapped model where the client supports it and say so in the cost preview.
+
+**Evidence** — `CHECK PASS in 714s`, 5321 tests in 358 files; `CHECK PASS (fast) in 532s`, 3173 related tests in 161 files. `test/unit/workers/models.test.ts` passes 20 cases: identifier and choice validation, refusal of malformed remembered values, no configuration read without an executing client, the native model field and configured sentence for every role on all seven clients, byte-identical unmapped output, preview tiers and display rows, per-tier setup questions for the executing client only, refusals and run scope that write nothing, per-scope installation files, an installed Claude role, doctor current/stale comparison and the compiled `wl setup --models` command. Criterion 1 is met as refined in [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md): unmapped tiers inherit the session model on six clients, while Claude Code keeps its existing aliases ([ADR-0048](../docs/decisions/0048-native-target-layouts-and-checked-launcher-roots.md)) rather than silently moving verifiers to the session model; mappings are remembered answers because the `config@1` declaration is frozen. Criterion 2 is checked for rendering and preview; whether each client loads the field and runs that model is in [manual verification](./manual-verification.md). One generated reference was regenerated; no recorded command output changed. No native client, model account or live evaluation was used.
 
 **Tests** — Rendering tests per client; configuration schema tests.
 
