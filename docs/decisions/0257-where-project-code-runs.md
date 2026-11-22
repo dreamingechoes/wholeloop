@@ -25,7 +25,7 @@ On 2026-11-18 a fixture application whose test reports its platform ran through 
   - The image is chosen by the person (`--image` for a run, or the remembered answer `execution:image`) and resolved from the local cache only; nothing is pulled. Without an image the step refuses before planning and names the remedies.
   - A per-repository host choice is the answer `execution:project-code` in the committed project file only; `wl setup` refuses it at user scope, because a user-level choice would cover every repository. A per-run choice is `--execution host` on `wl verify suite`.
   - `wl exec` follows only the repository's choice. Builders cannot select host execution for themselves, so a model never turns off isolation on its own.
-  - The supervised container has no network. Installing dependencies with network is a wider containment choice, left as proposal 0260 and a manual verification row.
+  - The supervised container has no network. Installing dependencies with network is a wider containment choice; [0260](./0260-network-for-supervised-project-setup.md), accepted on 2026-11-22, allows one declared setup command with network before every other command runs offline.
   - The Docker CLI receives only `PATH`, `HOME` and its `DOCKER_*` connection variables; nothing from the host reaches the container. A container under the same name that wholeloop did not label is never reused, replaced or removed.
   - Passing an executor (the runner) together with a host or image choice is refused, so the runner cannot be given host execution through the same call.
 

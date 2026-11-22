@@ -1717,6 +1717,7 @@ export const COMMANDS: readonly Command[] = [
       '--models <client:tier=model,...>',
       '--execution <docker|host>',
       '--image <name>',
+      '--project-setup <command>',
       '--scope <scope>',
     ],
     schema: 'wholeloop/setup@1',

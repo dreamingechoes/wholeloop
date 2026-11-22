@@ -144,7 +144,7 @@ wl verify complete --for slice-0123abcd --json
 - **Without Docker** the suite refuses before planning anything (exit 3) and names both ways forward: start Docker, or choose host execution for this run.
 - **Host execution is your explicit choice.** `--execution host` runs this round on your machine; `wl setup --execution host --scope project` makes it the repository's choice. Either way the result says "This machine, not isolated". Autonomous runs never use the host.
 
-Dependencies must already be usable inside the container, because it has no network: a repository whose packages need installing for Linux will fail there until a network-enabled setup step exists.
+**Installing dependencies.** The container has no network, so dependencies that must be installed for Linux need a setup command. Declare one for the repository, for example `wl setup --project-setup "npm ci" --scope project`. It runs once per workspace, when the container is created, with network; the container is then taken offline before tests or builder commands run. Verification shows the setup before it starts and records it with the round. Only `npm`, `pnpm`, `bun`, `uv` and `composer` are accepted, because each writes to one known folder (`node_modules`, `.venv` or `vendor`), which is kept in your store instead of the worktree. Other installers need an image with the dependencies already in it, or host execution ([ADR-0260](../../decisions/0260-network-for-supervised-project-setup.md)).
 
 **Once per round.** The suite runs once per round, and every verifier reads the same result.
 

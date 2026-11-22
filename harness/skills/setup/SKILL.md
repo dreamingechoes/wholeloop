@@ -13,6 +13,8 @@ Read the shared ask-never-guess, output-contract and installation protocols. Rea
 4. Inspect integrations through `wl provider list --json` and `wl provider test
    <id> --json`. Detection is not authentication. For a requested MCP client, `wl mcp add <id> --target <cli> --json` prints a snippet to review and merge. Prefer that client's observed MCP tools/schemas; read source-evidence and destination-publication before calls. Use provider plan for the selected operation and external metadata. wholeloop has no service client of its own: without client MCP access an operation stays an open question or local handoff.
 
+⛔ `project-setup-person-choice`: pass `--project-setup <command> --scope project` only with an install command the person chose, never one inferred from a lock file; say that it runs once per workspace with network before every other command runs offline.
+
 For local setup failures, call `wl doctor --json`; with a known generated artifact, pass its single --target and --artifact. Inspect its repair/diagnostic commands without running installation or permission changes automatically. Report actual access and activation separately from installed versions or declarations.
 
 For an explicit installation request, use install/uninstall with exact targets and scope; report ownership, retained backups and pending activation from the core.

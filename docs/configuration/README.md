@@ -127,8 +127,9 @@ Supervised verification and building run project code in Docker by default. Two 
 | --- | --- | --- |
 | `execution:image` | an image in your local Docker cache, such as `node:22-bookworm` | user or project |
 | `execution:project-code` | `docker` (default) or `host`, which runs on your machine without isolation | project only, so it never applies to every repository at once |
+| `execution:setup` | one `npm`, `pnpm`, `bun`, `uv` or `composer` command that installs dependencies, such as `npm ci`; it runs once per container with network, then the container goes offline | project only |
 
-Set them with `wl setup --image <name>` and `wl setup --execution host --scope project`. Autonomous runs ignore both and always use their own pinned environments.
+Set them with `wl setup --image <name>`, `wl setup --execution host --scope project` and `wl setup --project-setup "npm ci" --scope project`. Autonomous runs ignore both and always use their own pinned environments.
 
 ## Inspect configuration
 

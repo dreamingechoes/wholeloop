@@ -51,7 +51,7 @@ When you run `verify-works` or `build-slice` yourself, project code runs in one 
 
 - **Docker is checked only when code is about to run**, before anything is planned. Without it the step refuses (exit 3) and names both remedies: start Docker, or choose host execution for this run.
 - **Host execution is a person's choice**: `--execution host` on `wl verify suite` for one run, or `wl setup --execution host --scope project` for the repository. It is shown before the suite starts, recorded with the round and displayed as "This machine, not isolated". Builders cannot select it; `wl exec` follows only the repository's choice. The autonomous runner refuses it.
-- **Dependencies** must already work inside the container, because it has no network. Installing Linux packages for a project needs a network-enabled setup step, which is not available yet.
+- **Dependencies** are installed by one declared setup command (`wl setup --project-setup "npm ci" --scope project`), run once per container with network; the container is detached from that network and checked offline before any other command, and the dependency folder lives in the store, not the worktree. Without a declared setup the container never joins a network ([ADR-0260](../decisions/0260-network-for-supervised-project-setup.md)).
 
 ## Requirements
 

@@ -1,9 +1,11 @@
 // A warm per-workspace container that runs a supervised step's project commands (ADR-0257).
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { posix } from 'node:path'
+import { mkdirSync, rmSync } from 'node:fs'
+import { join, posix } from 'node:path'
 import { dockerCliEnvironment } from '../environment/docker-command.js'
-import { canonicalPath } from '../state/paths.js'
+import { canonicalPath, storePath } from '../state/paths.js'
+import type { ProjectSetup } from './choice.js'
 
 export class DockerUnavailableError extends Error {}
 export interface DockerReply {
@@ -17,7 +19,11 @@ export interface ProjectSandbox {
   image: string
   imageId: string
   workspace: string
+  /** The declared setup and whether it ran, with network, when this container was created. */
+  setup?: { argv: string[]; ran: boolean }
 }
+/** A dependency install is allowed far longer than one inspection call. */
+export const SETUP_TIMEOUT_MS = 15 * 60 * 1000
 
 /**
  * The Docker CLI resolves its own context and credentials; wl never reads Docker's configuration
@@ -77,6 +83,14 @@ const LABEL = 'wholeloop.exec'
 export function sandboxName(workspace: string) {
   return `wl-exec-${createHash('sha256').update(canonicalPath(workspace)).digest('hex').slice(0, 16)}`
 }
+const setupLabel = (setup?: ProjectSetup) =>
+  setup ? createHash('sha256').update(JSON.stringify(setup)).digest('hex').slice(0, 16) : 'none'
+/** Installed dependencies live in the store, never in the worktree the person can open (ADR-0260). */
+export function dependencyCache(workspace: string, store = storePath()) {
+  return join(store, 'execution', sandboxName(workspace))
+}
+// --mount is comma-separated and has no escape the CLI documents for every version.
+const mountable = (path: string) => !/[,"\n\r]/.test(path)
 
 /**
  * Reuse the running container for this workspace and image, so a build loop does not pay a
@@ -87,10 +101,12 @@ export function ensureSandbox(
   workspace: string,
   image: string,
   call: DockerCall = dockerCli,
+  options: { setup?: ProjectSetup; store?: string } = {},
 ): ProjectSandbox {
   const source = canonicalPath(workspace)
-  // --mount is comma-separated and has no escape the CLI documents for every version.
-  if (/[,"\n\r]/.test(source))
+  const setup = options.setup
+  const cache = setup ? dependencyCache(source, options.store) : undefined
+  if (!mountable(source) || (cache && !mountable(cache)))
     throw new DockerUnavailableError(
       'This workspace path contains a comma, quote or newline, which Docker cannot mount safely; move the worktree or choose --execution host.',
     )
@@ -102,21 +118,31 @@ export function ensureSandbox(
       'container',
       'inspect',
       '--format',
-      `{{index .Config.Labels "${LABEL}"}} {{index .Config.Labels "wholeloop.image"}} {{.State.Running}}`,
+      `{{index .Config.Labels "${LABEL}"}} {{index .Config.Labels "wholeloop.image"}} {{.State.Running}} {{index .Config.Labels "wholeloop.setup"}} {{range $name, $value := .NetworkSettings.Networks}}{{$name}} {{end}}`,
       container,
     ],
     15_000,
   )
   if (inspected.code === 0) {
-    const [owned, ownedImage, running] = inspected.stdout.trim().split(' ')
+    const [owned, ownedImage, running, ownedSetup = '', ...networks] = inspected.stdout
+      .trim()
+      .split(/\s+/)
     if (owned !== '1')
       throw new DockerUnavailableError(
         `A container named ${container} exists but was not created by wholeloop; remove or rename it.`,
       )
-    if (ownedImage === imageId) {
+    // A reused container must still be offline: setup's network is detached before any command.
+    const offline = networks.every((name) => name === 'none')
+    if (ownedImage === imageId && (ownedSetup || 'none') === setupLabel(setup) && offline) {
       if (running !== 'true' && call(['container', 'start', container]).code !== 0)
         throw new DockerUnavailableError(`Could not restart the project container ${container}.`)
-      return { container, image, imageId, workspace: source }
+      return {
+        container,
+        image,
+        imageId,
+        workspace: source,
+        ...(setup ? { setup: { argv: setup.argv, ran: false } } : {}),
+      }
     }
     if (call(['container', 'rm', '--force', container]).code !== 0)
       throw new DockerUnavailableError(`Could not replace the project container ${container}.`)
@@ -136,8 +162,11 @@ export function ensureSandbox(
       `${LABEL}=1`,
       '--label',
       `wholeloop.image=${imageId}`,
+      '--label',
+      `wholeloop.setup=${setupLabel(setup)}`,
+      // Only a declared setup starts on a network, and it is detached before any other command.
       '--network',
-      'none',
+      setup ? 'bridge' : 'none',
       '--cap-drop',
       'ALL',
       '--security-opt',
@@ -155,6 +184,12 @@ export function ensureSandbox(
       'HOME=/tmp',
       '--mount',
       `type=bind,source=${source},target=/workspace`,
+      ...(setup && cache
+        ? [
+            '--mount',
+            `type=bind,source=${prepared(cache)},target=${posix.join('/workspace', setup.dependencies)}`,
+          ]
+        : []),
       '--workdir',
       '/workspace',
       '--entrypoint',
@@ -168,7 +203,37 @@ export function ensureSandbox(
     throw new DockerUnavailableError(
       `Could not start a project container from ${image}; it needs a sleep executable.`,
     )
-  return { container, image, imageId, workspace: source }
+  if (!setup) return { container, image, imageId, workspace: source }
+  const fail = (message: string): never => {
+    call(['container', 'rm', '--force', container])
+    throw new DockerUnavailableError(message)
+  }
+  const ran = call(['exec', '--workdir', '/workspace', container, ...setup.argv], SETUP_TIMEOUT_MS)
+  if (ran.code !== 0)
+    fail(
+      `Setup ${setup.argv.join(' ')} failed in the project container${ran.stderr.trim() ? `: ${ran.stderr.trim().split('\n').slice(-3).join(' ')}` : ''}`,
+    )
+  // Every later command must run offline; a container that cannot prove it is removed.
+  const detached = call(['network', 'disconnect', 'bridge', container], 30_000)
+  const left = call(
+    [
+      'container',
+      'inspect',
+      '--format',
+      '{{range $name, $value := .NetworkSettings.Networks}}{{$name}} {{end}}',
+      container,
+    ],
+    15_000,
+  )
+  if (detached.code !== 0 || left.code !== 0 || left.stdout.trim() !== '')
+    fail(`Could not take the project container ${container} offline after setup; it was removed.`)
+  return { container, image, imageId, workspace: source, setup: { argv: setup.argv, ran: true } }
+}
+
+/** A store directory the person owns, so the container's own user can write dependencies there. */
+function prepared(cache: string) {
+  mkdirSync(cache, { recursive: true, mode: 0o700 })
+  return cache
 }
 
 /** A command's directory relative to its workspace, never above or outside it. */
@@ -193,7 +258,7 @@ export function sandboxArgv(sandbox: ProjectSandbox, cwd: string, argv: readonly
 }
 
 /** A timed-out command keeps running inside the container unless the container stops. */
-export function stopSandbox(workspace: string, call: DockerCall = dockerCli) {
+export function stopSandbox(workspace: string, call: DockerCall = dockerCli, store = storePath()) {
   const container = sandboxName(workspace)
   const inspected = call(
     ['container', 'inspect', '--format', `{{index .Config.Labels "${LABEL}"}}`, container],
@@ -204,5 +269,8 @@ export function stopSandbox(workspace: string, call: DockerCall = dockerCli) {
     throw new DockerUnavailableError(
       `A container named ${container} exists but was not created by wholeloop; it was left alone.`,
     )
-  return call(['container', 'rm', '--force', container]).code === 0
+  const removed = call(['container', 'rm', '--force', container]).code === 0
+  // Installed dependencies belong to that container; the next one runs its setup again.
+  if (removed) rmSync(dependencyCache(workspace, store), { recursive: true, force: true })
+  return removed
 }

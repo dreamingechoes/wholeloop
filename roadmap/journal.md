@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-22 · P9-25 ✅ · Network for supervised project setup
+
+- **Decision:** the maintainer accepted [ADR-0260](../docs/decisions/0260-network-for-supervised-project-setup.md); P9-25 implements it. Refinements recorded there: only `npm`, `pnpm`, `bun`, `uv` and `composer` commands, because each writes to one known folder; that folder is a store directory the person owns rather than a named volume, which would be owned by root while project commands run as the person's user ID; setup is read only from the committed project file. Rejected: any command as setup, and named volumes.
+- **Changed:** `wl setup --project-setup "npm ci" --scope project` declares the setup; a lock file only proposes it. A container with a declared setup starts on the bridge network, runs the setup with the dependency folder mounted from the store, is detached and must report no network before any other command; a reused container is checked again, a failed setup or a container that cannot go offline is removed with a reason, and stopping the container removes its dependencies. A container without setup never joins a network.
+- **Shown and recorded:** `verify begin` shows a Setup line before anything runs, each Docker round records `verify.suite-setup` (`wholeloop/suite-setup@1`, added to the compatibility baseline) and `wl exec` says when setup ran with network. The verification and build protocols tell agents to show the line and never install dependencies through `wl exec`; the setup skill gains `project-setup-person-choice`, with enforcers.
+- **Documentation:** verify-works, build-slice, execution isolation, configuration and troubleshooting describe the setup; ADR-0257 points to ADR-0260. Counts are 126/141, with P9-24 the only open Phase 9 task.
+- **Verified:** `CHECK PASS in 704s`, 5413 tests in 364 files with the Docker rehearsals skipped; `CHECK PASS (fast) in 633s`, 4199 related tests in 269 files. `test/unit/execution/execution.test.ts` passes seven new fixture cases; its gated rehearsal against Docker Desktop 29.9.3 on macOS arm64 with `node:22-bookworm` installed `ms` with `npm ci` over the network, ran the suite with that dependency while `fetch` was blocked, and left the host worktree without dependencies and no container behind. A Linux rehearsal remains manual. No model, native client or hosted trial was used.
+
+---
+
 ## 2026-11-22 · P9-23 ✅ · Autonomous research includes an authored conclusion
 
 - **Changed:** after its examinations, the unattended research stage makes one bounded conclusion call, with the same two repair attempts as every job, through a read-only planner purpose without web access. The author receives only the question, the evidence aggregate, its digest basis and the core-derived certainty; it queries no source, runs no command and gains no authority beyond `source.read` and `report.write`. The brief then opens with Answer, Recommendation, confidence and unchecked work, and every claim, refutation, open question and source limit follows unchanged.

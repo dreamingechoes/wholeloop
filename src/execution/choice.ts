@@ -56,3 +56,60 @@ export function chosenImage(answers: unknown, run?: string): string | undefined 
 
 /** The person-facing phrase every display and refusal uses for host execution. */
 export const NOT_ISOLATED = 'ran on this machine, not isolated'
+
+export const SETUP_ANSWER = 'execution:setup'
+/**
+ * Installers whose whole output lands in one known folder, which is kept out of the worktree
+ * (ADR-0260). Others write elsewhere in the repository or the home directory, so they are refused
+ * rather than guessed; a prepared image or host execution covers them.
+ */
+export const SETUP_INSTALLERS: Readonly<Record<string, string>> = {
+  npm: 'node_modules',
+  pnpm: 'node_modules',
+  bun: 'node_modules',
+  uv: '.venv',
+  composer: 'vendor',
+}
+export interface ProjectSetup {
+  argv: string[]
+  /** The workspace folder the installer writes, mounted from outside the worktree. */
+  dependencies: string
+}
+
+/** One plain command, run without a shell, so nothing can chain or redirect around the rule. */
+export function checkSetup(value: string): ProjectSetup {
+  const argv = value.trim().split(/\s+/).filter(Boolean)
+  const installer = argv[0] ?? ''
+  const dependencies = SETUP_INSTALLERS[installer]
+  if (
+    !dependencies ||
+    argv.length > 16 ||
+    value.length > 256 ||
+    argv.some((token) => !/^[A-Za-z0-9_@%+=:,./-]+$/.test(token))
+  )
+    throw new Error(
+      `Setup '${value}' must be one ${Object.keys(SETUP_INSTALLERS).join(', ')} command without shell syntax, such as npm ci`,
+    )
+  return { argv, dependencies }
+}
+
+/** Like host execution, setup with network is a per-repository choice in the committed file. */
+export function repositorySetup(root: string): ProjectSetup | undefined {
+  const values = readConfig(join(root, '.wholeloop/config.yml'), true)
+  const answers = isObject(values) && isObject(values.answers) ? values.answers : {}
+  const value = answers[SETUP_ANSWER]
+  if (value === undefined) return undefined
+  if (typeof value !== 'string') throw new Error(`answers.${SETUP_ANSWER} must be a command`)
+  return checkSetup(value)
+}
+
+/** Detection only proposes a setup; it is never applied without the person choosing it. */
+export function proposedSetup(files: readonly string[]): string | undefined {
+  if (files.includes('package-lock.json')) return 'npm ci'
+  if (files.includes('pnpm-lock.yaml')) return 'pnpm install --frozen-lockfile'
+  if (files.includes('bun.lock') || files.includes('bun.lockb'))
+    return 'bun install --frozen-lockfile'
+  if (files.includes('uv.lock')) return 'uv sync --frozen'
+  if (files.includes('composer.lock')) return 'composer install'
+  return undefined
+}

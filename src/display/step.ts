@@ -185,6 +185,12 @@ export function stepDisplay(
       return `Docker container · ${value(entry.image) || 'image not chosen yet'}`
     return ''
   }
+  // Setup is the only project command that gets network; the person sees it before and after.
+  const setup = (input: unknown) => {
+    const entry = record(record(input).setup)
+    if (!entry.command) return ''
+    return `${value(entry.command)}, with network, once per workspace${entry.ran === true ? ' (ran for this round)' : entry.ran === false ? ' (ran earlier)' : ''}; later commands run offline`
+  }
   // Rigor is the person's choice; a different proposal is surfaced, never applied silently.
   const rigor = record(payload.rigor)
   row('Rigor', rigor.coverage)
@@ -193,6 +199,7 @@ export function stepDisplay(
       `Proposed rigor for this run: ${value(rigor.proposed)}. It stays ${value(rigor.rigor)} unless you choose otherwise.`,
     )
   row('Project code', placement(payload.projectCode))
+  row('Setup', setup(payload.projectCode) || setup(payload.execution))
   row('Ran in', placement(payload.execution))
   if (command === 'verify suite') {
     for (const finding of list(payload.findings)) {
