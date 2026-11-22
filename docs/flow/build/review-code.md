@@ -53,13 +53,18 @@ flowchart TD
 | **simplicity** | Is there a smaller, clearer way to say the same thing — in code and in prose? |
 | **change shape** | Is this one coherent change, sized to be reviewed, with nothing unrelated inside? |
 
-1. **Lenses are fixed, not chosen per run.** Six reviewers asking the same question would agree with each other; six different questions catch different things.
+1. **Lenses are fixed, not chosen per run.** Six reviewers asking the same question would agree with each other; six different questions catch different things. Correctness and security always run. The four optional lenses step aside only when the change cannot concern them, and the plan says why:
+   - **Documentation only:** design fit, performance and simplicity are skipped.
+   - **Ten changed lines or fewer in one file:** simplicity and change shape are skipped.
+   - An unknown size, such as a new untracked file, keeps every lens.
 2. **Your repo's guidance is the rubric.** A review skill, `CONTRIBUTING.md`, a style guide or lint config found by `wl discover` sets what "good" means here. The harness default applies only where the repo is silent.
-3. **Challenged before it blocks.** A finding is dropped only when two or more of its three challengers actively argue it is wrong.
-4. **Security and correctness lean cautious.** Input that crosses a boundary is treated as untrusted until the code shows otherwise; in doubt, the finding stands. A missed exploit costs far more than a false alarm.
-5. **Later rounds look at what moved.** Round 2 reviews only the diff since round 1, so a fix isn't punished for code it never touched.
-6. **Reads, never writes.** Same guarantee as verify: no edit tools where enforceable, and the slice's worktree is checked untouched after every round.
-7. **Bounded, and yours to tune.** Three rounds by default; change it per project (`gates.review.rounds`) or per run (`--rounds review=5`). Still blocked at the limit? You get every finding with its reasoning, and the choice to extend or stop.
+3. **Only blockers block.** Each finding of an optional lens carries a severity: **blocker** (the change must not ship with it), **should** (worth fixing, can wait) or **nit** (cosmetic). Should and nit findings are not challenged and do not fail the round; you read every one of them in the hand-back as "Not blocking". Correctness and security findings are always blockers.
+4. **Challenged before it blocks.** A blocker is dropped only when two or more of its three challengers actively argue it is wrong.
+5. **Security and correctness lean cautious.** Input that crosses a boundary is treated as untrusted until the code shows otherwise; in doubt, the finding stands. A missed exploit costs far more than a false alarm.
+6. **Later rounds look at what moved.** Round 2 reviews only the diff since round 1, so a fix isn't punished for code it never touched.
+7. **Reads, never writes.** Same guarantee as verify: no edit tools where enforceable, and the slice's worktree is checked untouched after every round.
+8. **Bounded, and yours to tune.** Three rounds by default; change it per project (`gates.review.rounds`) or per run (`--rounds review=5`). Still blocked at the limit? You get every finding with its reasoning, and the choice to extend or stop.
+9. **Rigor is your choice.** `standard` is the default and the coverage above. Ask for `--rigor quick` to run only correctness, security and your criteria for a tiny change, or `--rigor deep` for five challengers per blocker. The plan shows a proposal from the change size, but nothing changes unless you choose it, and your interaction profile never does. The chosen rigor and what it covered appear in the plan and the verdict.
 
 **Teams can add lenses** (accessibility, i18n, data privacy…) as manifests ([extending](../../extending/lenses-templates-profiles.md)). Disabling a built-in requires a meaningful reason in project configuration, reported in every gate plan.
 

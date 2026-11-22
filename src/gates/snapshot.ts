@@ -140,3 +140,27 @@ export function changedPaths(root: string, base: string): string[] {
     ),
   ].sort()
 }
+
+/**
+ * Added plus deleted lines against the base for tracked files. Unknown when the change has an
+ * untracked or binary file, so a size rule can only ever keep a lens, never drop one by guess.
+ */
+export function changedLineCount(root: string, base: string): number | undefined {
+  if (git(root, ['ls-files', '--others', '--exclude-standard', '-z']).split('\0').some(Boolean))
+    return undefined
+  let lines = 0
+  for (const entry of git(root, [
+    '-c',
+    'diff.autoRefreshIndex=false',
+    'diff',
+    '--numstat',
+    base,
+    '--',
+  ]).split('\n')) {
+    if (!entry.trim()) continue
+    const [added, deleted] = entry.split('\t')
+    if (!/^\d+$/.test(added ?? '') || !/^\d+$/.test(deleted ?? '')) return undefined
+    lines += Number(added) + Number(deleted)
+  }
+  return lines
+}

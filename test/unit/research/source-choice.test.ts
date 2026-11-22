@@ -423,3 +423,64 @@ it.each([
       expect(view.candidates.some((candidate) => candidate.id === 'native-web')).toBe(true)
     }),
 )
+
+it('asks rigor with the sources and pins the chosen coverage for the run (ADR-0258)', () =>
+  fixture(({ workflow, subject, options, engine }) => {
+    const preview = workflow.plan(subject, options)
+    if (preview.status !== 'needs-sources') throw new Error('Expected source question')
+    expect(preview.openQuestions.at(-1)).toMatchObject({
+      question: 'Which rigor should this research use?',
+      missing: expect.stringContaining('Proposed: standard.'),
+    })
+    const quick = workflow.plan(subject, { ...options, sources: ['native-code'], rigor: 'quick' })
+    if (quick.status !== 'planned') throw new Error('Expected a plan')
+    expect(quick.rigor).toMatchObject({ rigor: 'quick', proposed: 'quick', source: 'person' })
+    expect(quick.rigor.coverage).toBe('Quick: claims are not independently verified')
+    expect(engine.store.events().filter((event) => event.type === 'research.rigor')).toHaveLength(1)
+    expect(() => workflow.plan(subject, { ...options, rigor: 'deep' })).toThrow(
+      'Rigor is fixed at quick for this research run',
+    )
+    const job = quick.jobs[0]
+    if (!job) throw new Error('Expected one investigation')
+    workflow.submit(subject, {
+      angle: job.angle.id,
+      status: 'ok',
+      claims: [
+        {
+          id: 'empty',
+          text: 'Empty input is rejected.',
+          confidence: 'high',
+          loadBearing: true,
+          evidence: [{ ref: 'https://example.com/fixture', excerpt: 'Synthetic observation' }],
+        },
+      ],
+      openQuestions: [],
+    })
+    const after = workflow.plan(subject, options)
+    if (after.status !== 'planned') throw new Error('Expected a plan')
+    expect(after.examinations).toEqual([])
+    expect(after.cost.workers).toBe(0)
+    expect(() =>
+      workflow.examine(subject, {
+        claim: `${job.angle.id}:empty`,
+        verifier: 1,
+        outcome: 'confirm',
+        reason: 'Observed',
+        evidence: [],
+      }),
+    ).toThrow('Quick rigor leaves claims unverified')
+    const context = workflow.complete(subject)
+    if (!('report' in context)) throw new Error('Expected conclusion context')
+    expect(JSON.stringify(context.report.openQuestions)).toContain(
+      'Not independently verified: quick rigor was chosen for this run',
+    )
+    expect(context.certainty?.confidence).toBe('low')
+  }))
+
+it('raises research verification to five independent verifiers under deep', () =>
+  fixture(({ workflow, subject, options }) => {
+    const deep = workflow.plan(subject, { ...options, sources: ['native-code'], rigor: 'deep' })
+    if (deep.status !== 'planned') throw new Error('Expected a plan')
+    expect(deep).toMatchObject({ verifiers: 5, refutations: 3 })
+    expect(deep.rigor.coverage).toBe('Deep: 5 independent verifiers per load-bearing claim')
+  }))

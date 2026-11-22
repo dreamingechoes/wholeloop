@@ -89,6 +89,7 @@ export function statusItems(
               round.votes,
               round.plan.snapshot.digest,
               run.budget,
+              round.classifications,
             ))
           : undefined,
       current = focus(item)

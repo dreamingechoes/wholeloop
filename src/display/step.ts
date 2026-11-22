@@ -185,6 +185,13 @@ export function stepDisplay(
       return `Docker container · ${value(entry.image) || 'image not chosen yet'}`
     return ''
   }
+  // Rigor is the person's choice; a different proposal is surfaced, never applied silently.
+  const rigor = record(payload.rigor)
+  row('Rigor', rigor.coverage)
+  if (rigor.source === 'default' && rigor.proposed && rigor.proposed !== rigor.rigor)
+    open.push(
+      `Proposed rigor for this run: ${value(rigor.proposed)}. It stays ${value(rigor.rigor)} unless you choose otherwise.`,
+    )
   row('Project code', placement(payload.projectCode))
   row('Ran in', placement(payload.execution))
   if (command === 'verify suite') {
@@ -224,6 +231,13 @@ export function stepDisplay(
         value(finding.message) ||
         value(finding.title)
       if (text) open.push(text)
+    }
+    // Advisory findings never fail a round; the person still reads each one in the hand-back.
+    for (const entry of list(report.dropped)) {
+      const reason = value(record(entry).reason)
+      const severity = /^Advisory \((should|nit)\)/.exec(reason)?.[1]
+      const finding = record(record(entry).finding)
+      if (severity) open.push(`Not blocking (${severity}): ${value(finding.text)}`)
     }
     if (list(report.missing).length) row('Not checked', list(report.missing).map(value).join(' · '))
     if (payload.current === false)

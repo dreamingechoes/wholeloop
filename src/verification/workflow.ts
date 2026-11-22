@@ -8,6 +8,7 @@ import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
 import { itemId, type StateEvent } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
+import type { Rigor } from '../workers/rigor.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import { git, namedBase } from '../worktrees/git.js'
 import { WorktreeManager } from '../worktrees/manager.js'
@@ -23,6 +24,7 @@ export interface VerifyOptions {
   criteria?: Criterion[]
   base?: string
   rounds?: number
+  rigor?: Rigor
 }
 export class VerificationWorkflow {
   constructor(readonly engine: FlowEngine) {}
@@ -161,6 +163,7 @@ export class VerificationWorkflow {
       base: base ?? '',
       criteria,
       ...(options.rounds !== undefined ? { rounds: options.rounds } : {}),
+      ...(options.rigor !== undefined ? { rigor: options.rigor } : {}),
       ...(prior?.decision?.report.verdict === 'PASS' && priorIndex <= startedIndex
         ? { newRun: true }
         : {}),

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/gate-severity@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "run": {
+      "type": "string",
+      "pattern": "^gate-[a-f0-9]{16}$"
+    },
+    "round": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "finding": {
+      "type": "string",
+      "minLength": 3
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["should", "nit"]
+    }
+  },
+  "required": ["run", "round", "finding", "severity"]
+}

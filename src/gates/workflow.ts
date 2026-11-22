@@ -21,10 +21,21 @@ import { verificationCriteria } from '../verification/contracts.js'
 import { testabilityResult, testPath } from '../verification/testability.js'
 import { workerCost } from '../workers/cost.js'
 import { clientModels, type WorkerModels } from '../workers/models.js'
+import {
+  checkRigor,
+  DEEP_VERIFIERS,
+  proposeGateRigor,
+  type Rigor,
+  type RigorChoice,
+  rigorChoice,
+  rigorView,
+  STANDARD_RIGOR,
+} from '../workers/rigor.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import { namedBase, repository } from '../worktrees/git.js'
 import { WorktreeManager } from '../worktrees/manager.js'
 import {
+  type GateClassification,
   type GateKind,
   type GatePlan,
   type GateResult,
@@ -34,7 +45,7 @@ import {
 } from './contracts.js'
 import { gateLenses } from './lenses.js'
 import { gateReport } from './report.js'
-import { changedPaths, workspaceSnapshot } from './snapshot.js'
+import { changedLineCount, changedPaths, workspaceSnapshot } from './snapshot.js'
 import { gateRuns, remainingStartupBudget } from './state.js'
 
 export interface GateOptions {
@@ -46,6 +57,8 @@ export interface GateOptions {
   newRun?: boolean
   criteria?: Criterion[]
   contracts?: ContractGateInput
+  /** The person's explicit coverage choice for a new run; never taken from the profile. */
+  rigor?: Rigor
 }
 const latestRun = (events: readonly StateEvent[], subject: string, gate: GateKind) =>
   gateRuns(events)
@@ -56,6 +69,7 @@ const plannedCost = (
   results: readonly GateResult[] = [],
   votes: readonly GateVote[] = [],
   models?: WorkerModels,
+  classifications: readonly GateClassification[] = [],
 ) => {
   const completed = new Set(results.map(({ unit }) => unit)),
     examined = new Set(votes.map(({ finding, verifier }) => `${finding}/${verifier}`)),
@@ -65,7 +79,11 @@ const plannedCost = (
   for (const result of results)
     for (const finding of result.findings)
       for (let verifier = 1; verifier <= plan.verifiers; verifier++)
-        if (!examined.has(`${result.unit}:${finding.id}/${verifier}`)) roles.push('reviewer')
+        if (
+          !classifications.some((entry) => entry.finding === `${result.unit}:${finding.id}`) &&
+          !examined.has(`${result.unit}:${finding.id}/${verifier}`)
+        )
+          roles.push('reviewer')
   return workerCost(roles, undefined, models)
 }
 const languages = (paths: string[]) =>
@@ -156,7 +174,19 @@ export class GateWorkflow {
       root: this.engine.root,
       userFile: this.engine.userFile,
     })
-    const lenses = gateLenses(gate, config, catalogOptions, inputs)
+    const lines = changedLineCount(repo.path, base.sha)
+    // A continuing run keeps the rigor its first round recorded; older runs ran at standard.
+    const continuing = !options.newRun && existing ? existing.rigor : undefined
+    if (options.rigor !== undefined && first && !options.newRun && !existing?.unavailable) {
+      const pinned = continuing?.rigor ?? 'standard'
+      if (checkRigor(options.rigor) !== pinned)
+        throw new Error(`Rigor is fixed at ${pinned} for this run; start a new run to change it`)
+    }
+    const choice = continuing ?? rigorChoice(options.rigor, proposeGateRigor(paths, lines))
+    const lenses = gateLenses(gate, config, catalogOptions, inputs, {
+      lines: gate === 'review' ? lines : undefined,
+      rigor: choice.rigor,
+    })
     const policy = lenses.policy
     if (first && !options.newRun && first.policy !== policy)
       throw new Error('Gate policy changed mid-run; restore its pinned lens configuration')
@@ -318,17 +348,31 @@ export class GateWorkflow {
         return {
           schema: 'wholeloop/gate-plan@1',
           plan: previous.plan,
-          cost: plannedCost(previous.plan, previous.results, previous.votes, models),
+          cost: plannedCost(
+            previous.plan,
+            previous.results,
+            previous.votes,
+            models,
+            previous.classifications,
+          ),
           budget,
           resumed: true,
+          rigor: rigorView(gate, current?.rigor ?? STANDARD_RIGOR, previous.plan.verifiers),
         }
       } else if (previous?.decision?.report.verdict === 'PASS')
         return {
           schema: 'wholeloop/gate-plan@1',
           plan: previous.plan,
-          cost: plannedCost(previous.plan, previous.results, previous.votes, models),
+          cost: plannedCost(
+            previous.plan,
+            previous.results,
+            previous.votes,
+            models,
+            previous.classifications,
+          ),
           budget,
           resumed: true,
+          rigor: rigorView(gate, current?.rigor ?? STANDARD_RIGOR, previous.plan.verifiers),
           complete: snapshot.digest === previous.plan.snapshot.digest,
           stale: snapshot.digest !== previous.plan.snapshot.digest,
         }
@@ -354,11 +398,26 @@ export class GateWorkflow {
         inputs,
         units: lenses.units,
         excluded: lenses.excluded,
-        verifiers: !options.newRun && first ? first.verifiers : Number(settings.verifiers),
+        verifiers:
+          !options.newRun && first
+            ? first.verifiers
+            : choice.rigor === 'deep'
+              ? Math.max(Number(settings.verifiers), DEEP_VERIFIERS)
+              : Number(settings.verifiers),
         refutations: 0,
       }
       plan.refutations = Math.floor(plan.verifiers / 2) + 1
       append(subject, { type: 'gate.planned', data: { plan } })
+      if (round === 1)
+        append(subject, {
+          type: 'gate.rigor',
+          data: {
+            run: plan.run,
+            rigor: choice.rigor,
+            proposed: choice.proposed,
+            source: choice.source,
+          },
+        })
       if (plan.units.some((unit) => unit.id === 'testability'))
         append(subject, {
           type: 'gate.submitted',
@@ -370,11 +429,28 @@ export class GateWorkflow {
         cost: plannedCost(plan, [], [], models),
         budget,
         resumed: false,
+        rigor: rigorView(gate, choice, plan.verifiers),
       }
     })
   }
 
-  submit(subject: string, run: string, round: number, result: GateResult | GateVote) {
+  submit(subject: string, run: string, round: number, input: GateResult | GateVote) {
+    // An inspector may classify a finding below blocker; the stored result keeps the frozen
+    // gate-result@1 shape and each classification becomes its own event (ADR-0258).
+    const classifications: GateClassification[] = []
+    let result = input
+    if ('unit' in input && Array.isArray(input.findings))
+      result = {
+        ...input,
+        findings: input.findings.map((entry) => {
+          const { severity, ...finding } = entry as typeof entry & { severity?: unknown }
+          if (severity === undefined || severity === 'blocker') return finding
+          if (severity !== 'should' && severity !== 'nit')
+            throw new Error('Finding severity must be blocker, should or nit')
+          classifications.push({ finding: `${input.unit}:${finding.id}`, severity })
+          return finding
+        }),
+      }
     if ('unit' in result) validateGateResult(result)
     else validateGateVote(result)
     return this.engine.store.transaction((events, append) => {
@@ -389,9 +465,16 @@ export class GateWorkflow {
         throw new Error(
           'Workspace changed during a read-only gate round; seal it as failed before retrying',
         )
-      if ('unit' in result)
+      if ('unit' in result) {
+        if (
+          classifications.length &&
+          current.plan.units.find(({ id }) => id === result.unit)?.failSafe !== false
+        )
+          throw new Error('Findings of a mandatory lens always block; omit their severity')
         append(subject, { type: 'gate.submitted', data: { run, round, result } })
-      else append(subject, { type: 'gate.examined', data: { run, round, vote: result } })
+        for (const classification of classifications)
+          append(subject, { type: 'gate.classified', data: { run, round, ...classification } })
+      } else append(subject, { type: 'gate.examined', data: { run, round, vote: result } })
       return { schema: 'wholeloop/gate-submit@1', subject, run, round, recorded: true }
     })
   }
@@ -428,7 +511,14 @@ export class GateWorkflow {
     }
     const report =
       current.decision?.report ??
-      gateReport(current.plan, current.results, current.votes, observed, run.budget)
+      gateReport(
+        current.plan,
+        current.results,
+        current.votes,
+        observed,
+        run.budget,
+        current.classifications,
+      )
     if (!current.decision) {
       append(subject, {
         type: 'gate.decided',
@@ -456,6 +546,7 @@ export class GateWorkflow {
       report,
       current: !stale,
       verdict: stale ? 'STALE' : report.verdict,
+      rigor: rigorView(gate, run.rigor ?? STANDARD_RIGOR, current.plan.verifiers),
     }
   }
 }

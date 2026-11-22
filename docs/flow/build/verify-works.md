@@ -160,6 +160,8 @@ Dependencies must already be usable inside the container, because it has no netw
 - Live failed findings include a transient output tail of at most 20 lines and 2048 characters, without terminal controls. The store retains hashes only. A cached receipt cannot recover a tail it did not store.
 - Plain text shows the readable findings by default. With `--json`, omitting the version flag preserves the original v1 response and hash field names; explicit version 1 also retains them. Canonical skills select version 2 in every client.
 
+**Rigor.** Verification runs at `standard` unless you choose otherwise for the run: `--rigor deep` uses five challengers per blocker, and `--rigor quick` keeps every agreed criterion and the suite but skips optional lenses a team added. The plan shows a proposal from the change size and the **Rigor** line, and the chosen rigor stays fixed for the run.
+
 **Changed tests.** When the change touches test files, verification adds two checks: a deterministic lint for tests that cannot fail, such as `expect(true).toBe(true)` or `assert.ok(true)`, and a separate review of the changed tests by a verifier. The lint does not prove a whole test can fail, and it is not mutation testing.
 
 **Completion** needs a successful recorded suite and a current verify pass. A failed suite stays a blocker even if its findings were refuted.

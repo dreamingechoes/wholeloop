@@ -1,8 +1,10 @@
 // `wl research`: plans and records research rounds.
+
 import { FlowEngine } from '../flow/engine.js'
 import { readRegularText } from '../fs/regular-file.js'
 import { ResearchWorkflow } from '../research/workflow.js'
 import { StateStore } from '../state/store.js'
+import { checkRigor } from '../workers/rigor.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
@@ -40,6 +42,9 @@ export function researchCommand(
         ...(sources !== undefined ? { sources } : {}),
         ...(typeof options['--remember'] === 'string' ? { remember: options['--remember'] } : {}),
         ...(typeof options['--client'] === 'string' ? { client: options['--client'] } : {}),
+        ...(typeof options['--rigor'] === 'string'
+          ? { rigor: checkRigor(options['--rigor']) }
+          : {}),
       })
     } else if (command === 'research complete') {
       if (

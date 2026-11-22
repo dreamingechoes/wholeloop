@@ -1,4 +1,5 @@
 // `wl verify`: suite plans and execution for verify-works.
+
 import { readFileSync } from 'node:fs'
 import { BuildWorkflow } from '../build/workflow.js'
 import { parseCriteria } from '../definition/criteria.js'
@@ -9,6 +10,7 @@ import { StateStore } from '../state/store.js'
 import { namedSuiteHashes, SuiteStartError } from '../verification/start.js'
 import { runSuite, suiteResultV2 } from '../verification/suite.js'
 import { VerificationWorkflow } from '../verification/workflow.js'
+import { checkRigor } from '../workers/rigor.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { roundOverrides } from './gate.js'
@@ -50,6 +52,7 @@ export function verificationCommand(
         ...(value('--rounds')
           ? { rounds: roundOverrides(value('--rounds') ?? '').verify ?? Number.NaN }
           : {}),
+        ...(value('--rigor') ? { rigor: checkRigor(value('--rigor')) } : {}),
       })
     } else {
       if (positional.length || !value('--for')) throw new CliError('Provide --for <id>')

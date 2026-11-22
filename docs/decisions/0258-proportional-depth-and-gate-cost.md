@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-22 (P9-17).** All three points are implemented without lowering any verifier count below three, so no plan schema needed a new version. Optional review lenses step aside for documentation-only changes and for one-file changes of ten lines or fewer, with the reason in the plan; an unknown size keeps every lens. An inspector of an optional lens may classify a finding as `should` or `nit`; the classification is its own `gate.classified` event, the advisory is reported in the dropped list with an Advisory reason, is not cross-examined and does not fail the round. Rigor is recorded per run as `gate.rigor` or `research.rigor`: standard unless the person passes another value, with a size or source proposal shown but never applied. Quick skips optional lenses in gates and leaves research claims unverified; deep raises the quorum to five. Historical rounds and research runs have no such events and replay to identical reports.
+
 **Amended 2026-11-22 (P9-15).** A person can now map each canonical tier to a model per client, which is the cheaper-verifier part of point 1. The mapping is an explicit remembered answer (`model:<client>:<tier>`), set through setup and never chosen by detection or a profile. `wl install` renders it into each role's native model field from the installation scope's own configuration file; plugin builds and unmapped installs keep their exact bytes. The cost preview names the configured model per tier for the executing client and keeps it distinct from an observed model. Coverage, quorums and authority are unchanged.
 
 **Amended 2026-11-22 (P9-13).** Research, framing and gate plans now expose a deterministic cost preview before worker dispatch. The estimate uses worker calls and declared input bytes; tokens, duration and price remain unknown without measurements. Requested tiers come from the bundled role metadata and never claim which model a client actually runs. These observations are additive output metadata, not changes to pinned plans, budgets or coverage.
@@ -35,6 +37,12 @@ Tier-to-model mappings are explicit, per client and per tier:
 - **Rendering.** `wl install` reads only the installation scope's own file: user installs the user file, project installs the project file. The mapped value goes into the native model field of every client (YAML `model` header; `model` in Codex TOML) with a sentence naming it as configured. `wl build`, marketplace plugins and maintainer renders never read configuration. Doctor compares an installation against the same scoped mapping, so a changed choice reports the installation as out of date.
 - **Preview.** Native previews for research, framing, verification and review add the configured model per mapped tier and a "configured for" line naming the client, read only when a packaged client launched the command. Headless previews stay unmapped, because headless workers do not receive the mapping.
 
+Severity, applicability and rigor follow these rules:
+
+- **Severity** applies only to optional lenses. Mandatory lenses (correctness, security) and verification units are fail-safe: a lower severity there is refused at submission and in replay. The finder's classification stands without a vote; it never removes a finding from the person's view. Headless and runner routes keep every finding a blocker.
+- **Applicability** excludes only optional built-in lenses, by deterministic rules on the pinned paths and the tracked line count; extension lenses keep their own declarations.
+- **Rigor** is chosen once per run, before any result, and is fixed for that run. `standard` needs no confirmation because it is today's coverage; `quick` and `deep` are passed explicitly. Research asks it in the same question as its sources, carried as an open question so the frozen sources payload is unchanged. The autonomous runner always runs at standard.
+
 For cost previews, count current unfinished jobs and independent examinations from the same plan that dispatches them. Exclude deterministic suite/testability execution from model-worker counts, retain submitted results/votes, and refresh the preview for each later batch. Framing's definition challenge is one challenger, regardless of communication style. Model tiers are requested classes; custom unmapped roles remain unknown. Estimate declared input bytes only after inputs are prepared, excluding later read evidence and client overhead. Do not turn bytes into guessed tokens or monetary prices. Native clients show the returned display before dispatch; shared execution hosts can observe a preview before each phase, and checked headless progress emits core-formatted cost text before launching processes. An attached preview that fails stops before work rather than silently spending.
 
 ## Alternatives rejected
@@ -44,6 +52,10 @@ For cost previews, count current unfinished jobs and independent examinations fr
 - **Name the setting depth.** It would collide with the profile's `depth` dial, which changes vocabulary, and suggest that a profile preset sets it.
 - **Guess prices, tokens or completion time from worker counts.** Client packing, tokenizers, model mappings and account rates are not measured by these plans. Worker calls and declared bytes provide an honest estimate while the remaining quantities stay unknown.
 - **Count completed or deterministic work as future model calls.** It inflates the preview and disagrees with actual dispatch. Current findings can add independent examinations, so each batch needs its own preview.
+- **New result, report and plan schema versions for severity and rigor.** They would duplicate the replayed gate machinery; additive events leave every frozen declaration and every historical report unchanged.
+- **Refuters voting on severity.** Doubles the examination work this point exists to remove; the advisory still reaches the person.
+- **Quick with one or two verifiers.** A quorum below three would need new schema versions and would still not be a quorum; an unverified claim says plainly what it is.
+- **Asking for rigor before every gate.** Standard is today's coverage, so a question each time adds friction without protecting anything.
 - **Change Claude Code's default to inherit.** It would silently move its verifiers and reviewers from `sonnet` to whatever the session runs, often the most expensive model, which is the opposite of this point. The alias mapping stays until a person maps a tier.
 - **A new configuration key for models.** The `config@1` declaration is frozen; a key would need a new schema version. Remembered answers already hold explicit per-scope choices, as specification providers do.
 - **Merge user and project mappings when installing.** A personal choice would be written into files a repository commits, or a repository would change every personal installation. Each scope uses its own file.
@@ -58,6 +70,8 @@ Small questions and changes become cheap, and the cost of each check is visible 
 ## Verification
 
 Aggregation tables per severity, lens applicability tables, schema compatibility tests for any new verifier counts, and the experience check budgets (P9-20).
+
+`test/unit/gates/severity.test.ts` checks advisory aggregation, skipped examinations, refusal on mandatory lenses and replay identity. `test/unit/gates/applicability.test.ts` checks the applicability table, real planned lenses for tiny, documentation-only and unknown-size changes, and gate rigor: default with a proposal, quick, deep and the fixed run choice. `test/unit/research/source-choice.test.ts` checks the rigor question, quick runs without examinations and with unverified claims, refused examinations and deep quorums.
 
 `test/unit/workers/models.test.ts` checks model identifiers and choice parsing, refusal of malformed remembered values, no configuration read without an executing client, the native model field and configured sentence for every role on all seven clients, byte-identical unmapped and non-Claude `inherit` output, preview tiers, labels and display rows, setup questions per tier for the executing client only, refused and run-scope choices that write nothing, per-scope installation files, the installed Claude role, doctor's current/stale comparison and the compiled `wl setup --models` command. Native loading of a mapped model remains manual verification.
 

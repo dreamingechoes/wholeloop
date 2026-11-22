@@ -2,8 +2,21 @@
 import { isObject, validate } from '../config/schema.js'
 import type { StateEvent } from '../state/events.js'
 import { type SuiteStartFailure, validStartupFailure } from '../verification/start.js'
-import type { GateKind, GatePlan, GateReport, GateResult, GateVote } from './contracts.js'
-import { validateGatePlan, validateGateResult, validateGateVote } from './contracts.js'
+import { type RunRigor, validRigorData } from '../workers/rigor.js'
+import type {
+  GateClassification,
+  GateKind,
+  GatePlan,
+  GateReport,
+  GateResult,
+  GateVote,
+} from './contracts.js'
+import {
+  severitySchema,
+  validateGatePlan,
+  validateGateResult,
+  validateGateVote,
+} from './contracts.js'
 import { gateReport } from './report.js'
 import schemas from './schemas/events-v1.json' with { type: 'json' }
 
@@ -11,6 +24,7 @@ export interface GateRound {
   plan: GatePlan
   results: GateResult[]
   votes: GateVote[]
+  classifications: GateClassification[]
   decision?: { observed: string; report: GateReport }
 }
 export interface GateRun {
@@ -20,11 +34,15 @@ export interface GateRun {
   budget: number
   rounds: GateRound[]
   unavailable?: SuiteStartFailure
+  /** Absent for runs recorded before rigor existed; they ran at standard coverage. */
+  rigor?: RunRigor
 }
 
 export const remainingStartupBudget = (run: GateRun) => run.budget - (run.rounds.length - 1)
 
 export function validGateData(type: string, data: Record<string, unknown>): boolean {
+  if (type === 'gate.classified') return !validate(data, severitySchema).length
+  if (type === 'gate.rigor') return validRigorData(data)
   const schema = Object.entries(schemas.properties).find(([key]) => key === type)?.[1]
   if (!schema || validate(data, schema).length) return false
   try {
@@ -124,12 +142,19 @@ export function gateRuns(events: readonly StateEvent[]): GateRun[] {
         )
           throw new Error('Gate rounds must preserve their run, policy, repository and budget')
       }
-      run.rounds.push({ plan, results: [], votes: [] })
+      run.rounds.push({ plan, results: [], votes: [], classifications: [] })
     } else if ('run' in entry.data && typeof entry.data.run === 'string') {
       const run = runs.get(entry.data.run)
       if (!run || run.subject !== entry.subject) throw new Error('Gate event needs its planned run')
       const current = run.rounds.at(-1)
       if (!current) throw new Error('Gate event needs a round')
+      if (entry.type === 'gate.rigor') {
+        // Chosen once, with the first round of its run, before any result.
+        if (run.rigor || run.rounds.length !== 1 || current.results.length || current.votes.length)
+          throw new Error('Rigor is chosen once, with the first round of its run')
+        run.rigor = entry.data
+        continue
+      }
       if (entry.type === 'gate.extended') {
         if (
           !entry.data.reason.trim() ||
@@ -153,8 +178,30 @@ export function gateRuns(events: readonly StateEvent[]): GateRun[] {
           throw new Error('Gate unit is unplanned or already submitted')
         current.results.push(result)
       }
+      if (entry.type === 'gate.classified') {
+        const { finding, severity } = entry.data
+        const unit = current.plan.units.find(({ id }) => finding.startsWith(`${id}:`))
+        const known = current.results.some(
+          (result) =>
+            result.unit === unit?.id &&
+            result.findings.some(({ id }) => `${result.unit}:${id}` === finding),
+        )
+        if (
+          !unit ||
+          unit.failSafe ||
+          !known ||
+          current.classifications.some((prior) => prior.finding === finding) ||
+          current.votes.some((vote) => vote.finding === finding)
+        )
+          throw new Error(
+            'Only an unexamined finding of an optional lens can be classified, once, below blocker',
+          )
+        current.classifications.push({ finding, severity })
+      }
       if (entry.type === 'gate.examined') {
         const { vote } = entry.data
+        if (current.classifications.some((entry) => entry.finding === vote.finding))
+          throw new Error('Advisory findings are reported, not cross-examined')
         const known = current.results.some((result) =>
           result.findings.some((finding) => `${result.unit}:${finding.id}` === vote.finding),
         )
@@ -175,6 +222,7 @@ export function gateRuns(events: readonly StateEvent[]): GateRun[] {
           current.votes,
           entry.data.observed,
           run.budget,
+          current.classifications,
         )
         if (
           !isObject(entry.data.report) ||

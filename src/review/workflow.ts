@@ -8,6 +8,7 @@ import { GateWorkflow } from '../gates/workflow.js'
 import { itemId, type StateEvent } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
 import { workerModels } from '../workers/models.js'
+import type { Rigor } from '../workers/rigor.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import { git, namedBase } from '../worktrees/git.js'
 import { WorktreeManager } from '../worktrees/manager.js'
@@ -21,6 +22,7 @@ export interface ReviewOptions {
   owner?: string
   base?: string
   rounds?: number
+  rigor?: Rigor
 }
 
 export class ReviewWorkflow {
@@ -104,6 +106,7 @@ export class ReviewWorkflow {
     const result = new GateWorkflow(engine).plan(subject, 'review', {
       base: base ?? '',
       ...(options.rounds !== undefined ? { rounds: options.rounds } : {}),
+      ...(options.rigor !== undefined ? { rigor: options.rigor } : {}),
       ...(prior?.decision?.report.verdict === 'PASS' && planned <= started ? { newRun: true } : {}),
     })
     const review = prepareReviewInput(engine, result.plan)
@@ -121,6 +124,7 @@ export class ReviewWorkflow {
       ...gateAssignments(result.plan, {
         results: state?.results ?? [],
         votes: state?.votes ?? [],
+        classifications: state?.classifications ?? [],
         review,
         models: workerModels(this.engine),
       }),
@@ -145,6 +149,7 @@ export class ReviewWorkflow {
       ...gateAssignments(plan, {
         results: state?.results ?? [],
         votes: state?.votes ?? [],
+        classifications: state?.classifications ?? [],
         review,
         models: workerModels(this.engine),
       }),

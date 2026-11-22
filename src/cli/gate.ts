@@ -1,4 +1,5 @@
 // `wl gate`: plans, submits and decides verify and review rounds.
+
 import { readFileSync } from 'node:fs'
 import { isObject } from '../config/schema.js'
 import { parseCriteria } from '../definition/criteria.js'
@@ -6,6 +7,7 @@ import { FlowEngine } from '../flow/engine.js'
 import { GATE_SCHEMAS, type GateKind } from '../gates/contracts.js'
 import { GateWorkflow } from '../gates/workflow.js'
 import { StateStore } from '../state/store.js'
+import { checkRigor } from '../workers/rigor.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
@@ -86,6 +88,7 @@ export function gateCommand(
           ...(value('--extend') ? { extend: Number(value('--extend')) } : {}),
           ...(value('--reason') ? { reason: value('--reason') as string } : {}),
           ...(options['--new-run'] === true ? { newRun: true } : {}),
+          ...(value('--rigor') ? { rigor: checkRigor(value('--rigor')) } : {}),
           ...(value('--criteria')
             ? {
                 criteria: parseCriteria(

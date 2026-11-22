@@ -3,6 +3,7 @@
 import { workerAssignment } from '../workers/assignment.js'
 import { assignmentCost } from '../workers/cost.js'
 import type { WorkerModels } from '../workers/models.js'
+import type { Rigor } from '../workers/rigor.js'
 import type { CitationCheck } from './citation-proof.js'
 import type { AngleResult, Refutation, ResearchPlan } from './contracts.js'
 import { researchReport } from './report.js'
@@ -16,8 +17,9 @@ export function researchAssignments(
   citationChecks: readonly (CitationCheck & { angle: string })[] = [],
   localRevision?: { repository: string; commit: string | null; reason?: string },
   models?: WorkerModels,
+  rigor: Rigor = 'standard',
 ) {
-  const report = researchReport(plan, results, votes, citationChecks)
+  const report = researchReport(plan, results, votes, citationChecks, rigor)
   const assignments = {
     jobs: plan.angles
       .filter((angle) => !results.some((result) => result.angle === angle.id))
@@ -46,7 +48,8 @@ export function researchAssignments(
           { angle: angle.id },
         ),
       })),
-    examinations: report.claims
+    // Quick rigor leaves claims unverified rather than examined by fewer verifiers.
+    examinations: (rigor === 'quick' ? [] : report.claims)
       .filter((claim) => claim.loadBearing)
       .flatMap((claim) => {
         const angle = plan.angles.find((angle) => angle.id === claim.angle)
