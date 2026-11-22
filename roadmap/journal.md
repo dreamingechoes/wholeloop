@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-22 · P9-23 ✅ · Autonomous research includes an authored conclusion
+
+- **Changed:** after its examinations, the unattended research stage makes one bounded conclusion call, with the same two repair attempts as every job, through a read-only planner purpose without web access. The author receives only the question, the evidence aggregate, its digest basis and the core-derived certainty; it queries no source, runs no command and gains no authority beyond `source.read` and `report.write`. The brief then opens with Answer, Recommendation, confidence and unchecked work, and every claim, refutation, open question and source limit follows unchanged.
+- **Honest failure:** a conclusion counts only when its basis matches the stored evidence, so one written for changed evidence is refused rather than repaired. A failed, refused or missing conclusion leaves the brief saying the answer was not authored, and the run ends `completed-with-unknowns` or `blocked` by its uncertainty policy; no answer is ever inferred from the claims. No conclusion is requested when no source produced evidence.
+- **Decision:** [ADR-0184](../docs/decisions/0184-unattended-research-host.md) and [ADR-0021](../docs/decisions/0021-journaled-research-plans-and-refutations.md) are amended. New runs bind version 2 and version 1 briefs replay byte for byte. Rejected: a new result schema and a separate stage, because the existing conclusion contract and job machinery already bind, bound and resume it. Narrowed: the runner has no separate research cost preview, so the brief's method section, the tutorial and the ADR state the added call.
+- **Documentation:** the delivery runner tutorial and the autonomous delivery page describe the authored answer and the missing-conclusion outcome; manual verification gains a row for live quota evidence on each reference client. Counts are 125/140, with P9-24 the only open Phase 9 task.
+- **Verified:** `CHECK PASS in 695s`, 5404 tests in 364 files; `CHECK PASS (fast) in 90s`, 174 related tests in 12 files. `test/unit/runner/research-conclusion.test.ts` passes eight cases on the synthetic transport, and the existing route, native-process and public-composition tests count the conclusion launch. No model, real source, native client or hosted trial was used.
+
+---
+
 ## 2026-11-22 · P9-21 ✅ · Agent experience on every supported client
 
 - **Written pass:** [client experience pass](./client-experience-pass.md) reads a disposable seven-client user install and records, per client, roles and tools, waiting, sandbox and store access, launcher calls per step (one to ten distinct commands; build-slice the most) and launcher length (55 to 93 characters). Its one actionable gap is the new task P9-24: every skill carries its own launcher, so an allow rule needs seventeen entries and every approval prompt shows a long path. Antigravity's missing command-level rule and Codex's inherited sandbox are recorded, not filed, because nothing in the repository can change them.

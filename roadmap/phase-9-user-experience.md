@@ -408,18 +408,20 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-23 · Autonomous research includes an authored conclusion
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-06 · **Release:** 1.2.0 · **Decision:** amends [ADR-0021](../docs/decisions/0021-journaled-research-plans-and-refutations.md) and [ADR-0184](../docs/decisions/0184-unattended-research-host.md)
+**Status:** ✅ · **Size:** M · **Depends on:** P9-06 · **Release:** 1.2.0 · **Decision:** amends [ADR-0021](../docs/decisions/0021-journaled-research-plans-and-refutations.md) and [ADR-0184](../docs/decisions/0184-unattended-research-host.md)
 
 **Goal** — The private research-report endpoint returns an authored Answer and Recommendation, rather than only an evidence ledger.
 
 **Acceptance criteria:**
 
-- [ ] The research controller obtains a conclusion bound to its completed evidence aggregate, with no new source query, repository command or broader tool authority.
-- [ ] Its report opens with the answer, recommendation, core-derived confidence and unchecked work, retaining every claim, refutation and source limitation.
-- [ ] Conclusion generation, replay, failure, changed evidence and the added bounded call are covered by the existing budget and resumption machinery; missing prose never becomes an invented answer.
-- [ ] Its plan/cost preview and documentation reflect the actual work; live quota evidence remains in manual verification.
+- [x] The research controller obtains a conclusion bound to its completed evidence aggregate, with no new source query, repository command or broader tool authority.
+- [x] Its report opens with the answer, recommendation, core-derived confidence and unchecked work, retaining every claim, refutation and source limitation.
+- [x] Conclusion generation, replay, failure, changed evidence and the added bounded call are covered by the existing budget and resumption machinery; missing prose never becomes an invented answer.
+- [x] Its plan/cost preview and documentation reflect the actual work; live quota evidence remains in manual verification. *Narrowed: the runner has no separate research cost preview; the brief's method section, the tutorial and ADR-0184 state the one added bounded call.*
 
 **Tests** — Private research-host fixtures for a complete conclusion, unknowns, stale input, failed generation, exact replay, bounded calls and unchanged source reads.
+
+**Evidence** — `src/runner/research-stages.ts` makes one conclusion job after the examinations, with the same two repairs as every job, through a read-only planner purpose without web access in `src/runner/research-workers.ts`; the author receives only the question, the evidence aggregate, its digest basis and the core-derived certainty. A conclusion counts only when its basis matches the stored evidence; a missing one leaves the brief saying the answer was not authored and the outcome follows the uncertainty policy. New runs bind version 2; version 1 briefs replay unchanged. `test/unit/runner/research-conclusion.test.ts` covers the answer-first brief with every claim retained, unknowns listed as unchecked work, failed generation under both policies, stale and hostile conclusions, no conclusion without evidence, exact replay without a new call, unchanged source calls and the version rules; the existing route, native-process and public-composition tests now count the conclusion launch. [ADR-0184](../docs/decisions/0184-unattended-research-host.md) and [ADR-0021](../docs/decisions/0021-journaled-research-plans-and-refutations.md) are amended. Live quota evidence remains in [manual verification](./manual-verification.md#user-experience-phase-9-2026-11-18). The gate results are in the journal entry of 2026-11-22.
 
 ## P9-24 · One short launcher per client
 
