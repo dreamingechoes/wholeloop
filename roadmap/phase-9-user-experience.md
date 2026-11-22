@@ -233,14 +233,16 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-12 · Suite start failures and readable gate output
 
-**Status:** 🔄 · **Size:** S · **Depends on:** — · **Release:** 1.2.0 · **Decision:** [ADR-0033](../docs/decisions/0033-once-per-round-suites-and-explicit-verification-inputs.md)
+**Status:** ✅ · **Size:** S · **Depends on:** — · **Release:** 1.2.0 · **Decision:** [ADR-0033](../docs/decisions/0033-once-per-round-suites-and-explicit-verification-inputs.md)
 
 **Goal** — A suite that cannot start says why and does not spend a round.
 
 **Acceptance criteria:**
 
-- [ ] Exit 126 or 127, a missing executable or a spawn error name the command and cause, then stop before workers, a recorded code verdict or evaluation budget consumption. Retain the planned write-ahead intent for audit and at-most-once execution; a corrected environment gets a replacement plan with only the unused budget. Changed workspaces and already submitted criterion work cannot earn this exception.
-- [ ] Output hashes are named as hashes in a new result schema version; a failed suite finding carries a bounded tail of its output.
+- [x] Exit 126 or 127, a missing executable or a spawn error name the command and cause, then stop before workers, a recorded code verdict or evaluation budget consumption. Retain the planned write-ahead intent for audit and at-most-once execution; a corrected environment gets a replacement plan with only the unused budget. Changed workspaces and already submitted criterion work cannot earn this exception.
+- [x] Output hashes are named as hashes in a new result schema version; a failed suite finding carries a bounded tail of its output.
+
+**Evidence** — `CHECK PASS in 696s`, 5248 tests in 355 files; the corrected fast gate passes 4046 tests in 261 files in 633s. Four targeted files pass 510 tests, including actual startup failures, compiled v1/v2/text routes, retained budgets, refusal of forged allowances and mismatched intents, signal handling, real workflow resumption and all seven rendered clients. The planned intent remains recorded instead of being erased; only unused code-evaluation budget is carried forward. Failure tails remain transient (20 lines, 2048 characters), with hashes retained in history. [ADR-0033](../docs/decisions/0033-once-per-round-suites-and-explicit-verification-inputs.md) records this conservative interpretation and the two additive contract identities. Four generated references are current.
 
 **Tests** — Suite fixtures for a missing executable, a non-executable script and a failing test.
 

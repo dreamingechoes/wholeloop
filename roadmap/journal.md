@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-22 · P9-12 ✅ · Available suites and readable failure evidence
+
+- **Changed:** known spawn failures and exit 126/127 name the declared command, executable and cause, stop before workers or a code verdict, and retain an availability receipt without spending an evaluation of the code. A corrected environment gets a distinct plan carrying only unused budget; previous failed code rounds stay spent. Workspace changes, submitted criterion work, votes, signals and ambiguous interrupted intents retain conservative failure or inspection rules. The old intent never executes again.
+- **Recovery:** standalone verification reuses its pinned comparison base instead of replacing it with the worktree checkout base. The actual workflow regression exposed this mismatch; restoring the agreed base permits recovery without accepting a different comparison.
+- **Output:** optional result version 2 names SHA-256 fields explicitly and puts at most 20 lines/2048 characters of transient, control-free output into live failed findings. Plain text uses this presentation; JSON without the flag and durable readers retain v1. Cached observations cannot reconstruct missing output. All seven canonical clients select v2. Only the two new contract identities were added to the compatibility inventory; every frozen declaration stays unchanged.
+- **Decision and scope:** [ADR-0033](../docs/decisions/0033-once-per-round-suites-and-explicit-verification-inputs.md) records the refinement. The original criterion's wording was clarified: the planned write-ahead intent remains in history, while startup failure stops before a recorded code verdict or spent evaluation round. Erasing a real intent, resetting earlier failures, silently renaming v1 hashes and persisting even bounded process logs were rejected. No wider repair authority, new task or manual evidence gap was introduced; counts are 116/139, with nine Phase 9 tasks open.
+- **Documentation:** the verification guide and execution protocol explain startup ownership, conservative exclusions, carried budgets, response versions and transient excerpts. Four generated references remain current. No existing terminal recording invokes the changed command, and normal recorded layouts remain unchanged.
+- **Verified:** `CHECK PASS in 696s`, 5248 tests in 355 files; `CHECK PASS (fast) in 633s`, 4046 tests in 261 files. Four targeted files pass 510 tests, including real missing/non-executable commands, exit 126/127, compiled CLI text and both JSON versions, budget/intent forgery refusals, signal handling, actual workflow recovery and seven-client rendering. The initial gate caught an invalid option returning shape exit 4 instead of input exit 2; the corrected run passes. macOS arm64 locally; required CI exercises Linux and Node 20. No hosted product trial, signed-in native client, model quota or live experience evaluation ran.
+
+---
+
 ## 2026-11-22 · P9-11 ✅ · Explicit measurement provider choices
 
 - **Changed:** ready specification entry groups registered providers by each source query capability, retaining current-client access labels. The canonical skill asks where each metric lives and reuses only an explicit matching preference; a requested repository choice uses the existing answer configuration. A stale preference remains unselected with a warning. All seven clients receive the same instructions.
