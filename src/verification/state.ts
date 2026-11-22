@@ -2,7 +2,7 @@
 import type { GatePlan } from '../gates/contracts.js'
 import { gateRuns } from '../gates/state.js'
 import type { StateEvent } from '../state/events.js'
-import type { SuiteExecution, SuitePlan, SuiteResult } from './contracts.js'
+import type { SuiteExecution, SuitePlan, SuiteResult, SuiteSetup } from './contracts.js'
 import { type SuiteStartFailure, validStartupFailure } from './start.js'
 
 /** Reject duplicate intents and inconsistent process receipts during every replay. */
@@ -30,6 +30,7 @@ function replaySuites(events: readonly StateEvent[]) {
       result?: SuiteResult
       unavailable?: SuiteStartFailure
       execution?: SuiteExecution
+      setup?: SuiteSetup
     }
   >()
   const agreed = new Set<string>()
@@ -63,6 +64,20 @@ function replaySuites(events: readonly StateEvent[]) {
       )
         throw new Error('Suite execution must describe its unique unfinished suite intent')
       entry.execution = event.data
+    }
+    if (event.type === 'verify.suite-setup') {
+      const entry = runs.get(`${event.data.run}/${event.data.round}`)
+      // Setup belongs to a Docker round and is written with its intent, before any result.
+      if (
+        !entry ||
+        entry.subject !== event.subject ||
+        entry.execution?.isolation !== 'docker' ||
+        entry.setup ||
+        entry.result ||
+        entry.unavailable
+      )
+        throw new Error('Suite setup must describe its unique unfinished Docker suite intent')
+      entry.setup = event.data
     }
     if (event.type === 'verify.suite-finished') {
       const entry = runs.get(`${event.data.run}/${event.data.round}`)

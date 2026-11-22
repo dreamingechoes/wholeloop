@@ -2,7 +2,7 @@
 import { spawnSync } from 'node:child_process'
 import { join } from 'node:path'
 import { BuildWorkflow } from '../build/workflow.js'
-import { chosenImage, executionChoice, NOT_ISOLATED } from '../execution/choice.js'
+import { chosenImage, executionChoice, NOT_ISOLATED, repositorySetup } from '../execution/choice.js'
 import {
   DockerUnavailableError,
   dockerEnvironment,
@@ -64,14 +64,17 @@ export function execCommand(
     const choice = executionChoice(repository.root)
     let argv = positional
     let image: { image: string; imageId: string } | undefined
+    let setup: { argv: string[]; ran: boolean } | undefined
     if (choice.isolation === 'docker') {
       const name = chosenImage(repository.configuration().values.answers)
       if (!name)
         throw new DockerUnavailableError(
           "Choose the container image that runs this repository's code: wl setup --image <name> --scope project, or ask the person to choose host execution for this repository.",
         )
-      const sandbox = ensureSandbox(workspace, name)
+      const declared = repositorySetup(repository.root)
+      const sandbox = ensureSandbox(workspace, name, undefined, declared ? { setup: declared } : {})
       image = { image: sandbox.image, imageId: sandbox.imageId }
+      setup = sandbox.setup
       argv = sandboxArgv(sandbox, cwd, positional)
     }
     const result = spawnSync(argv[0] ?? '', argv.slice(1), {
@@ -87,7 +90,7 @@ export function execCommand(
     if (result.signal && choice.isolation === 'docker') stopSandbox(workspace)
     const placement =
       choice.isolation === 'docker'
-        ? `Ran in a Docker container (${image?.image}).`
+        ? `Ran in a Docker container (${image?.image})${setup ? `, offline after setup ${setup.argv.join(' ')} ${setup.ran ? 'ran with network' : 'ran earlier with network'}` : ''}.`
         : `Ran on this machine, not isolated (${choice.source === 'repository' ? 'chosen for this repository' : 'chosen'}).`
     if (json)
       io.out(
@@ -97,6 +100,9 @@ export function execCommand(
           isolation: choice.isolation,
           source: choice.source,
           ...(image ?? { note: NOT_ISOLATED }),
+          ...(setup
+            ? { setup: { command: setup.argv.join(' '), network: true, ran: setup.ran } }
+            : {}),
           exitCode: result.status,
           signal: result.signal,
           stdout: result.stdout ?? '',

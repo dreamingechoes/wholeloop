@@ -6,7 +6,7 @@ import { StringDecoder } from 'node:string_decoder'
 import { isObject } from '../config/schema.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { discover } from '../discovery/tree.js'
-import { chosenImage, executionChoice, NOT_ISOLATED } from '../execution/choice.js'
+import { chosenImage, executionChoice, NOT_ISOLATED, repositorySetup } from '../execution/choice.js'
 import {
   type DockerCall,
   DockerUnavailableError,
@@ -24,7 +24,7 @@ import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
 import { canonicalPath, inside } from '../state/paths.js'
 import { workerModels } from '../workers/models.js'
-import type { SuiteExecution, SuitePlan, SuiteResult } from './contracts.js'
+import type { SuiteExecution, SuitePlan, SuiteResult, SuiteSetup } from './contracts.js'
 import {
   namedSuiteHashes,
   SuiteStartError,
@@ -284,6 +284,17 @@ export async function runSuite(
     append(subject, { type: 'verify.suite-planned', data: { run, round, plan } })
     if (placement?.record)
       append(subject, { type: 'verify.suite-execution', data: { run, round, ...placement.record } })
+    if (placement?.setup)
+      append(subject, {
+        type: 'verify.suite-setup',
+        data: {
+          run,
+          round,
+          argv: placement.setup.argv,
+          network: 'bridge',
+          ran: placement.setup.ran,
+        },
+      })
     return undefined
   })
   let result = cached
@@ -338,9 +349,10 @@ export async function runSuite(
     )
   const current = workspaceSnapshot(gate.plan.repository).digest === gate.plan.snapshot.digest
   const observation = { run, round, current, result, output }
-  const execution = verificationRuns(engine.store.events()).find(
-    (entry) => entry.run === run && entry.round === round,
-  )?.execution
+  const recorded = verificationRuns(engine.store.events()).find(
+      (entry) => entry.run === run && entry.round === round,
+    ),
+    execution = recorded?.execution
   return {
     schema: 'wholeloop/verify-suite@1',
     subject,
@@ -350,7 +362,7 @@ export async function runSuite(
     current,
     result,
     output,
-    ...(execution ? { execution: executionView(execution) } : {}),
+    ...(execution ? { execution: executionView(execution, recorded?.setup) } : {}),
     ...gateAssignments(gate.plan, {
       results: state?.results ?? [],
       votes: state?.votes ?? [],
@@ -369,7 +381,11 @@ function suitePlacement(
   engine: FlowEngine,
   options: Parameters<typeof runSuite>[4],
   workspace: string,
-): { executor: SuiteExecutor; record?: Omit<SuiteExecution, 'run' | 'round'> } {
+): {
+  executor: SuiteExecutor
+  record?: Omit<SuiteExecution, 'run' | 'round'>
+  setup?: { argv: string[]; ran: boolean }
+} {
   if (options?.executor) {
     if (options.execution !== undefined || options.image !== undefined)
       throw new Error(
@@ -385,9 +401,12 @@ function suitePlacement(
       "Choose the container image that runs this repository's code: pass --image <name>, or remember it with wl setup --image <name> --scope project. Or choose host execution for this run with --execution host.",
     )
   const call = options?.docker ?? dockerCli
-  const sandbox = ensureSandbox(workspace, image, call)
+  // Setup is read from the committed project file only, like a host choice (ADR-0260).
+  const setup = repositorySetup(engine.root)
+  const sandbox = ensureSandbox(workspace, image, call, setup ? { setup } : {})
   return {
     record: { ...choice, image: sandbox.image, imageId: sandbox.imageId },
+    ...(sandbox.setup ? { setup: sandbox.setup } : {}),
     executor: async (root, command, timeoutMs) => {
       const completed = await execute(
         root,
@@ -403,13 +422,16 @@ function suitePlacement(
 }
 
 /** Person-facing placement: Docker with its image, or the host stated as not isolated. */
-export function executionView(execution: SuiteExecution) {
+export function executionView(execution: SuiteExecution, setup?: SuiteSetup) {
   return execution.isolation === 'docker'
     ? {
         isolation: 'docker' as const,
         source: execution.source,
         image: execution.image,
         imageId: execution.imageId,
+        ...(setup
+          ? { setup: { command: setup.argv.join(' '), network: true, ran: setup.ran } }
+          : {}),
       }
     : { isolation: 'host' as const, source: execution.source, note: NOT_ISOLATED }
 }

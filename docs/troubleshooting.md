@@ -152,6 +152,8 @@ In the same way, `questions: []` in a framing preflight means the core has the i
 - **Choose an image** when the message asks for one: `wl setup --image node:22-bookworm --scope project`. The image must already be in your local cache; `docker pull node:22-bookworm` fetches it, because wholeloop never pulls for you.
 - **Or choose your machine** for this run with `--execution host`, or for the repository with `wl setup --execution host --scope project`. The result then says it was not isolated: the code sees your home directory, environment and network.
 
+**The setup failed or the container could not go offline.** The message names the setup command and the last lines of its error, and the container is removed. Run the same install yourself in the image to see the full output, fix the lock file or the image, and run the step again; the next container runs the setup again. Setup is limited to `npm`, `pnpm`, `bun`, `uv` and `composer` commands without shell syntax.
+
 A container named `wl-exec-…` that wholeloop did not create is left alone; remove or rename it yourself. `wl exec --for <slice> --stop` removes the slice's own container.
 
 ## Understand exit codes

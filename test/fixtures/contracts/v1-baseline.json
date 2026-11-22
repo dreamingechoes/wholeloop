@@ -438,6 +438,7 @@
     "schema:wholeloop/suite-start-failure@1": "8dc0ab8e7e6f39e0eb477d64d26e2c6b94e77e8cc044b40199a0211d03812669",
     "output:wholeloop/exec@1": "ed43c3f4337bd1d4feecdd46dda6bb0be71ec1c434a4a9fc4ac6bb35a81c96cf",
     "schema:wholeloop/suite-execution@1": "de1eedeb076f0924171a346d8411428d86f4c920999fa1fca0b2eb3f5bc83c26",
+    "schema:wholeloop/suite-setup@1": "4cf210fbdf05c5b4b579b79481efd3c8c6a320e4d906ef8279206458270bf687",
     "schema:wholeloop/gate-severity@1": "89e4550f2ac9927e8c71a674ef891442b26dca729e536cc1dbb156b4c53ecb16",
     "schema:wholeloop/run-rigor@1": "b57d56be1ec4f6bae9a7f9c8e53776e71a5b55c82c5f8025f3559e864bc410a4",
     "schema:wholeloop/research-code-citations@1": "af22de3a7ffa86f18555fc8993f69dfeab722004d278134b67b235d9dc3a7e4b"

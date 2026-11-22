@@ -1,12 +1,21 @@
 // `wl setup`: records the chosen profile, providers and worker models at an explicit scope.
+import { readdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { CliError } from '../cli/errors.js'
 import { EXIT } from '../cli/io.js'
 import { loadConfig, userConfigPath } from '../config/load.js'
 import { resolveConfig } from '../config/resolve.js'
+import { isObject } from '../config/schema.js'
 import { writeSettings } from '../config/write.js'
-import { checkImage, EXECUTION_ANSWER, IMAGE_ANSWER } from '../execution/choice.js'
+import {
+  checkImage,
+  checkSetup,
+  EXECUTION_ANSWER,
+  IMAGE_ANSWER,
+  proposedSetup,
+  SETUP_ANSWER,
+} from '../execution/choice.js'
 import { profileDescription } from '../profile/presets.js'
 import { detectMcpByClient } from '../providers/detect.js'
 import { loadProviders, resolveProvider } from '../providers/load.js'
@@ -26,6 +35,28 @@ const ACCESS_WORDS: Record<string, string> = {
   unavailable: 'not set up',
 }
 
+/** Offered only when a lock file suggests one; detection proposes and never applies. */
+function setupQuestion(root: string, answers: unknown) {
+  if (isObject(answers) && answers[SETUP_ANSWER] !== undefined) return []
+  let files: string[] = []
+  try {
+    files = readdirSync(root)
+  } catch {
+    return []
+  }
+  const proposal = proposedSetup(files)
+  if (!proposal) return []
+  return [
+    {
+      id: 'project-setup',
+      prompt: `Which command installs this repository's dependencies in its project container? It runs once per workspace with network, before every other command runs offline; remember it with --scope project. Skip to keep the container offline.`,
+      multi: false,
+      options: [{ value: proposal, label: `${proposal} (proposed from the lock file)` }],
+      freeText: true,
+    },
+  ]
+}
+
 export function setup(
   root: string,
   options: {
@@ -37,6 +68,7 @@ export function setup(
     models?: string
     execution?: string
     image?: string
+    projectSetup?: string
     client?: string
     home?: string
     env?: NodeJS.ProcessEnv
@@ -55,6 +87,12 @@ export function setup(
       if (options.scope !== 'project')
         throw new Error('Remember --execution for this repository with --scope project')
       answers[EXECUTION_ANSWER] = options.execution
+    }
+    if (options.projectSetup) {
+      // Setup gets network once per workspace (ADR-0260): a choice for this repository only.
+      if (options.scope !== 'project')
+        throw new Error('Remember --project-setup for this repository with --scope project')
+      answers[SETUP_ANSWER] = checkSetup(options.projectSetup).argv.join(' ')
     }
   } catch (error) {
     throw new CliError((error as Error).message)
@@ -146,6 +184,7 @@ export function setup(
                   'Which code host should open draft pull requests?',
                   providerChoices('codehost.open-draft-pr'),
                 ),
+                ...setupQuestion(root, loaded.values.answers),
                 // Only the executing client: model names belong to one client and account.
                 ...(options.client
                   ? MODEL_TIERS.map((tier) =>

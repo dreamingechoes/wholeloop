@@ -3,7 +3,7 @@
 import { readFileSync } from 'node:fs'
 import { BuildWorkflow } from '../build/workflow.js'
 import { parseCriteria } from '../definition/criteria.js'
-import { chosenImage, executionChoice, NOT_ISOLATED } from '../execution/choice.js'
+import { chosenImage, executionChoice, NOT_ISOLATED, repositorySetup } from '../execution/choice.js'
 import { DockerUnavailableError } from '../execution/docker.js'
 import { FlowEngine } from '../flow/engine.js'
 import { StateStore } from '../state/store.js'
@@ -76,9 +76,15 @@ export function verificationCommand(
 
 function projectCode(root: string, engine: FlowEngine) {
   const choice = executionChoice(root)
+  const setup = choice.isolation === 'docker' ? repositorySetup(root) : undefined
   return choice.isolation === 'host'
     ? { ...choice, note: NOT_ISOLATED }
-    : { ...choice, image: chosenImage(engine.configuration().values.answers) ?? null }
+    : {
+        ...choice,
+        image: chosenImage(engine.configuration().values.answers) ?? null,
+        // Shown before anything runs: the one command that will get network, once per workspace.
+        ...(setup ? { setup: { command: setup.argv.join(' '), network: true } } : {}),
+      }
 }
 
 export async function verificationSuiteCommand(

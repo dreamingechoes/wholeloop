@@ -41,6 +41,7 @@ export function utilityCommand(
         ...(value('--models') ? { models: value('--models') as string } : {}),
         ...(value('--execution') ? { execution: value('--execution') as string } : {}),
         ...(value('--image') ? { image: value('--image') as string } : {}),
+        ...(value('--project-setup') ? { projectSetup: value('--project-setup') as string } : {}),
         ...(guidanceClient() ? { client: guidanceClient() as string } : {}),
       })
     else {

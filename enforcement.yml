@@ -18,6 +18,8 @@
 # src/docs/commands.ts#checkCommands through wl docs check, tested in test/unit/docs/commands.test.ts.
 version: 1
 rules:
+  - id: project-setup-person-choice
+    enforcers: [src/execution/choice.ts#checkSetup, src/execution/choice.ts#repositorySetup, src/utilities/setup.ts#setup, src/execution/docker.ts#ensureSandbox, test/unit/execution/execution.test.ts]
   - id: quiet-step-inputs
     enforcers: [src/harness/communication.ts#streamInputProblems, src/cli/json-input.ts#jsonInput, src/cli/attribution.ts#withCommandAttribution, src/cli/flow.ts#flowCommand, src/flow/engine.ts#FlowEngine, src/display/step.ts#stepDisplay, test/unit/cli/json-input.test.ts]
   - id: status-actionable-attention

@@ -46,7 +46,7 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 3. **What the person reads:** P9-06–P9-10 and P9-22.
 4. **Cost and guarantees:** P9-11–P9-17.
 5. **Truth and every client:** P9-18, P9-19 and P9-21, with the experience check passing its budgets.
-6. **Additional findings:** P9-23 after the original task order; its private research endpoint shares the answer-first outcome without changing earlier task order. P9-24, from the P9-21 pass, follows it.
+6. **Additional findings:** P9-23 after the original task order; its private research endpoint shares the answer-first outcome without changing earlier task order. P9-24, from the P9-21 pass, and P9-25, from the accepted ADR-0260, follow it.
 
 ## P9-01 · A store the client can write
 
@@ -436,6 +436,22 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 - [ ] Upgrades and uninstall replace or remove the old per-skill launchers with the existing ownership and backup rules.
 
 **Tests** — Seven-client install, upgrade and uninstall fixtures; rendered-skill snapshots; the allow-rule tests from P9-21 with one entry.
+
+## P9-25 · Network for supervised project setup
+
+**Status:** ✅ · **Size:** M · **Depends on:** P9-16 · **Release:** 1.2.0 · **Decision:** [ADR-0260](../docs/decisions/0260-network-for-supervised-project-setup.md), accepted on 2026-11-22
+
+**Goal** — A repository whose dependencies must be installed for Linux can verify and build in its container, without host execution and without network for any other command.
+
+**Acceptance criteria:**
+
+- [x] A person declares one setup command per repository at project scope; detection only proposes it.
+- [x] The setup runs once per container with network, writes dependencies outside the worktree, and the container is detached and checked offline before any other command.
+- [x] The setup is shown before verification and recorded with each round; a failed setup or a container that cannot go offline is removed with a reason.
+
+**Tests** — Command rule, project-file reading, network order, reuse, replacement, failure removal, recorded event, proposal; a gated real Docker rehearsal.
+
+**Evidence** — `src/execution/choice.ts` accepts one plain `npm`, `pnpm`, `bun`, `uv` or `composer` command read only from the committed project file; `src/execution/docker.ts` starts such a container on the bridge network, runs the setup with the dependency folder mounted from the store, detaches the network and requires an empty network list, rechecks it on reuse and removes the container on any failure; `src/verification/suite.ts` records `verify.suite-setup` (`wholeloop/suite-setup@1`) and `wl exec` and `verify begin` show the setup. `test/unit/execution/execution.test.ts` passes seven new cases, and its gated rehearsal on Docker Desktop 29.9.3, macOS arm64, `node:22-bookworm`, installed `ms` with `npm ci`, ran the suite with that dependency while `fetch` was blocked, and left the host worktree without dependencies and no container behind. A Linux rehearsal remains in [manual verification](./manual-verification.md#user-experience-phase-9-2026-11-18). The gate results are in the journal entry of 2026-11-22.
 
 ---
 

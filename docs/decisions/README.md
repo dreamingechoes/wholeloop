@@ -261,6 +261,7 @@
 | [0256](./0256-person-facing-display-rendered-by-the-core.md) | Person-facing display rendered by the core | Accepted | 2026-11-21 |
 | [0257](./0257-where-project-code-runs.md) | Where project code runs | Accepted | 2026-11-21 |
 | [0259](./0259-observed-experience-budgets.md) | Observed experience budgets | Accepted | 2026-11-21 |
+| [0260](./0260-network-for-supervised-project-setup.md) | Network for supervised project setup | Accepted | 2026-11-22 |
 
 ## Lifecycle
 

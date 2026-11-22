@@ -38,7 +38,9 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 - [ ] P9-16: run the Docker rehearsal on a Linux host with Docker 28 or newer and `node:22-bookworm` cached: `WHOLELOOP_DOCKER_REHEARSAL=1 npx vitest run test/unit/execution`. It passed on macOS arm64 with Docker Desktop 29.9.3 on 2026-11-22: the suite and a worker command reported Linux, `HOME=/tmp`, a hidden host path, an absent host variable and blocked network. Required CI does not run it.
 
-- [ ] P9-16: decide proposal 0260 (`docs/decisions/0260-network-for-supervised-project-setup.md`), a network-enabled setup command for supervised containers. Until then a supervised container has no network, so repositories whose dependencies need a Linux install cannot run their suite in it without host execution.
+- [x] P9-16: decide proposal 0260. Accepted by the maintainer on 2026-11-22 and implemented as P9-25.
+
+- [ ] P9-25: run the setup rehearsal on a Linux host with Docker 28 or newer, network access to the npm registry and `node:22-bookworm` cached: `WHOLELOOP_DOCKER_REHEARSAL=1 npx vitest run test/unit/execution -t 'Docker rehearsal'`. On macOS arm64 with Docker Desktop 29.9.3 on 2026-11-22, `npm ci` installed a dependency with network, the suite used it with the network blocked, and the worktree on the host gained no dependency.
 
 ### P9-20 baseline capture
 

@@ -16,10 +16,18 @@ import { tmpdir } from 'node:os'
 import { delimiter, dirname, join, relative, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { stepDisplay } from '../../../src/display/step.js'
-import { checkImage, chosenImage, executionChoice } from '../../../src/execution/choice.js'
+import {
+  checkImage,
+  checkSetup,
+  chosenImage,
+  executionChoice,
+  proposedSetup,
+  repositorySetup,
+} from '../../../src/execution/choice.js'
 import {
   type DockerCall,
   DockerUnavailableError,
+  dependencyCache,
   dockerPreflight,
   ensureSandbox,
   projectCwd,
@@ -36,7 +44,16 @@ import { runSuite } from '../../../src/verification/suite.js'
 
 const IMAGE_ID = `sha256:${'a'.repeat(64)}`
 /** A scripted daemon: every call is logged and answered from a small state table. */
-function daemon(state: { container?: { image: string; running: boolean; owned?: boolean } } = {}) {
+interface FakeContainer {
+  image: string
+  running: boolean
+  owned?: boolean
+  setup?: string
+  networks?: string[]
+}
+function daemon(
+  state: { container?: FakeContainer; setupFails?: boolean; disconnectFails?: boolean } = {},
+) {
   const calls: string[][] = []
   const call: DockerCall = (args) => {
     calls.push(args)
@@ -46,17 +63,38 @@ function daemon(state: { container?: { image: string; running: boolean; owned?: 
     if (first === 'container' && second === 'inspect') {
       const container = state.container
       if (!container) return { code: 1, stdout: '', stderr: 'No such container' }
+      const networks = (container.networks ?? ['none']).map((name) => `${name} `).join('')
+      const format = args.at(-2) ?? ''
       return {
         code: 0,
-        stdout: args.at(-2)?.includes('wholeloop.image')
-          ? `${container.owned === false ? '' : '1'} ${container.image} ${container.running}\n`
-          : `${container.owned === false ? '' : '1'}\n`,
+        stdout: format.includes('wholeloop.image')
+          ? `${container.owned === false ? '' : '1'} ${container.image} ${container.running} ${container.setup ?? 'none'} ${networks}\n`
+          : format.startsWith('{{range')
+            ? `${networks}\n`
+            : `${container.owned === false ? '' : '1'}\n`,
         stderr: '',
       }
     }
     if (first === 'container' && second === 'run') {
-      state.container = { image: IMAGE_ID, running: true }
+      const flag = (name: string) => args[args.indexOf(name) + 1] ?? ''
+      state.container = {
+        image: IMAGE_ID,
+        running: true,
+        setup: flag('--label').startsWith('wholeloop.exec')
+          ? (args.find((arg) => arg.startsWith('wholeloop.setup=')) ?? '').slice(16)
+          : 'none',
+        networks: [flag('--network')],
+      }
       return { code: 0, stdout: 'id\n', stderr: '' }
+    }
+    if (first === 'exec')
+      return state.setupFails
+        ? { code: 1, stdout: '', stderr: 'npm error network unreachable' }
+        : { code: 0, stdout: 'installed\n', stderr: '' }
+    if (first === 'network' && second === 'disconnect') {
+      if (state.disconnectFails) return { code: 1, stdout: '', stderr: 'cannot disconnect' }
+      if (state.container) state.container.networks = []
+      return { code: 0, stdout: '', stderr: '' }
     }
     if (first === 'container' && (second === 'start' || second === 'rm')) {
       if (second === 'rm') delete state.container
@@ -244,9 +282,17 @@ if (args[0] === 'version') { console.log('linux 29.9.3'); process.exit(0) }
 if (args[0] === 'image') { console.log(${JSON.stringify(IMAGE_ID)}); process.exit(0) }
 if (args[0] === 'container' && args[1] === 'inspect') {
   if (!fs.existsSync(state)) process.exit(1)
-  console.log(args.at(-2).includes('wholeloop.image') ? '1 ${IMAGE_ID} true' : '1'); process.exit(0)
+  const box = JSON.parse(fs.readFileSync(state, 'utf8')), nets = box.networks.map(n => n + ' ').join('')
+  const format = args.at(-2)
+  console.log(format.includes('wholeloop.image') ? '1 ${IMAGE_ID} true ' + box.setup + ' ' + nets : format.startsWith('{{range') ? nets : '1'); process.exit(0)
 }
-if (args[0] === 'container' && args[1] === 'run') { fs.writeFileSync(state, 'running'); process.exit(0) }
+if (args[0] === 'container' && args[1] === 'run') {
+  const setup = (args.find(a => a.startsWith('wholeloop.setup=')) || 'wholeloop.setup=none').slice(16)
+  fs.writeFileSync(state, JSON.stringify({ setup, networks: [args[args.indexOf('--network') + 1]] })); process.exit(0)
+}
+if (args[0] === 'network' && args[1] === 'disconnect') {
+  const box = JSON.parse(fs.readFileSync(state, 'utf8')); box.networks = []; fs.writeFileSync(state, JSON.stringify(box)); process.exit(0)
+}
 if (args[0] === 'container' && args[1] === 'rm') { fs.rmSync(state, { force: true }); process.exit(0) }
 if (args[0] === 'exec') { console.log('platform=container-fixture ' + args.slice(4).join(' ')); process.exit(0) }
 process.exit(1)
@@ -316,6 +362,119 @@ process.exit(1)
     )
   return { dir, root, engine, subject, plan, wl, suite, docker, dockerCalls, useRealDocker }
 }
+
+describe('setup with network, then offline (ADR-0260)', () => {
+  it('accepts one plain installer command and refuses everything else', () => {
+    expect(checkSetup('npm ci')).toEqual({ argv: ['npm', 'ci'], dependencies: 'node_modules' })
+    expect(checkSetup(' uv  sync --frozen ')).toEqual({
+      argv: ['uv', 'sync', '--frozen'],
+      dependencies: '.venv',
+    })
+    expect(checkSetup('composer install').dependencies).toBe('vendor')
+    for (const refused of [
+      'yarn install',
+      'curl https://example.com',
+      'npm ci && curl x',
+      'npm ci; rm -rf /',
+      'npm ci $(id)',
+      'npm ci > out',
+      `npm ${'x '.repeat(16)}`,
+      '',
+    ])
+      expect(() => checkSetup(refused), refused).toThrow('without shell syntax')
+    expect(proposedSetup(['package-lock.json', 'README.md'])).toBe('npm ci')
+    expect(proposedSetup(['uv.lock'])).toBe('uv sync --frozen')
+    expect(proposedSetup(['yarn.lock'])).toBeUndefined()
+  })
+
+  it('reads setup only from the committed project file', () => {
+    const root = mkdtempSync(join(tmpdir(), 'wholeloop-setup-'))
+    try {
+      expect(repositorySetup(root)).toBeUndefined()
+      mkdirSync(join(root, '.wholeloop'))
+      writeFileSync(
+        join(root, '.wholeloop/config.yml'),
+        "version: 1\nanswers:\n  'execution:setup': npm ci\n",
+      )
+      expect(repositorySetup(root)?.argv).toEqual(['npm', 'ci'])
+      writeFileSync(
+        join(root, '.wholeloop/config.yml'),
+        "version: 1\nanswers:\n  'execution:setup': 'npm ci && curl x'\n",
+      )
+      expect(() => repositorySetup(root)).toThrow('without shell syntax')
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  it('runs setup once on a network, detaches it and reuses the offline container', () => {
+    const { call, calls, state } = daemon()
+    const dir = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-sandbox-')))
+    const workspace = join(dir, 'worktree'),
+      store = join(dir, 'store')
+    mkdirSync(workspace)
+    const setup = checkSetup('npm ci')
+    try {
+      const sandbox = ensureSandbox(workspace, 'node:fixture', call, { setup, store })
+      expect(sandbox.setup).toEqual({ argv: ['npm', 'ci'], ran: true })
+      const run = calls.find((args) => args[1] === 'run') ?? []
+      expect(run[run.indexOf('--network') + 1]).toBe('bridge')
+      // Dependencies are written to the store, never into the worktree on the host.
+      const cache = dependencyCache(workspace, store)
+      expect(run).toContain(`type=bind,source=${cache},target=/workspace/node_modules`)
+      expect(existsSync(cache)).toBe(true)
+      expect(existsSync(join(workspace, 'node_modules'))).toBe(false)
+      const order = calls.map((args) => args.slice(0, 2).join(' '))
+      const at = (entry: string) => order.indexOf(entry)
+      expect(at('exec --workdir')).toBeGreaterThan(at('container run'))
+      expect(at('network disconnect')).toBeGreaterThan(at('exec --workdir'))
+      expect(state.container?.networks).toEqual([])
+      // Reuse runs nothing again and still proves the container is offline.
+      const before = calls.length
+      expect(ensureSandbox(workspace, 'node:fixture', call, { setup, store }).setup).toEqual({
+        argv: ['npm', 'ci'],
+        ran: false,
+      })
+      expect(calls.slice(before).some((args) => args[0] === 'exec' || args[1] === 'run')).toBe(
+        false,
+      )
+      // A container found back on a network, or made for another setup, is replaced.
+      if (state.container) state.container.networks = ['bridge']
+      expect(ensureSandbox(workspace, 'node:fixture', call, { setup, store }).setup?.ran).toBe(true)
+      ensureSandbox(workspace, 'node:fixture', call, { setup: checkSetup('npm install'), store })
+      expect(calls.filter((args) => args[1] === 'run')).toHaveLength(3)
+      // Without a declared setup the container never touches a network.
+      ensureSandbox(workspace, 'node:fixture', call, { store })
+      const last = calls.filter((args) => args[1] === 'run').at(-1) ?? []
+      expect(last[last.indexOf('--network') + 1]).toBe('none')
+      expect(last.join(' ')).not.toContain('node_modules')
+      expect(stopSandbox(workspace, call, store)).toBe(true)
+      expect(existsSync(cache)).toBe(false)
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it.each([
+    ['a failed setup', { setupFails: true }, /Setup npm ci failed.*network unreachable/],
+    ['a network that will not detach', { disconnectFails: true }, 'Could not take the project'],
+  ] as const)('removes the container after %s', (_name, faults, message) => {
+    const { call, calls, state } = daemon({ ...faults })
+    const dir = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-sandbox-')))
+    try {
+      expect(() =>
+        ensureSandbox(dir, 'node:fixture', call, {
+          setup: checkSetup('npm ci'),
+          store: join(dir, 'store'),
+        }),
+      ).toThrow(message)
+      expect(calls.at(-1)?.slice(0, 2)).toEqual(['container', 'rm'])
+      expect(state.container).toBeUndefined()
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+})
 
 describe('supervised suites and worker commands', () => {
   it('runs the suite in the container by default and records where it ran', () =>
@@ -421,6 +580,42 @@ describe('supervised suites and worker commands', () => {
       expect(wl('exec', '--for', subject, '--stop').stdout).toContain('No project container')
     }))
 
+  it('records setup with its network before the suite and in worker commands', () =>
+    fixture(({ wl, plan, suite, subject, engine, dockerCalls }) => {
+      expect(wl('setup', '--project-setup', 'npm ci', '--scope', 'user').code).toBe(4)
+      expect(
+        wl('setup', '--project-setup', 'npm ci', '--image', 'node:fixture', '--scope', 'project')
+          .code,
+      ).toBe(0)
+      const begun = wl('verify', 'begin', '--base', 'main')
+      expect(begun.stdout).toContain('npm ci, with network, once per workspace')
+      const first = plan()
+      const ran = JSON.parse(suite(first.run, first.round, '--json').stdout)
+      expect(ran.execution.setup).toEqual({ command: 'npm ci', network: true, ran: true })
+      expect(verificationRuns(engine.store.events())[0]?.setup).toEqual({
+        run: first.run,
+        round: first.round,
+        argv: ['npm', 'ci'],
+        network: 'bridge',
+        ran: true,
+      })
+      const order = dockerCalls().map((args) => args.slice(0, 2).join(' '))
+      expect(order.indexOf('network disconnect')).toBeLessThan(order.lastIndexOf('exec --workdir'))
+      const worker = wl('exec', '--for', subject, '--', 'npm', 'test')
+      expect(worker.stderr).toContain('offline after setup npm ci ran earlier with network')
+      expect(dockerCalls().filter((args) => args[1] === 'run')).toHaveLength(1)
+    }))
+
+  it('proposes setup from a lock file and never applies it on its own', () =>
+    fixture(({ wl, root }) => {
+      writeFileSync(join(root, 'package-lock.json'), '{}')
+      const asked = JSON.parse(wl('setup', '--json').stdout)
+      expect(
+        asked.questions.find((question: { id: string }) => question.id === 'project-setup'),
+      ).toMatchObject({ options: [{ value: 'npm ci' }], freeText: true })
+      expect(existsSync(join(root, '.wholeloop/config.yml'))).toBe(false)
+    }))
+
   it('never touches Docker in steps that only read', () =>
     fixture(({ wl, dockerCalls }) => {
       expect(wl('next', 'Find old orders faster', '--owner', 'Alex', '--json').code).toBe(0)
@@ -455,7 +650,89 @@ describe.runIf(process.env.WHOLELOOP_DOCKER_REHEARSAL === '1')('Docker rehearsal
         context.wl('exec', '--for', context.subject, '--stop')
       }
     }))
+  it('installs a dependency with network during setup and runs every later command offline', () =>
+    fixture((context) => {
+      context.useRealDocker()
+      try {
+        rehearseSetup(context)
+      } finally {
+        context.wl('exec', '--for', context.subject, '--stop')
+      }
+    }))
 })
+/** ADR-0260: setup reaches the registry once; the suite then runs offline with its dependency. */
+function rehearseSetup({ plan, suite, wl, root, dir }: ReturnType<typeof setup>) {
+  const run = (command: string, args: string[]) => {
+    const result = spawnSync(command, args, { cwd: root, encoding: 'utf8' })
+    if (result.status !== 0) throw new Error(result.stderr)
+  }
+  writeFileSync(
+    join(root, 'package.json'),
+    JSON.stringify({
+      name: 'execution-fixture',
+      private: true,
+      dependencies: { ms: '2.1.3' },
+      scripts: { check: 'node suite.mjs' },
+    }),
+  )
+  // The real npm next to this Node writes the lock; the fixture's npm on PATH is a fake.
+  run(join(dirname(process.execPath), 'npm'), [
+    'install',
+    '--package-lock-only',
+    '--ignore-scripts',
+    '--no-audit',
+    '--no-fund',
+  ])
+  writeFileSync(
+    join(root, 'suite.mjs'),
+    [
+      "import ms from 'ms'",
+      "console.log('dependency=' + ms('2 days'))",
+      "const net = await fetch('https://example.com').then(() => 'reached', () => 'blocked')",
+      "console.log('network=' + net)",
+    ].join('\n'),
+  )
+  run('git', ['add', '.'])
+  run('git', [
+    '-c',
+    'user.name=Fixture',
+    '-c',
+    'user.email=fixture@example.com',
+    '-c',
+    'core.hooksPath=/dev/null',
+    'commit',
+    '-m',
+    'dependency',
+  ])
+  expect(
+    wl('setup', '--image', 'node:22-bookworm', '--project-setup', 'npm ci', '--scope', 'project')
+      .code,
+  ).toBe(0)
+  run('git', ['add', '.'])
+  run('git', [
+    '-c',
+    'user.name=Fixture',
+    '-c',
+    'user.email=fixture@example.com',
+    '-c',
+    'core.hooksPath=/dev/null',
+    'commit',
+    '-m',
+    'setup',
+  ])
+  const first = plan()
+  const ran = suite(first.run, first.round, '--json')
+  expect(ran.stderr).toBe('')
+  const payload = JSON.parse(ran.stdout)
+  expect(payload.output[0].stdout).toContain('dependency=172800000')
+  expect(payload.output[0].stdout).toContain('network=blocked')
+  expect(payload.execution.setup).toEqual({ command: 'npm ci', network: true, ran: true })
+  // The dependency lives in the store; the worktree on the host only gains an empty mount point.
+  const host = join(root, 'node_modules')
+  expect(existsSync(host) ? readdirSync(host) : []).toEqual([])
+  expect(existsSync(join(dir, 'state/wholeloop/execution'))).toBe(true)
+}
+
 function rehearse({ plan, suite, wl, subject, root, dir }: ReturnType<typeof setup>) {
   writeFileSync(
     join(root, 'suite.mjs'),
