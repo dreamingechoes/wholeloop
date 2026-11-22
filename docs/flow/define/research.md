@@ -60,6 +60,8 @@ The first plan view returns `needs-sources`, access labels and suggested provide
 
 Alone, `research` needs only a question. It creates a **loose brief** that you can later feed into [`frame-problem`](./frame-problem.md) (`--from brief-7f3a`) or simply keep. Inside an initiative, the brief attaches to it and its open questions become inputs to the next step.
 
+[Cost previews](../README.md#cost-before-workers-start) show current worker calls, requested tiers and declared input size before each batch starts. The illustrative example below is abridged and omits these previews; token usage, time and price are not measured by the plan.
+
 ## Run it
 
 ![research: an illustrative example session in a coding client](../../assets/terminal/session-research.gif)

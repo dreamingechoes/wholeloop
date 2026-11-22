@@ -1,10 +1,11 @@
 // `wl fanout run`: runs a gate round through headless workers.
 import { openCodeVersionProbe } from '../diagnostics/doctor.js'
-import { progressText } from '../display/render.js'
+import { progressText, wrapText } from '../display/render.js'
 import { headlessAdapter } from '../fanout/adapters.js'
 import { runHeadless } from '../fanout/run.js'
 import { FlowEngine } from '../flow/engine.js'
 import { StateStore } from '../state/store.js'
+import { costText, type WorkerCost } from '../workers/cost.js'
 import type { parseArguments } from './arguments.js'
 import { EXIT, type Io } from './io.js'
 import { emitStep } from './presentation.js'
@@ -41,6 +42,8 @@ export async function fanoutCommand(
         ? {
             onProgress: (progress: Parameters<typeof progressText>[0]) =>
               (io.progress ?? io.err)(progressText(progress)),
+            onCost: (cost: WorkerCost) =>
+              (io.progress ?? io.err)(wrapText(costText(cost)).join('\n')),
           }
         : {}),
       ...(options['--concurrency'] !== undefined

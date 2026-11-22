@@ -224,11 +224,16 @@ describe('bounded headless gate processes', () => {
     'collects real isolated processes and caches a decided round without respawning',
     () =>
       fixture(async ({ dir, engine, plan, adapter, env }) => {
-        const progress: DisplayProgress[] = []
+        const progress: DisplayProgress[] = [],
+          costs: number[] = []
         const result = await runHeadless(engine, plan.subject, 'review', {
           adapter,
           env,
           concurrency: 2,
+          onCost: (cost) => {
+            costs.push(cost.workers)
+            expect(existsSync(join(dir, 'workers.ndjson'))).toBe(false)
+          },
           onProgress: (entry) => {
             progress.push(entry)
             throw new Error('An output observer cannot alter evidence')
@@ -237,6 +242,7 @@ describe('bounded headless gate processes', () => {
         expect(result.status).toBe('PASS')
         expect(result.workers).toHaveLength(plan.units.length)
         expect(progress).toHaveLength(plan.units.length)
+        expect(costs).toEqual([plan.units.length])
         expect(progress.every((entry) => entry.status === 'finished' && entry.elapsedMs >= 0)).toBe(
           true,
         )
@@ -509,8 +515,13 @@ describe('bounded headless gate processes', () => {
         )
         if (selected === 'claude') {
           const lines = result.stderr.trim().split('\n')
-          expect(lines).toHaveLength(plan.units.length)
-          expect(lines.every((line) => / — finished · \d+:\d{2}$/.test(line))).toBe(true)
+          const finished = lines.filter((line) => / — finished · \d+:\d{2}$/.test(line))
+          expect(finished).toHaveLength(plan.units.length)
+          expect(lines[0]).toContain(`Cost estimate: ${plan.units.length} worker calls`)
+          expect(lines.slice(0, lines.indexOf(finished[0] ?? '')).join(' ')).toContain(
+            'price unknown',
+          )
+          expect(lines.every((line) => line.length <= 80)).toBe(true)
         } else expect(result.stderr).toBe('')
         expect(result.status).toBe(0)
         const payload = JSON.parse(result.stdout)

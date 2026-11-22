@@ -133,6 +133,44 @@ function refute(
   })
 }
 
+it.each(['verify', 'review'] as const)(
+  'previews current %s workers and outstanding refutations without changing the pinned plan',
+  (gate) =>
+    fixture(({ engine, workflow, subject }) => {
+      const initial = workflow.plan(subject, gate, { base: 'main', criteria })
+      const expected = gate === 'verify' ? 1 : 6
+      expect(initial.cost).toMatchObject({
+        workers: expected,
+        modelTiers: [{ tier: 'standard', workers: expected }],
+        estimate: { value: expected, declaredInputBytes: null, price: null },
+      })
+      expect(initial.plan).not.toHaveProperty('cost')
+      const unit = initial.plan.units.find((unit) => !['suite', 'testability'].includes(unit.id))
+      if (!unit) throw new Error('Expected a semantic worker unit')
+      workflow.submit(subject, initial.plan.run, initial.plan.round, {
+        unit: unit.id,
+        status: 'ok',
+        evidence: ['Observed fixture'],
+        findings: [defect],
+      })
+      expect(workflow.plan(subject, gate).cost.workers).toBe(expected + 2)
+      workflow.submit(subject, initial.plan.run, initial.plan.round, {
+        finding: `${unit.id}:${defect.id}`,
+        verifier: 1,
+        outcome: 'confirm',
+        reason: 'Observed fixture defect',
+        evidence: [],
+      })
+      expect(workflow.plan(subject, gate).cost.workers).toBe(expected + 1)
+      expect(
+        engine.store
+          .events()
+          .filter((event) => event.type === 'gate.planned')
+          .every((event) => !('cost' in event.data.plan)),
+      ).toBe(true)
+    }),
+)
+
 describe('journaled bounded gate rounds', () => {
   it('passes complete unchanged coverage, resumes without duplication and rebuilds every round exactly', () =>
     fixture(({ engine, workflow, subject }) => {

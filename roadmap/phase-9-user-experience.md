@@ -248,7 +248,7 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-13 · Cost shown before every fan-out
 
-**Status:** ⬜ · **Size:** S · **Depends on:** P9-04 · **Release:** 1.2.0
+**Status:** 🔄 · **Size:** S · **Depends on:** P9-04 · **Release:** 1.2.0 · **Decision:** [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md)
 
 **Goal** — The person sees what a step will spend before it spends it.
 

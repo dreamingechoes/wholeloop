@@ -2,9 +2,11 @@ import { researchAssignments } from '../../src/research/assignments.js'
 import type { Angle, AngleResult, Refutation, ResearchPlan } from '../../src/research/contracts.js'
 import { validateRefutation, validateResult } from '../../src/research/contracts.js'
 import { researchReport } from '../../src/research/report.js'
+import { assignmentCost, type WorkerCost } from '../../src/workers/cost.js'
 import { scheduleAssignments } from '../../src/workers/schedule.js'
 
 export interface ResearchEngine {
+  preview?(cost: WorkerCost): void
   investigate(
     angle: Angle,
     plan: ResearchPlan,
@@ -29,8 +31,10 @@ export async function runResearch(
   sink: ResearchSink,
   mode: 'native' | 'sequential' = 'native',
 ) {
+  const initial = researchAssignments(plan, [], []).jobs
+  if (initial.length) engine.preview?.(assignmentCost(initial))
   const results = await scheduleAssignments(
-    researchAssignments(plan, [], []).jobs,
+    initial,
     async (assignment) => {
       const angle = assignment.angle
       let result: AngleResult
@@ -53,6 +57,7 @@ export async function runResearch(
     mode,
   )
   const jobs = researchAssignments(plan, results, []).examinations
+  if (jobs.length) engine.preview?.(assignmentCost(jobs))
   const votes = await scheduleAssignments(
     jobs,
     async (job) => {

@@ -1,6 +1,7 @@
 // Expands transient research jobs without changing the pinned plan or exposing other votes.
 
 import { workerAssignment } from '../workers/assignment.js'
+import { assignmentCost } from '../workers/cost.js'
 import type { AngleResult, Refutation, ResearchPlan } from './contracts.js'
 import { researchReport } from './report.js'
 import resultSchema from './schemas/result-v1.json' with { type: 'json' }
@@ -12,7 +13,7 @@ export function researchAssignments(
   votes: readonly Refutation[],
 ) {
   const report = researchReport(plan, results, votes)
-  return {
+  const assignments = {
     jobs: plan.angles
       .filter((angle) => !results.some((result) => result.angle === angle.id))
       .map((angle) => ({
@@ -72,4 +73,5 @@ export function researchAssignments(
           }))
       }),
   }
+  return { ...assignments, cost: assignmentCost(assignments.jobs, assignments.examinations) }
 }

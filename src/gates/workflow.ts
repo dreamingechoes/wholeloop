@@ -19,6 +19,7 @@ import {
 } from '../verification/contract-gate.js'
 import { verificationCriteria } from '../verification/contracts.js'
 import { testabilityResult, testPath } from '../verification/testability.js'
+import { workerCost } from '../workers/cost.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import { namedBase, repository } from '../worktrees/git.js'
 import { WorktreeManager } from '../worktrees/manager.js'
@@ -49,6 +50,22 @@ const latestRun = (events: readonly StateEvent[], subject: string, gate: GateKin
   gateRuns(events)
     .filter((run) => run.subject === subject && run.gate === gate)
     .at(-1)
+const plannedCost = (
+  plan: GatePlan,
+  results: readonly GateResult[] = [],
+  votes: readonly GateVote[] = [],
+) => {
+  const completed = new Set(results.map(({ unit }) => unit)),
+    examined = new Set(votes.map(({ finding, verifier }) => `${finding}/${verifier}`)),
+    roles = plan.units
+      .filter((unit) => !['suite', 'testability'].includes(unit.id) && !completed.has(unit.id))
+      .map(() => (plan.gate === 'verify' ? 'verifier' : 'reviewer'))
+  for (const result of results)
+    for (const finding of result.findings)
+      for (let verifier = 1; verifier <= plan.verifiers; verifier++)
+        if (!examined.has(`${result.unit}:${finding.id}/${verifier}`)) roles.push('reviewer')
+  return workerCost(roles)
+}
 const languages = (paths: string[]) =>
   [
     ...new Set(
@@ -295,11 +312,18 @@ export class GateWorkflow {
           throw new Error('Only a passing prior run can start a fresh gate budget')
         budget = options.rounds ?? Number(gateSettings.rounds)
       } else if (previous && !previous.decision) {
-        return { schema: 'wholeloop/gate-plan@1', plan: previous.plan, budget, resumed: true }
+        return {
+          schema: 'wholeloop/gate-plan@1',
+          plan: previous.plan,
+          cost: plannedCost(previous.plan, previous.results, previous.votes),
+          budget,
+          resumed: true,
+        }
       } else if (previous?.decision?.report.verdict === 'PASS')
         return {
           schema: 'wholeloop/gate-plan@1',
           plan: previous.plan,
+          cost: plannedCost(previous.plan, previous.results, previous.votes),
           budget,
           resumed: true,
           complete: snapshot.digest === previous.plan.snapshot.digest,
@@ -337,7 +361,13 @@ export class GateWorkflow {
           type: 'gate.submitted',
           data: { run: plan.run, round: plan.round, result: testabilityResult(plan) },
         })
-      return { schema: 'wholeloop/gate-plan@1', plan, budget, resumed: false }
+      return {
+        schema: 'wholeloop/gate-plan@1',
+        plan,
+        cost: plannedCost(plan),
+        budget,
+        resumed: false,
+      }
     })
   }
 

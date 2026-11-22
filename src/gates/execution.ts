@@ -2,6 +2,7 @@
 import type { FlowEngine } from '../flow/engine.js'
 import type { ReviewContext } from '../review/contracts.js'
 import { prepareReviewInput } from '../review/input.js'
+import { type WorkerCost, workerCost } from '../workers/cost.js'
 import { scheduleAssignments } from '../workers/schedule.js'
 import type { GatePlan, GateResult, GateVote } from './contracts.js'
 import { workspaceSnapshot } from './snapshot.js'
@@ -9,6 +10,7 @@ import { gateRuns } from './state.js'
 import { GateWorkflow } from './workflow.js'
 
 export interface GateHost {
+  preview?(cost: WorkerCost): void
   inspect(
     plan: GatePlan,
     unit: GatePlan['units'][number],
@@ -36,8 +38,19 @@ export async function inspectGateRound(
     .find((run) => run.run === plan.run)
     ?.rounds.at(-1)
   const unchanged = () => workspaceSnapshot(plan.repository).digest === plan.snapshot.digest
+  const inspections = plan.units.filter(
+    (unit) => !current?.results.some((result) => result.unit === unit.id),
+  )
+  const workers = inspections.filter((unit) => !['suite', 'testability'].includes(unit.id))
+  if (workers.length)
+    host.preview?.(
+      workerCost(
+        workers.map(() => (plan.gate === 'verify' ? 'verifier' : 'reviewer')),
+        workers,
+      ),
+    )
   await scheduleAssignments(
-    plan.units.filter((unit) => !current?.results.some((result) => result.unit === unit.id)),
+    inspections,
     async (unit) => {
       if (host.stopped()) return
       let result: GateResult
@@ -88,6 +101,13 @@ export async function inspectGateRound(
         !submitted?.votes.some(
           (vote) => vote.finding === job.finding && vote.verifier === job.verifier,
         ),
+    )
+  if (jobs.length)
+    host.preview?.(
+      workerCost(
+        jobs.map(() => 'reviewer'),
+        jobs,
+      ),
     )
   await scheduleAssignments(
     jobs,

@@ -89,6 +89,8 @@ A PR URL also needs `--branch <resolved-local-head>`. The client supplies the re
 
 **What stays fixed.** Changing the rubric during a run fails instead of weakening the review. Keep the private objects together with the journal: rebuilding projections cannot recreate missing source files.
 
+[Cost previews](../README.md#cost-before-workers-start) show current worker calls, requested tiers and declared input size before each batch starts. The illustrative example below is abridged and omits these previews; token usage, time and price are not measured by the plan.
+
 ## Run it
 
 ![review-code: an illustrative example session in a coding client](../../assets/terminal/session-review-code.gif)
