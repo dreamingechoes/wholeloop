@@ -263,7 +263,7 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-14 · Deterministic checks of code citations
 
-**Status:** ⬜ · **Size:** M · **Depends on:** — · **Release:** 1.2.0
+**Status:** 🔄 · **Size:** M · **Depends on:** — · **Release:** 1.2.0 · **Decision:** [ADR-0021](../docs/decisions/0021-journaled-research-plans-and-refutations.md)
 
 **Goal** — A claim citing `file:lines@sha` is checked by the core, not only by model verifiers.
 

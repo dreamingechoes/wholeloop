@@ -13,6 +13,8 @@ For an explicit wholeloop/delivery-worker-assignment@1 from the controller, read
 
 Use the exact claim and verifier slot in the supplied job. Inspect the cited evidence and the inference connecting it to the conclusion. Seek contradictory observations, sample limitations and missing context; do not repair the claim.
 
+When input.codeCitations supplies core structural checks, use them for committed file existence, line bounds and literal excerpt matching. Independently examine the claim's meaning and counterexamples; a matching quotation is not proof of its inference. Do not repeat mechanical checks merely to fill a verifier slot, skip independent examination or change the planned quorum. Unversioned references remain unchecked by this mechanism.
+
 Return the supplied vote schema in your final message with the assigned claim ID and verifier number. A refutation needs both a reason and concrete evidence. Confirmation means the evidence supports the claim within its stated limits; uncertainty is a valid outcome when access or evidence is insufficient.
 
 The conductor validates and submits your final vote. The core counts unique verifier slots and applies the planned majority. Your response does not decide whether the claim is retained or dropped. Do not run core commands, edit source files, make up another verifier's response or imply agreement from silence.

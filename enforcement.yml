@@ -31,6 +31,8 @@ rules:
     enforcers: [src/research/conclusion.ts#validateConclusion, src/research/conclusion.ts#conclusionBasis, src/research/report.ts#researchBrief, src/research/workflow.ts#ResearchWorkflow, src/flow/engine.ts#complete, test/unit/research/conclusion.test.ts]
   - id: research-person-selects-sources
     enforcers: [src/providers/source-access.ts#sourceCandidates, src/providers/detect.ts#detectMcpByClient, src/research/plan.ts#researchPlan, src/research/workflow.ts#ResearchWorkflow, src/cli/research.ts#researchCommand, src/config/write.ts#writeSettings, test/unit/research/source-choice.test.ts, test/unit/research/research.test.ts]
+  - id: research-code-citations
+    enforcers: [src/research/citations.ts, src/research/citation-proof.ts, src/research/schemas/citations-v1.json, src/research/workflow.ts, src/research/assignments.ts, src/research/report.ts, src/state/events.ts, test/unit/research/citations.test.ts]
   - id: read-only-fanout-joins
     enforcers: [src/workers/schedule.ts#scheduleAssignments, src/workers/assignment.ts#workerAssignment, src/research/assignments.ts#researchAssignments, src/gates/assignments.ts#gateAssignments, harness/workflows/research.ts#runResearch, src/gates/execution.ts, test/unit/workers/schedule.test.ts, test/unit/workers/assignments.test.ts, test/unit/adapters/worker-roles.test.ts, test/unit/profile/profile.test.ts]
   - id: fanout-cost-before-start
