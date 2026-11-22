@@ -488,6 +488,10 @@ rules:
     enforcers: [src/review/comments.ts#publishReviewComment, test/unit/review/review.test.ts]
   - id: verify-suite-once
     enforcers: [src/verification/suite.ts#runSuite, src/verification/state.ts#verificationRuns, test/unit/verification/verification.test.ts, src/verification/state.ts#replayVerification, test/unit/gates/state-performance.test.ts]
+  - id: verify-startup-budget
+    enforcers: [src/verification/start.ts, src/verification/suite.ts#runSuite, src/verification/state.ts, src/gates/state.ts, src/gates/workflow.ts, test/unit/verification/start.test.ts]
+  - id: verify-readable-output
+    enforcers: [src/verification/start.ts#suiteOutputTail, src/verification/suite.ts#suiteResultV2, src/cli/verification.ts, src/display/step.ts, test/unit/verification/start.test.ts]
   - id: verify-agreed-criteria
     enforcers: [src/verification/workflow.ts#VerificationWorkflow, src/gates/workflow.ts#GateWorkflow, test/unit/verification/verification.test.ts]
   - id: verify-observed-exit

@@ -4,7 +4,8 @@ import { BuildWorkflow } from '../build/workflow.js'
 import { parseCriteria } from '../definition/criteria.js'
 import { FlowEngine } from '../flow/engine.js'
 import { StateStore } from '../state/store.js'
-import { runSuite } from '../verification/suite.js'
+import { namedSuiteHashes, SuiteStartError } from '../verification/start.js'
+import { runSuite, suiteResultV2 } from '../verification/suite.js'
 import { VerificationWorkflow } from '../verification/workflow.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
@@ -72,17 +73,46 @@ export async function verificationSuiteCommand(
   const value = (key: string) => (typeof options[key] === 'string' ? options[key] : undefined)
   if (positional.length || !value('--for') || !value('--run') || !value('--round'))
     throw new CliError('Provide --for, --run and --round')
+  const version = value('--result-version') ?? (json ? '1' : '2')
+  if (!['1', '2'].includes(version)) throw new CliError('Use --result-version 1 or 2', EXIT.input)
   const workflow = new BuildWorkflow(new FlowEngine(new StateStore(), root))
-  const payload = await runSuite(
-    workflow.engineFor(value('--for') ?? ''),
-    value('--for') ?? '',
-    value('--run') ?? '',
-    Number(value('--round')),
-    {
-      ...(value('--commands') ? { refs: JSON.parse(value('--commands') ?? '') as string[] } : {}),
-      ...(value('--timeout') ? { timeoutMs: Number(value('--timeout')) } : {}),
-    },
-  )
-  emitStep('verify suite', payload, io, json, positional)
+  let payload: Awaited<ReturnType<typeof runSuite>>
+  try {
+    payload = await runSuite(
+      workflow.engineFor(value('--for') ?? ''),
+      value('--for') ?? '',
+      value('--run') ?? '',
+      Number(value('--round')),
+      {
+        ...(value('--commands') ? { refs: JSON.parse(value('--commands') ?? '') as string[] } : {}),
+        ...(value('--timeout') ? { timeoutMs: Number(value('--timeout')) } : {}),
+      },
+    )
+  } catch (error) {
+    if (!(error instanceof SuiteStartError)) throw error
+    if (version === '1') throw new CliError(error.message, EXIT.precondition)
+    emitStep(
+      'verify suite',
+      {
+        schema: 'wholeloop/verify-suite@2',
+        subject: value('--for'),
+        run: error.failure.run,
+        round: error.failure.round,
+        status: 'unavailable',
+        roundSpent: false,
+        result: null,
+        output: [],
+        findings: [],
+        commands: namedSuiteHashes(error.failure.commands),
+        cause: error.failure.cause,
+        warnings: [error.message],
+      },
+      io,
+      json,
+      positional,
+    )
+    return EXIT.precondition
+  }
+  emitStep('verify suite', version === '2' ? suiteResultV2(payload) : payload, io, json, positional)
   return payload.result.status === 'passed' && payload.current ? EXIT.ok : EXIT.shape
 }

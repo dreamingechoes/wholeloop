@@ -3464,6 +3464,15 @@
       "type": "object",
       "properties": {
         "schema": {
+          "const": "wholeloop/verify-suite@2"
+        }
+      },
+      "required": ["schema", "subject", "run", "round", "result", "output", "findings"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
           "const": "wholeloop/verify-complete@1"
         }
       },

@@ -33,7 +33,7 @@ import {
 import { gateLenses } from './lenses.js'
 import { gateReport } from './report.js'
 import { changedPaths, workspaceSnapshot } from './snapshot.js'
-import { gateRuns } from './state.js'
+import { gateRuns, remainingStartupBudget } from './state.js'
 
 export interface GateOptions {
   repo?: string
@@ -285,7 +285,12 @@ export class GateWorkflow {
         budget = options.extend
       }
       const previous = current?.rounds.at(-1)
-      if (options.newRun) {
+      const restart = !!current?.unavailable
+      if (restart && current) {
+        if (options.newRun)
+          throw new Error('A startup replacement cannot reset the evaluation budget')
+        budget = remainingStartupBudget({ ...current, budget })
+      } else if (options.newRun) {
         if (previous?.decision?.report.verdict !== 'PASS')
           throw new Error('Only a passing prior run can start a fresh gate budget')
         budget = options.rounds ?? Number(gateSettings.rounds)
@@ -300,7 +305,7 @@ export class GateWorkflow {
           complete: snapshot.digest === previous.plan.snapshot.digest,
           stale: snapshot.digest !== previous.plan.snapshot.digest,
         }
-      const round = options.newRun ? 1 : (current?.rounds.length ?? 0) + 1
+      const round = options.newRun || restart ? 1 : (current?.rounds.length ?? 0) + 1
       if (round > budget)
         throw new Error(
           'Gate budget exhausted; explicitly extend it or take over the open findings',
@@ -308,7 +313,10 @@ export class GateWorkflow {
       const plan: GatePlan = {
         schema: 'wholeloop/gate-round@1',
         subject,
-        run: !options.newRun && existing ? existing.run : `gate-${randomBytes(8).toString('hex')}`,
+        run:
+          !options.newRun && !restart && existing
+            ? existing.run
+            : `gate-${randomBytes(8).toString('hex')}`,
         gate,
         round,
         budget,
@@ -375,6 +383,10 @@ export class GateWorkflow {
     const run = latestRun(events, subject, gate)
     const current = run?.rounds.at(-1)
     if (!run || !current) throw new Error('Plan a gate round first')
+    if (run.unavailable)
+      throw new Error(
+        'The suite could not start; fix its environment and request a new verify plan without spending a code round',
+      )
     let observed: string
     try {
       observed = workspaceSnapshot(current.plan.repository).digest

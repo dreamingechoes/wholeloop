@@ -1,6 +1,7 @@
 // Replays gate rounds and rejects impossible transitions.
 import { isObject, validate } from '../config/schema.js'
 import type { StateEvent } from '../state/events.js'
+import { type SuiteStartFailure, validStartupFailure } from '../verification/start.js'
 import type { GateKind, GatePlan, GateReport, GateResult, GateVote } from './contracts.js'
 import { validateGatePlan, validateGateResult, validateGateVote } from './contracts.js'
 import { gateReport } from './report.js'
@@ -18,7 +19,10 @@ export interface GateRun {
   gate: GateKind
   budget: number
   rounds: GateRound[]
+  unavailable?: SuiteStartFailure
 }
+
+export const remainingStartupBudget = (run: GateRun) => run.budget - (run.rounds.length - 1)
 
 export function validGateData(type: string, data: Record<string, unknown>): boolean {
   const schema = Object.entries(schemas.properties).find(([key]) => key === type)?.[1]
@@ -38,6 +42,25 @@ export function gateRuns(events: readonly StateEvent[]): GateRun[] {
   const runs = new Map<string, GateRun>(),
     latestBySubject = new Map<string, Map<GateKind, GateRun>>()
   for (const entry of events) {
+    if (entry.type === 'verify.suite-unavailable') {
+      const run = runs.get(entry.data.run),
+        current = run?.rounds.at(-1)
+      if (
+        !run ||
+        run.subject !== entry.subject ||
+        run.gate !== 'verify' ||
+        run.unavailable ||
+        latestBySubject.get(entry.subject)?.get('verify') !== run ||
+        current?.plan.round !== entry.data.round ||
+        current.decision ||
+        current.votes.length ||
+        current.results.some((result) => result.unit !== 'testability') ||
+        !validStartupFailure(entry.data)
+      )
+        throw new Error('Only an unchanged unexamined verify startup can release its unused budget')
+      run.unavailable = entry.data
+      continue
+    }
     if (!entry.type.startsWith('gate.')) continue
     if (entry.type === 'gate.planned') {
       const plan = entry.data.plan,
@@ -48,9 +71,26 @@ export function gateRuns(events: readonly StateEvent[]): GateRun[] {
       if (!run) {
         if (
           plan.round !== 1 ||
-          (latest && latest.rounds.at(-1)?.decision?.report.verdict !== 'PASS')
+          (latest &&
+            !latest.unavailable &&
+            latest.rounds.at(-1)?.decision?.report.verdict !== 'PASS')
         )
           throw new Error('Finish the existing gate run; failed budgets cannot reset implicitly')
+        if (latest?.unavailable) {
+          const first = latest.rounds[0]?.plan
+          if (
+            plan.budget !== remainingStartupBudget(latest) ||
+            !first ||
+            first.repository !== plan.repository ||
+            first.snapshot.branch !== plan.snapshot.branch ||
+            JSON.stringify(first.base) !== JSON.stringify(plan.base) ||
+            first.policy !== plan.policy ||
+            first.verifiers !== plan.verifiers
+          )
+            throw new Error(
+              'A startup replacement must preserve policy and the remaining evaluation budget',
+            )
+        }
         run = {
           subject,
           run: plan.run,
@@ -100,6 +140,8 @@ export function gateRuns(events: readonly StateEvent[]): GateRun[] {
         run.budget = entry.data.budget
         continue
       }
+      if (run.unavailable)
+        throw new Error('A suite startup failure cannot receive a code verdict or worker results')
       if (!('round' in entry.data) || entry.data.round !== current.plan.round || current.decision)
         throw new Error('Gate submissions require the current unsealed round')
       if (entry.type === 'gate.submitted') {

@@ -14,6 +14,13 @@ import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
 import { canonicalPath, inside } from '../state/paths.js'
 import type { SuitePlan, SuiteResult } from './contracts.js'
+import {
+  namedSuiteHashes,
+  SuiteStartError,
+  type SuiteStartFailure,
+  startupCode,
+  suiteOutputTail,
+} from './start.js'
 
 export function suitePlan(
   engine: FlowEngine,
@@ -71,6 +78,7 @@ function execute(root: string, command: SuitePlan['commands'][number], timeoutMs
   return new Promise<{
     receipt: SuiteResult['commands'][number]
     output: { ref: string; stdout: string; stderr: string }
+    spawnCode?: string
   }>((resolve) => {
     let stdout = ''
     let stderr = ''
@@ -80,11 +88,32 @@ function execute(root: string, command: SuitePlan['commands'][number], timeoutMs
     const stderrDecoder = new StringDecoder('utf8')
     let size = 0
     let stopped = false
-    const child = spawn(command.argv[0] ?? '', command.argv.slice(1), {
-      cwd: join(root, command.cwd),
-      detached: true,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    })
+    let spawnCode: string | undefined
+    const codeFor = (error: unknown) => {
+      const code = (error as NodeJS.ErrnoException)?.code
+      return typeof code === 'string' && /^E[A-Z0-9_]+$/.test(code) ? code : 'SPAWN_ERROR'
+    }
+    let child: ReturnType<typeof spawn>
+    try {
+      child = spawn(command.argv[0] ?? '', command.argv.slice(1), {
+        cwd: join(root, command.cwd),
+        detached: true,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      })
+    } catch (error) {
+      resolve({
+        receipt: {
+          ref: command.ref,
+          exitCode: -1,
+          signal: '',
+          stdout: stdoutHash.digest('hex'),
+          stderr: stderrHash.digest('hex'),
+        },
+        output: { ref: command.ref, stdout, stderr },
+        spawnCode: codeFor(error),
+      })
+      return
+    }
     const stop = () => {
       stopped = true
       if (child.pid) {
@@ -110,10 +139,15 @@ function execute(root: string, command: SuitePlan['commands'][number], timeoutMs
         stderr += stderrDecoder.write(buffer)
       }
     }
-    child.stdout.on('data', (buffer: Buffer) => receive('stdout', buffer))
-    child.stderr.on('data', (buffer: Buffer) => receive('stderr', buffer))
-    child.on('error', () => {
-      const error = 'Suite executable could not start'
+    child.stdout?.on('data', (buffer: Buffer) => receive('stdout', buffer))
+    child.stderr?.on('data', (buffer: Buffer) => receive('stderr', buffer))
+    child.on('error', (cause) => {
+      const code = codeFor(cause)
+      // A later process-group/kill error cannot recategorize executed code as an unused start.
+      if (!child.pid) spawnCode = code
+      const error = child.pid
+        ? `Suite process error: ${code}`
+        : `Suite executable could not start: ${code}`
       stderr += error
       stderrHash.update(error)
     })
@@ -130,12 +164,17 @@ function execute(root: string, command: SuitePlan['commands'][number], timeoutMs
           stderr: stderrHash.digest('hex'),
         },
         output: { ref: command.ref, stdout, stderr },
+        ...(spawnCode ? { spawnCode } : {}),
       })
     })
   })
 }
 
-export function suiteGateResult(result: SuiteResult): GateResult {
+export function suiteGateResult(
+  result: SuiteResult,
+  output?: readonly { stdout: string; stderr: string }[],
+): GateResult {
+  const tail = output ? suiteOutputTail(output) : ''
   return {
     unit: 'suite',
     status: 'ok',
@@ -154,7 +193,10 @@ export function suiteGateResult(result: SuiteResult): GateResult {
               text: result.unchanged
                 ? 'Repository suite did not complete successfully'
                 : 'Repository suite changed the observed workspace',
-              evidence: [`status ${result.status}; unchanged ${result.unchanged}`],
+              evidence: [
+                `status ${result.status}; unchanged ${result.unchanged}`,
+                ...(tail ? [`Output tail (transient):\n${tail}`] : []),
+              ],
             },
           ],
   }
@@ -174,9 +216,11 @@ export async function runSuite(
   round: number,
   options: { refs?: string[]; timeoutMs?: number; executor?: SuiteExecutor } = {},
 ) {
-  const gate = gateRuns(engine.store.events())
-    .find((entry) => entry.subject === subject && entry.run === run)
-    ?.rounds.at(-1)
+  const active = gateRuns(engine.store.events()).find(
+    (entry) => entry.subject === subject && entry.run === run,
+  )
+  if (active?.unavailable) throw new SuiteStartError(active.unavailable)
+  const gate = active?.rounds.at(-1)
   if (gate?.plan.gate !== 'verify' || gate.plan.round !== round || gate.decision)
     throw new Error('Run the suite in the current unsealed verify round')
   const plan = suitePlan(engine, gate.plan, options.refs, options.timeoutMs)
@@ -211,6 +255,7 @@ export async function runSuite(
   const output: { ref: string; stdout: string; stderr: string }[] = []
   if (!result) {
     const commands: SuiteResult['commands'] = []
+    let cause: SuiteStartFailure['cause'] | undefined
     for (const command of plan.commands) {
       const completed = await (options.executor ?? execute)(
         gate.plan.repository,
@@ -219,9 +264,20 @@ export async function runSuite(
       )
       commands.push(completed.receipt)
       output.push(completed.output)
+      const code = startupCode(completed.receipt, completed.spawnCode)
+      if (code) cause = { ref: command.ref, executable: command.argv[0] ?? '', code }
       if (completed.receipt.exitCode !== 0 || completed.receipt.signal) break
     }
     const unchanged = workspaceSnapshot(gate.plan.repository).digest === gate.plan.snapshot.digest
+    if (unchanged && cause) {
+      const failure: SuiteStartFailure = { run, round, unchanged: true, commands, cause }
+      engine.store.transaction((_events, append) => {
+        if (workspaceSnapshot(gate.plan.repository).digest !== gate.plan.snapshot.digest)
+          throw new Error('Workspace changed while recording the suite startup failure')
+        append(subject, { type: 'verify.suite-unavailable', data: failure })
+      })
+      throw new SuiteStartError(failure)
+    }
     result = {
       commands,
       unchanged,
@@ -261,5 +317,15 @@ export async function runSuite(
       votes: state?.votes ?? [],
       suite: observation,
     }),
+  }
+}
+
+/** Version two names hashes explicitly; the original response and durable readers stay intact. */
+export function suiteResultV2(observation: Awaited<ReturnType<typeof runSuite>>) {
+  return {
+    ...observation,
+    schema: 'wholeloop/verify-suite@2',
+    result: { ...observation.result, commands: namedSuiteHashes(observation.result.commands) },
+    findings: suiteGateResult(observation.result, observation.output).findings,
   }
 }
