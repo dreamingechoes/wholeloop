@@ -25,18 +25,18 @@ flowchart TD
   LOC -- "a URL (issue, doc, PR)" --> HY["pick it up from the URL<br/>rebuild what's needed locally"]
   LOC -- "nothing" --> AS["show what's open,<br/>ask which one"]
   ST & HY --> FIRST["first step whose output is missing"]
-  NEW & FIRST --> PLAN["preflight: steps · where it stops"]:::core
-  PLAN --> RUN["run steps in order"]
+  NEW & FIRST --> PLAN["preflight: the next step · where it stops"]:::core
+  PLAN --> RUN["run that step"]
   RUN --> STOP{{"next decision point"}}:::person
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
   classDef person fill:#ffd9cc,stroke:#c2410c,color:#3b1205;
 ```
 
-- **States the plan before acting.** Which steps, in which order and where it will stop, in a few lines. Say "only up to the spec" and it stops there.
+- **States what comes next before acting.** It names the next step and where that step stops for you; after it, `next` works out the following one. Planning several steps for one confirmation is not available yet.
 - **Never repeats finished work.** It starts from the first step whose output does not exist yet; a step skipped with a reason stays skipped.
 - **Picks up from a URL.** A tracker issue, a document or a PR is enough to rebuild the local state the next step needs, matching existing records instead of duplicating them.
 - **Pending decisions become questions** for a person, never automatic approvals.
-- **Respects your `stops` setting.** With `stops: each-step` it pauses after every step even when no decision is due ([profile](../configuration/profile.md)).
+- **Respects your `stops` setting.** With `stops: every-step` it pauses after every step even when no decision is due ([profile](../configuration/profile.md)).
 
 ![next: an illustrative example session in a coding client](../assets/terminal/session-next.gif)
 
@@ -47,10 +47,11 @@ The same session as text:
 ```text
 > /wholeloop:next https://linear.app/acme/issue/ENG-482
 
-Found     ENG-482 "Filter orders by date" → no local record yet, picking it up
-Has       spec (approved in Linear) · 1 scope · no slices
-Plan      slice-work → build-slice → verify-works ⇄ review-code → stop at "test it"
-Go?       [ Go ]  [ Only slice-work ]  [ Change the plan ]
+Found     ENG-482 "Filter orders by date" → no local record yet
+Read      through Linear in this client · imported text never counts as an approval
+Owner?    > Ana López
+Adopted   init-5c1d   wl open init-5c1d
+Next      frame-problem for init-5c1d · stops at the first decision that is yours
 ```
 
 ## status
@@ -142,14 +143,18 @@ In your client, the skill shows the same choices interactively:
 The same session as text:
 
 ```text
-> /wholeloop:setup providers
+> /wholeloop:setup
 
-Docs       ( ) local markdown  (•) Notion ✓ detected  ( ) Confluence  ( ) Google Docs
-Tracker    ( ) local  ( ) GitHub Issues  (•) Linear ✓ detected  ( ) Jira
-Codehost   (•) GitHub ✓ gh signed in  ( ) GitLab
-Analytics  [x] PostHog ✓ detected  [ ] Mixpanel ✗ not connected → show install
-Remember   (•) this repo (shared via .wholeloop/config.yml)  ( ) only me
+Profile    ( ) mentor  (•) pair  ( ) sparring  ( ) autopilot
+           pair: standard detail, balanced challenge, one step at a time, stops at decisions
+Docs       ( ) Local documents · built in  (•) Notion · set up in this client
+           ( ) Confluence · not set up  ( ) Google Docs · not set up
+Tracker    ( ) Local tracker · built in  (•) Linear · set up in this client  ( ) Jira · not set up
+Code host  (•) GitHub code host · gh found; sign-in not checked  ( ) GitLab code host · not set up
+Remember   ( ) user  (•) project (shared via .wholeloop/config.yml)  ( ) this run only
 ```
+
+Each tool is labelled with what was detected for the client you are using: built in, set up in this client, set up in another client, found as a command (sign-in not checked) or not set up. Detection reads which MCP servers are declared, never their values, and does not prove a working connection. Analytics tools are not chosen here: `write-spec` asks for one per metric and remembers it ([write-spec](define/write-spec.md)).
 
 Nothing has to be configured up front: every step asks for what it needs the first time and offers to remember the answer. `setup` is just the place to see and change it all at once.
 
@@ -202,6 +207,7 @@ wl status --json
 wl status init-0123abcd --json
 wl setup --json
 wl setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
+wl setup --codehost github --scope project --json
 wl setup --models codex:standard=gpt-6-luna --scope user --json
 ```
 

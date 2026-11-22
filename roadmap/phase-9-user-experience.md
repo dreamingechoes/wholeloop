@@ -327,17 +327,19 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-18 · Documented interactions that do not exist
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-05, P9-07 · **Release:** 1.2.0 · **Decision:** implement or remove, per interaction
+**Status:** ✅ · **Size:** M · **Depends on:** P9-05, P9-07 · **Release:** 1.2.0 · **Decision:** implement or remove, per interaction
 
 **Goal** — Setup, Define publication and `next` behave as their pages show, or the pages stop showing it.
 
 **Acceptance criteria:**
 
-- [ ] Setup: per-option detection labels, a description per profile, codehost and analytics choices — or the session and page are corrected.
-- [ ] Define: the first Define step of an initiative asks where its artifacts are published, remembered per repository — or the sessions are corrected.
-- [ ] `next`: the planned path to the next human stop and one confirmation — or the session is corrected.
+- [x] Setup: per-option detection labels, a description per profile, codehost and analytics choices — or the session and page are corrected. *Labels, descriptions and the code-host choice are implemented; analytics stays the per-metric choice in write-spec and the session and page say so.*
+- [x] Define: the first Define step of an initiative asks where its artifacts are published, remembered per repository — or the sessions are corrected. *Corrected: publication stays the explicit `wl share mode` selection.*
+- [x] `next`: the planned path to the next human stop and one confirmation — or the session is corrected. *Corrected: `next` names the next step and its stop; multi-step planning remains the planned `--through` route.*
 
 **Tests** — Contract tests for whichever interactions are implemented.
+
+**Evidence** — `test/unit/utilities/utilities.test.ts` covers the implemented interactions with fixture MCP declarations and a fixture `gh` executable: labels for built-in, set up in this client, set up in another client, command found and not set up providers, the unknown label for an unreadable client configuration, the dial-derived descriptions of two built-in profiles, the code-host question in the batched setup questions, refusal of a provider without `codehost.open-draft-pr` before writing, and `providers.codehost` saved at project scope. The setup, next and frame-problem sessions, their pages and the README image description were corrected and their three illustrative recordings re-rendered; [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md) records why analytics, Define publication and the multi-step `next` plan were corrected rather than implemented. The gate results are in the journal entry of 2026-11-22. Native rendering of the new labels stays in the per-client pass (P9-21).
 
 ## P9-19 · Documentation that matches behaviour, with a check
 

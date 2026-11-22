@@ -232,7 +232,7 @@ Every step, in every client, follows the same exchange with the core. You always
 
 Here is a framing step as it might look in your client:
 
-![An illustrative frame-problem session: the step states its plan, asks where the framing should live and who owns it, fills in the framing questions with an explicit TBD, records a challenger's question and ends with the new initiative and the next step](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/terminal/session-frame-problem.gif)
+![An illustrative frame-problem session: the step states its plan, asks who owns it, fills in the framing questions with an explicit TBD, records a challenger's question and ends with the new initiative and the next step](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/terminal/session-frame-problem.gif)
 
 *Illustrative: an example session, animated. Its wording depends on your client and model. Every step page has one.*
 

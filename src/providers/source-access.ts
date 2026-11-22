@@ -2,6 +2,46 @@
 
 import { detectProvider, type McpDeclaration } from './detect.js'
 import type { Registry } from './load.js'
+import type { Provider } from './manifest.js'
+
+/** How one provider is reachable from the executing client; never proof of a working connection. */
+export function providerAccess(
+  manifest: Provider,
+  declarations: readonly McpDeclaration[],
+  client: string | undefined,
+  path?: string,
+) {
+  const detected = detectProvider(
+    manifest,
+    declarations.filter((entry) => entry.target === client),
+    path,
+  )
+  const configuredClients = [
+    ...new Set(
+      declarations
+        .filter((entry) => entry.enabled && entry.server === manifest.access.mcp?.server)
+        .map((entry) => entry.target),
+    ),
+  ].sort()
+  const access =
+    detected.kind === 'native' || detected.kind === 'local'
+      ? 'native'
+      : detected.kind === 'mcp'
+        ? 'available in this client'
+        : configuredClients.some((entry) => entry !== client)
+          ? 'configured in another client'
+          : detected.kind === 'cli'
+            ? 'executable only'
+            : 'unavailable'
+  const available = detected.available && detected.kind !== 'cli'
+  const evidence =
+    access === 'configured in another client'
+      ? 'MCP is declared for another client; no source access is established here'
+      : detected.kind === 'cli'
+        ? `${detected.evidence}; a connection and relevant source are not established`
+        : detected.evidence
+  return { access, available, evidence, configuredClients }
+}
 
 export function sourceCandidates(options: {
   registry: Registry
@@ -11,7 +51,6 @@ export function sourceCandidates(options: {
 }) {
   if (options.registry.problems.length)
     throw new Error('Resolve provider registry problems before choosing research sources')
-  const current = options.declarations.filter((entry) => entry.target === options.client)
   const candidates = options.registry.providers
     .flatMap(({ manifest }) => {
       const capabilities = manifest.capabilities.filter(
@@ -19,31 +58,12 @@ export function sourceCandidates(options: {
           capability.startsWith('source.') && manifest.operations[`${capability}.query`],
       )
       if (!capabilities.length) return []
-      const detected = detectProvider(manifest, current, options.path)
-      const configuredClients = [
-        ...new Set(
-          options.declarations
-            .filter((entry) => entry.enabled && entry.server === manifest.access.mcp?.server)
-            .map((entry) => entry.target),
-        ),
-      ].sort()
-      const access =
-        detected.kind === 'native' || detected.kind === 'local'
-          ? 'native'
-          : detected.kind === 'mcp'
-            ? 'available in this client'
-            : configuredClients.some((client) => client !== options.client)
-              ? 'configured in another client'
-              : detected.kind === 'cli'
-                ? 'executable only'
-                : 'unavailable'
-      const available = detected.available && detected.kind !== 'cli'
-      const evidence =
-        access === 'configured in another client'
-          ? 'MCP is declared for another client; no source access is established here'
-          : detected.kind === 'cli'
-            ? `${detected.evidence}; a connection and relevant source are not established`
-            : detected.evidence
+      const { access, available, evidence, configuredClients } = providerAccess(
+        manifest,
+        options.declarations,
+        options.client,
+        options.path,
+      )
       return [
         {
           id: manifest.id,
