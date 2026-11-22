@@ -3,7 +3,7 @@ import { Document, isSeq } from 'yaml'
 import { frontmatter } from '../harness/frontmatter.js'
 import type { Adapter } from './contracts.js'
 import { renderPortableSkill } from './portable.js'
-import { agentContext } from './roles.js'
+import { agentContext, mappedModel, tierSentence } from './roles.js'
 
 // These names match Gemini 0.27.0's actual registry; current web docs also use a newer grep_search alias.
 const readTools = ['read_file', 'read_many_files', 'list_directory', 'glob', 'search_file_content']
@@ -50,6 +50,7 @@ export const geminiAdapter: Adapter = {
       description: metadata.description,
       kind: 'local',
       tools,
+      ...(mappedModel(options.model) ? { model: mappedModel(options.model) } : {}),
     }
     const header = new Document(native)
     const allowed = header.get('tools', true)
@@ -58,7 +59,7 @@ export const geminiAdapter: Adapter = {
     const context =
       options.runtime === false
         ? ''
-        : `${agentContext(writable && capabilities.includes('shell'))}Canonical model tier: ${canonical['wholeloop.tier'] ?? 'standard'}; inherit the selected model.\n\n`
+        : `${agentContext(writable && capabilities.includes('shell'))}${tierSentence(canonical['wholeloop.tier'] ?? 'standard', options.model, `Canonical model tier: ${canonical['wholeloop.tier'] ?? 'standard'}; inherit the selected model.`)}\n\n`
     const boundaries = `${writable ? '' : 'This observer has no shell, write, memory or MCP tool. Ask the main session for observed command/provider evidence. '}Gemini subagents cannot nest delegation; return further role work to the main session for sequential execution. ${options.runtime !== false && !writable ? 'Return missing inputs to the conductor; never ask the person directly.' : 'If structured questions are unavailable, return plain-text options and wait for answers.'}\n\n`
     return {
       mode: 0o644,

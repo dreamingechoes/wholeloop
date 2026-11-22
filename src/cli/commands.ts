@@ -1691,9 +1691,15 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'setup',
     arguments: '',
-    options: ['--profile <id>', '--docs <id>', '--tracker <id>', '--scope <scope>'],
+    options: [
+      '--profile <id>',
+      '--docs <id>',
+      '--tracker <id>',
+      '--models <client:tier=model,...>',
+      '--scope <scope>',
+    ],
     schema: 'wholeloop/setup@1',
-    summary: 'Ask for or explicitly save scoped profile and provider choices',
+    summary: 'Ask for or explicitly save scoped profile, provider and model choices',
   },
   {
     path: 'template list',

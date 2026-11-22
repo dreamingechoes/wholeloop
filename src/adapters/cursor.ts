@@ -5,7 +5,7 @@ import { markEntrypoint } from '../harness/entrypoints.js'
 import { frontmatter } from '../harness/frontmatter.js'
 import type { Adapter, RenderedFile } from './contracts.js'
 import { renderPortableSkill } from './portable.js'
-import { agentContext } from './roles.js'
+import { agentContext, mappedModel, tierSentence } from './roles.js'
 
 export const cursorAdapter: Adapter = {
   id: 'cursor',
@@ -68,14 +68,14 @@ export const cursorAdapter: Adapter = {
     const header = new Document({
       name: options.runtime === false ? name : `wl-${name}`,
       description: metadata.description,
-      model: 'inherit',
+      model: mappedModel(options.model) ?? 'inherit',
       readonly: !writable,
       is_background: false,
     })
     const context =
       options.runtime === false
         ? ''
-        : `${agentContext(writable && capabilities.includes('shell'))}Canonical model tier: ${canonical['wholeloop.tier'] ?? 'standard'}; inherit the selected model.\n\n`
+        : `${agentContext(writable && capabilities.includes('shell'))}${tierSentence(canonical['wholeloop.tier'] ?? 'standard', options.model, `Canonical model tier: ${canonical['wholeloop.tier'] ?? 'standard'}; inherit the selected model.`)}\n\n`
     const boundary = `${writable ? '' : 'This observer runs with native readonly permissions. Request observed command/provider evidence from the main session; do not change files, state or services. '}Return additional role work for sequential main-session handoff. ${options.runtime !== false && !writable ? 'Return missing inputs to the conductor; never ask the person directly.' : 'If structured questions are unavailable, return plain-text options and wait.'}\n\n`
     return {
       mode: 0o644,

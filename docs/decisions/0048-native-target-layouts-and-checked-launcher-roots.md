@@ -3,6 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-10-19
 
+**Amended 2026-11-22 (P9-15).** The default model rendering below stays: Claude Code's aliases and inheritance elsewhere. A tier a person maps to a model for a client replaces it in that client's installed roles; plugin builds keep the default. [ADR-0258](./0258-proportional-depth-and-gate-cost.md) records the mapping.
+
 **Amended 2026-11-08.** Native runs of the generated read-only roles held their restrictions: OpenCode 2.2.5 with auto-approval and Copilot 1.0.83 with `--allow-all` gave the reviewer no write or shell tool, and its sentinel stayed unchanged. They also found one widening. OpenCode's own read default asks before `.env` files, and the role's bare `read: allow` came later and overrode that ask, so the reviewer read `.env`. OpenCode roles now render `read` as patterns that deny `.env` and `.env.*` but allow `.env.example`, the rule the headless inspector already used, and the same run then refused the read. Copilot always adds its `skill` and session `sql` tools to an agent's tool list, and an agent file cannot remove them. Codex's current subagent documentation (checked on 2026-11-08) still says `sandbox_mode`, `approval_policy` and `mcp_servers` in a custom agent file do not override the parent, so the read-only parent or the headless recipe is still the strongest restriction available there.
 
 ## Context
@@ -17,7 +19,7 @@ Native clients do not share agent schemas or permission semantics. A portable ma
 - Require the client-reported loaded skill directory; missing path/context becomes a question. The conductor passes the checked artifact root to agents. This keeps deterministic root resolution in code instead of asking a model to invent paths.
 - Render native restrictions honestly. OpenCode observers deny shell/edit channels; Copilot observers receive read tools without shell/write tools and explicitly inherit repository instructions. Read access can include shared resources outside the checkout; writable OpenCode roles retain the native external-directory ask.
 - Codex custom agents inherit parent permissions and cannot impose a separate read-only sandbox. Emit supported feature reductions and explicit checked-parent/ headless guidance, never a fictitious per-agent sandbox_mode override. Permission enforcement, transient/ignored writes and actual tool behavior remain conformance.
-- Inherit the selected model for the additional clients and retain canonical tier hints. Do not hardcode account-specific model availability. Claude keeps its existing native alias mapping. Keep all conformance fields unverified and hook registration unimplemented until the common guard is connected.
+- Inherit the selected model for the additional clients and retain canonical tier hints. Do not hardcode account-specific model availability. Claude keeps its existing native alias mapping. A person's explicit tier-to-model mapping, applied at installation, replaces either default ([ADR-0258](./0258-proportional-depth-and-gate-cost.md)). Keep all conformance fields unverified and hook registration unimplemented until the common guard is connected.
 
 ## Alternatives considered
 

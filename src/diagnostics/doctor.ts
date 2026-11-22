@@ -10,6 +10,7 @@ import { loadConfig, loadExtensionOptions } from '../config/load.js'
 import { readRegularFile, readRegularText } from '../fs/regular-file.js'
 import type { InstallInput } from '../installation/contracts.js'
 import { inspectInstallation } from '../installation/inspect.js'
+import { scopeModels } from '../installation/models.js'
 import { detectMcp, detectProvider } from '../providers/detect.js'
 import { loadProviders } from '../providers/load.js'
 import { StoreFiles } from '../state/files.js'
@@ -464,6 +465,17 @@ export function doctor(options: DoctorOptions) {
   if (options.managed)
     for (const scope of ['user', 'project'] as const) {
       if (scope === 'project' && options.root === dirname(options.root)) continue
+      let models: ReturnType<typeof scopeModels> = {}
+      try {
+        // The configuration check above reports an invalid file; here it only means no mapping.
+        models = scopeModels(
+          scope,
+          options.root,
+          options.home,
+          options.env ?? process.env,
+          ...(options.userFile ? [options.userFile] : []),
+        )
+      } catch {}
       const result = inspectInstallation({
         ...options.managed,
         targets,
@@ -474,6 +486,7 @@ export function doctor(options: DoctorOptions) {
           scope,
           ...(opencodeVersion ? { opencodeVersion } : {}),
           ...(options.env ? { env: options.env } : {}),
+          models,
         },
       })
       const selected = result.targets.length ? result.targets : targets

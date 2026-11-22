@@ -1,6 +1,7 @@
 // Renders the harness for Claude Code as loose skills, agents and a plugin.
 import { stringify } from 'yaml'
 import { frontmatter } from '../harness/frontmatter.js'
+import { CLAUDE_ALIASES, type ModelTier } from '../workers/models.js'
 import type { Adapter } from './contracts.js'
 import { agentContext } from './roles.js'
 
@@ -10,7 +11,6 @@ const tools: Record<string, string[]> = {
   shell: ['Bash'],
   web: ['WebFetch', 'WebSearch'],
 }
-const tiers: Record<string, string> = { fast: 'haiku', standard: 'sonnet', deep: 'opus' }
 function body(content: string) {
   return content.replace(/^---\n[\s\S]*?\n---\n/, '').trimStart()
 }
@@ -60,7 +60,9 @@ export const claudeAdapter: Adapter = {
       name: metadata.name,
       description: metadata.description,
       tools: selected.join(', '),
-      model: tiers[canonical['wholeloop.tier'] ?? 'standard'],
+      // An explicit mapping, including inherit, replaces the built-in aliases (ADR-0048).
+      model:
+        options.model ?? CLAUDE_ALIASES[(canonical['wholeloop.tier'] ?? 'standard') as ModelTier],
       ...(!writable
         ? { permissionMode: 'plan', disallowedTools: 'Write, Edit, NotebookEdit, mcp__*' }
         : {}),

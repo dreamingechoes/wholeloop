@@ -4,6 +4,8 @@ import { createHash } from 'node:crypto'
 import { posix } from 'node:path'
 import { validate } from '../config/schema.js'
 import { markEntrypoint } from '../harness/entrypoints.js'
+import { frontmatter } from '../harness/frontmatter.js'
+import type { ModelMap, ModelTier } from '../workers/models.js'
 import { antigravityAdapter } from './antigravity.js'
 import { canonicalDigest, validateCanonical } from './canonical.js'
 import { claudeAdapter } from './claude.js'
@@ -39,6 +41,7 @@ export function generateAdapter(
   core: string,
   version: string,
   nativeVersion?: string,
+  models: ModelMap = {},
 ) {
   validateCanonical(canonical)
   if (
@@ -80,7 +83,11 @@ export function generateAdapter(
       if (sourceProblems.length) throw new Error(`${id}/${agent}: ${sourceProblems.join('; ')}`)
       agents.push(adapter.name('agent', agent))
       const path = adapter.paths('agent', agent)
-      const rendered = adapter.renderAgent(agent, content)
+      const tier = (frontmatter(content)?.metadata as Record<string, unknown> | undefined)?.[
+        'wholeloop.tier'
+      ]
+      const model = models[(typeof tier === 'string' ? tier : 'standard') as ModelTier]
+      const rendered = adapter.renderAgent(agent, content, model ? { model } : {})
       const problems = roleToolProblems(rendered.content)
       if (problems.length) throw new Error(`${id}/${agent}: ${problems.join('; ')}`)
       files.set(path, {

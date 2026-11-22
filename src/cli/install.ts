@@ -8,6 +8,7 @@ import { openCodeVersionProbe } from '../diagnostics/doctor.js'
 import { codexStoreAccess } from '../diagnostics/store-access.js'
 import { TARGETS } from '../installation/contracts.js'
 import { manageInstallation } from '../installation/manage.js'
+import { scopeModels } from '../installation/models.js'
 import { storePath } from '../state/paths.js'
 import { VERSION } from '../version.js'
 import type { parseArguments } from './arguments.js'
@@ -39,6 +40,7 @@ export function installationCommand(
           typeof options['--store'] === 'string' ? resolve(root, options['--store']) : storePath(),
         scope,
         ...(opencodeVersion ? { opencodeVersion } : {}),
+        ...(action === 'install' ? { models: scopeModels(scope, root, homedir()) } : {}),
       },
       targets,
       canonical: bundledCanonical(),

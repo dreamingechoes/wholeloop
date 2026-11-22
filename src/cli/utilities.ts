@@ -1,5 +1,6 @@
 // Keeps read-only status separate from the flow and preference actions of next and setup.
 import { isObject } from '../config/schema.js'
+import { guidanceClient } from '../discovery/clients.js'
 import { statusDisplay } from '../display/status.js'
 import { FlowEngine } from '../flow/engine.js'
 import { configuredCheckpoints } from '../impact/schedule.js'
@@ -36,6 +37,8 @@ export function utilityCommand(
         ...(value('--profile') ? { profile: value('--profile') as string } : {}),
         ...(value('--docs') ? { docs: value('--docs') as string } : {}),
         ...(value('--tracker') ? { tracker: value('--tracker') as string } : {}),
+        ...(value('--models') ? { models: value('--models') as string } : {}),
+        ...(guidanceClient() ? { client: guidanceClient() as string } : {}),
       })
     else {
       const store = new StateStore()

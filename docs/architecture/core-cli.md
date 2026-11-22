@@ -298,7 +298,7 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | `wl share reconcile` | `wholeloop/share-report@1` | Verify an exact published chunk from a labelled complete read |
 | `wl next [<idea\|id\|URL>]` | `wholeloop/next@1` | Continue stored work or begin evidence-based framing |
 | `wl status [<id>]` | `wholeloop/status@1` | Inspect work and pending decisions without mutation |
-| `wl setup` | `wholeloop/setup@1` | Ask for or explicitly save scoped profile and provider choices |
+| `wl setup` | `wholeloop/setup@1` | Ask for or explicitly save scoped profile, provider and model choices |
 | `wl template list` | `wholeloop/template-list@1` | List validated manifests and their origins |
 | `wl template test <id>` | `wholeloop/template-test@1` | Validate a manifest and its required resources |
 | `wl template scaffold <id>` | `wholeloop/template-scaffold@1` | Print or explicitly create a manifest kit |
