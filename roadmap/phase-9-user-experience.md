@@ -425,17 +425,19 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-24 · One short launcher per client
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-21 · **Release:** 1.2.0 · **Decision:** amends [ADR-0048](../docs/decisions/0048-native-target-layouts-and-checked-launcher-roots.md)
+**Status:** ✅ · **Size:** M · **Depends on:** P9-21 · **Release:** 1.2.0 · **Decision:** amends [ADR-0048](../docs/decisions/0048-native-target-layouts-and-checked-launcher-roots.md)
 
 **Goal** — Every installed skill calls the same short, stable launcher, so one allow rule covers a client and each approval prompt is readable.
 
 **Acceptance criteria:**
 
-- [ ] Each installed client has one launcher whose path does not depend on the skill, checked against the packaged core exactly as the per-skill launchers are today.
-- [ ] Skills, agents and the conductor context call that launcher; install shows a single allow rule per client instead of one per skill.
-- [ ] Upgrades and uninstall replace or remove the old per-skill launchers with the existing ownership and backup rules.
+- [x] Each installed client has one launcher whose path does not depend on the skill, checked against the packaged core exactly as the per-skill launchers are today. *Narrowed to user installations: project installations keep a launcher per skill, because their skills live in the repository and an absolute path would break when the checkout moves.*
+- [x] Skills, agents and the conductor context call that launcher; install shows a single allow rule per client instead of one per skill.
+- [x] Upgrades and uninstall replace or remove the old per-skill launchers with the existing ownership and backup rules.
 
 **Tests** — Seven-client install, upgrade and uninstall fixtures; rendered-skill snapshots; the allow-rule tests from P9-21 with one entry.
+
+**Evidence** — `src/installation/plan.ts` writes, for a user installation, one launcher per client at `wholeloop/wl.mjs` beside the skills directory and `src/adapters/portable.ts` replaces the two launcher sentences of every installed skill preamble with its absolute path (the Cursor rule likewise); `src/installation/receipts.ts` owns exactly that path, and `src/installation/launcher-access.ts` shows one rule. Agents and the conductor already receive the launcher from the skill, so their text is unchanged. `test/unit/installation/installation.test.ts` executes the shared launcher with `--with-context` for all seven clients and checks each skill names it; `test/unit/installation/launcher-access.test.ts` shows one rule per client from a real seven-client install, upgrades a per-skill installation (its launchers are removed), uninstalls (the shared launcher and its directory are removed) and keeps seventeen per-skill launchers at project scope; the Antigravity, Cursor and Gemini adapter tests run both scopes. [ADR-0048](../docs/decisions/0048-native-target-layouts-and-checked-launcher-roots.md) is amended. That each client accepts the one rule stays in [manual verification](./manual-verification.md#user-experience-phase-9-2026-11-18). The gate results are in the journal entry of 2026-11-22.
 
 ## P9-25 · Network for supervised project setup
 
