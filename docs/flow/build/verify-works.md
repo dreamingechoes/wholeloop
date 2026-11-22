@@ -76,11 +76,11 @@ The same session as text:
 > /wholeloop:verify-works slice-0d4e
 
 Verify — slice-0d4e "user can filter orders by date"
-Checks    npm test · npm run lint · npx tsc --noEmit   (from package.json)
+Checks    npm test · npm run typecheck · npm run lint   (from package.json)
 Criteria  4 (from slice-0d4e)
 Round     1 of 4
 
-▸ checks ran — 212 passed · 0 failed · lint clean · types clean
+▸ checks ran — 212 passed · 0 failed · types clean · lint clean
 ▸ verifiers started: AC-1 · AC-2 · AC-3 · AC-4 · touched tests
 ✓ AC-1  ✓ AC-2  ✗ AC-3  ✓ AC-4
 ✗ touched tests: filters.spec.ts "applies range" still passes with the filter removed
@@ -110,7 +110,7 @@ Next      builder, round 2 of 4
 
 **"Everything is green locally — why FAIL?"** Passing tests and met criteria are different claims. The verdict names the criterion and shows the evidence.
 
-**"It picked the wrong test command."** Pin it once: `wl answer verify.suite="make check" --scope project`, or set it in `.wholeloop/config.yml`.
+**"It picked the wrong test command."** Pin it once: `wl answer verify.suite=Makefile#check --remember project`, naming one of the commands verify offered, or set it in `.wholeloop/config.yml`.
 
 **"Can I skip a verifier to save time?"** You can make it slower; you cannot make it check less. No setting reduces what a gate covers.
 

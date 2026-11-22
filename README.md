@@ -194,7 +194,7 @@ init-3cf1140a Find tasks by title in … · frame
 
 No client or model account yet? The [local core tour](./docs/tutorials/local-core.md) shows the core on its own:
 
-![The local core tour: status finds no work, a first next call asks who owns the work, a second one with an owner returns the preflight, and status then shows the stored initiative](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/terminal/core-tour.gif)
+![The local core tour: status finds no work, a first next call asks who owns the work, a second one with an owner starts framing it, and status then shows the initiative in progress](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/terminal/core-tour.gif)
 
 Something failed or a skill is missing? Start with [troubleshooting](./docs/troubleshooting.md).
 

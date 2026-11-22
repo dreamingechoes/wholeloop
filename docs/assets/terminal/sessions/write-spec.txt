@@ -16,6 +16,6 @@ Appendix  also touches: orders API, export job · flag: orders_search_v1
 Decision: approve this spec?   [approve] [request changes]
 
 Produced
-  Spec               init-41c2/spec     wl open init-41c2 --spec
+  Spec               init-41c2/spec     wl open init-41c2
   Document           Notion page        (link)
 Next                 /wholeloop:cut-scopes init-41c2

@@ -373,7 +373,7 @@ Regenerate with `npm run docs:commands`; CI checks for drift.
 | **Fan-out** | `wl fanout run <workflow> --engine native\|headless\|sequential` | gates, `research` |
 | **Guards** | `wl guard <event>` (reads a hook payload on stdin) | generated hooks, git hooks |
 | **Worktrees** | `wl worktree create\|open\|stop\|list\|prune <slice>` — isolated workspace and branch per slice, with port allocation | builder, `open-pr`, `sync` |
-| **Environment** | `wl env declare <what> --undo "<command>"` · `wl env report` | builder, `open-pr` |
+| **Environment** | `wl env declare --for <id> --file <declaration.json>` (the declaration carries its undo) · `wl env report` | builder, `open-pr` |
 | **Install** | `wl install --target <cli,…> --scope user\|project` · `wl uninstall` · `wl doctor` | people |
 | **Docs (dev)** | `wl docs nav` · `wl docs check [--json]` · `wl docs reference [--write]` — ✅ implemented | CI, contributors |
 | **Harness (dev)** | `wl harness check [--json]` — budgets, front matter, enforcement map — ✅ implemented | CI, contributors |

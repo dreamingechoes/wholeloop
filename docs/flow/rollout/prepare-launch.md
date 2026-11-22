@@ -72,7 +72,7 @@ Voice     docs/brand/voice.md (repo)
 ▸ support guide + runbook (Notion)
 
 Produced
-  Rollout plan       Notion · Launch / Orders date filter     wl open scope-a9e0 --plan
+  Rollout plan       Notion · Launch / Orders date filter     wl open scope-a9e0
   Slack draft        #product-updates (not sent)              open in Slack → Drafts
   Release note       draft in docs provider
   Dashboard          PostHog · Orders date filter
