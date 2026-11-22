@@ -26,6 +26,8 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 - [ ] P9-08: after the P9-20 baseline is captured, set and verify first-question/plan/answer call budgets on native traces. Confirm short wl command notation and batched step-only reads in all seven clients while actual execution retains the packaged launcher. Fixtures lint all rendered skills and preserve existing boundaries; no native call-count calibration has been performed.
 
+- [ ] P9-13: during the P9-21 native passes, observe the core cost preview before each investigation, framing challenge, inspection and independent examination batch. Confirm that requested tiers are distinguished from the actual client model and that token, time and price remain unknown without usage evidence. Planned-call fixtures, seven-client rendering and synthetic headless process ordering pass; they do not establish native presentation or account quota.
+
 ### P9-20 baseline capture
 
 - [ ] On P9-20 revision `2927dc0d329ed60ef931ff2c5174066a334378a9`, before the UX fixes, run the six-step evaluation on Codex and Claude Code using dedicated signed-in homes; retain native traces, client versions and the source revision outside repositories. No live experience run has been performed. See [evaluation instructions](../test/evals/experience/README.md).

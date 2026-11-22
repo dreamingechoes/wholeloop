@@ -63,7 +63,7 @@ flowchart LR
 
 - **Workers** counts current unfinished jobs and examinations. Completed work and deterministic suite/testability checks do not become future model calls.
 - **Requested tier** is the role's intended model class (`fast`, `standard` or `deep`). The actual client model can differ; an unmapped custom role stays unknown.
-- **Estimate** states worker calls and, when inputs are prepared, their declared size in KiB. Source material read later and client overhead are excluded. Tokens, duration and price stay unknown; this is not a billing quote.
+- **Estimate** states worker calls and, when inputs are prepared, their declared size in KiB. Additional role/protocol text, source material read later and client overhead are excluded. Tokens, duration and price stay unknown; this is not a billing quote.
 - **Coverage stays fixed.** The preview neither drops checks nor changes a budget. It is calculated by the core from the current plan, rather than written from an impression of how much work looks necessary.
 
 Signed-in observations and usage calibration remain part of [manual verification](../../roadmap/manual-verification.md). A fixture count proves planned work, not subscription quota or observed latency.
