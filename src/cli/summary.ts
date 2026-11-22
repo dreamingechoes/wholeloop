@@ -45,6 +45,13 @@ export { statusSummary } from '../display/status.js'
 
 interface InstallationSummary {
   storeAccess?: { file: string; snippet: string }
+  launcherAccess?: readonly {
+    target: string
+    file: string | null
+    snippet: string | null
+    rules: number
+    note: string
+  }[]
   schema: string
   status: string
   scope: string
@@ -88,7 +95,7 @@ export function installationSummary(result: InstallationSummary): string {
           `Git guards are removed per repository: ${shellLine(result.removal.command)}`,
         ]
       : []
-  return humanLines(
+  const text = humanLines(
     [
       headline[result.status] ?? `${action}: ${result.status} for ${subject}.`,
       ...planned,
@@ -102,7 +109,27 @@ export function installationSummary(result: InstallationSummary): string {
             'Merge this with your existing settings only after choosing to allow the store; keep other writable roots you still need.',
           ]
         : []),
+      ...launcherLines(result.launcherAccess ?? []),
       'Add --json for the full result.',
     ].join('\n'),
   )
+  // Wrapping would break the rule when pasted; its paths were checked for control characters.
+  const single = result.launcherAccess?.length === 1 ? result.launcherAccess[0]?.snippet : null
+  return single ? `${text}\n\n${single}` : text
+}
+
+/** Where each rule would go; the rule itself is printed unwrapped so it can be copied. */
+function launcherLines(entries: NonNullable<InstallationSummary['launcherAccess']>) {
+  if (!entries.length) return []
+  return [
+    'To run wl without asking each time — review only; no client settings were changed:',
+    ...entries.map(({ target, file, snippet, rules, note }) =>
+      snippet
+        ? `  ${target}: ${plural(rules, 'rule')} for ${file ?? 'flags when starting the client'}`
+        : `  ${target}: ${note}`,
+    ),
+    entries.length === 1 && entries[0]?.snippet
+      ? entries[0].note
+      : 'Install one client at a time, or add --json, to see its exact rule.',
+  ]
 }

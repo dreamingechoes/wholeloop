@@ -22,7 +22,7 @@ export function checkedCommandFile(file: string) {
 export function documentedCommands(file: string, text: string) {
   const session = file.endsWith('.txt')
   const lines = text.split('\n')
-  const found: { line: number; command: string }[] = []
+  const found: { line: number; command: string; leading: boolean }[] = []
   let fence: string | undefined
   for (let index = 0; index < lines.length; index++) {
     const start = index
@@ -38,7 +38,12 @@ export function documentedCommands(file: string, text: string) {
       line = `${line.slice(0, -1)} ${lines[++index] ?? ''}`
     const pattern = code ? /(?:^|[\s$>(])wl\s+([a-z][^`\n]*)/g : /`wl\s+([a-z][^`]*)`/g
     for (const match of line.matchAll(pattern))
-      found.push({ line: start + 1, command: (match[1] ?? '').trim() })
+      found.push({
+        line: start + 1,
+        command: (match[1] ?? '').trim(),
+        // Output text such as "to run wl without asking" mentions the CLI, not a command.
+        leading: !code || /^\s*(?:[$>]\s*)?$/.test(line.slice(0, match.index ?? 0)),
+      })
   }
   return found
 }
@@ -63,7 +68,7 @@ export function checkCommands(
   const problems: Problem[] = []
   for (const [file, text] of files) {
     if (!checkedCommandFile(file)) continue
-    for (const { line, command } of documentedCommands(file, text)) {
+    for (const { line, command, leading } of documentedCommands(file, text)) {
       const parts = tokens(command)
       const words: string[] = []
       for (const part of parts) {
@@ -80,7 +85,7 @@ export function checkCommands(
         const group = shapes.some(
           (entry) => entry.words.slice(0, words.length).join(' ') === words.join(' '),
         )
-        if (!words.length || !group)
+        if (leading && (!words.length || !group))
           problems.push({ file, line, rule: 'command', message: `unknown command: wl ${command}` })
         continue
       }

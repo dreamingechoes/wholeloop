@@ -46,7 +46,7 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 3. **What the person reads:** P9-06–P9-10 and P9-22.
 4. **Cost and guarantees:** P9-11–P9-17.
 5. **Truth and every client:** P9-18, P9-19 and P9-21, with the experience check passing its budgets.
-6. **Additional findings:** P9-23 after the original task order; its private research endpoint shares the answer-first outcome without changing earlier task order.
+6. **Additional findings:** P9-23 after the original task order; its private research endpoint shares the answer-first outcome without changing earlier task order. P9-24, from the P9-21 pass, follows it.
 
 ## P9-01 · A store the client can write
 
@@ -376,17 +376,19 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-21 · Agent experience on every supported client
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P9-03, P9-04, P9-07, P9-20 · **Release:** 1.2.0
+**Status:** ✅ · **Size:** L · **Depends on:** P9-03, P9-04, P9-07, P9-20 · **Release:** 1.2.0
 
 **Goal** — Claude Code, Codex, OpenCode, Copilot, Gemini, Cursor and Antigravity give the same experience, each within its own limits.
 
 **Acceptance criteria:**
 
-- [ ] For each client, a written pass over rendered skills and agents: roles started, tools available, waiting primitive, sandbox and store access, approval prompts per step, launcher noise; gaps found become tasks in this phase.
-- [ ] Install shows, for review, the narrowest rule that lets the client run the `wl` launcher without asking each time, per client that supports one; it never writes it on its own, because that widens what runs without approval.
+- [x] For each client, a written pass over rendered skills and agents: roles started, tools available, waiting primitive, sandbox and store access, approval prompts per step, launcher noise; gaps found become tasks in this phase. *[Client experience pass](./client-experience-pass.md); its one actionable gap became P9-24.*
+- [x] Install shows, for review, the narrowest rule that lets the client run the `wl` launcher without asking each time, per client that supports one; it never writes it on its own, because that widens what runs without approval.
 - [ ] The experience check passes on both reference clients; the other clients' results are recorded in manual verification.
 
 **Tests** — Rendered-artifact snapshots; allow-rule rendering per client; live results in manual verification.
+
+**Evidence** — [Client experience pass](./client-experience-pass.md) records, from a disposable `wl install --target all --scope user`, the roles, tools, waiting, sandbox and store access, launcher calls per step and launcher length of all seven clients; its one actionable gap is P9-24. `src/installation/launcher-access.ts` builds, for each installed client, the rule that allows exactly its seventeen skill launchers with any arguments: Claude Code, Codex, OpenCode, Gemini and Cursor as a settings or rules snippet with its file, Copilot as launch flags, and none for Antigravity, which has no known command-level rule. Install returns them as `launcherAccess`, marked not applied and not verified, and its text output names each file and prints a single client's rule unwrapped; a launcher path containing pattern syntax or control characters withholds the rule. `test/unit/installation/launcher-access.test.ts` covers each format and file at both scopes, the withheld cases, and a real seven-client install whose rules name exactly the launchers it wrote while no client settings file appears. Criterion 3 stays unchecked: the experience check on Claude Code and Codex and the other clients' results need signed-in clients and model quota, and remain in [manual verification](./manual-verification.md#user-experience-phase-9-2026-11-18) with a new row for the allow rules. The gate results are in the journal entry of 2026-11-22.
 
 ## P9-22 · Fewer calls and files per step
 
@@ -418,6 +420,20 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 - [ ] Its plan/cost preview and documentation reflect the actual work; live quota evidence remains in manual verification.
 
 **Tests** — Private research-host fixtures for a complete conclusion, unknowns, stale input, failed generation, exact replay, bounded calls and unchanged source reads.
+
+## P9-24 · One short launcher per client
+
+**Status:** ⬜ · **Size:** M · **Depends on:** P9-21 · **Release:** 1.2.0 · **Decision:** amends [ADR-0048](../docs/decisions/0048-native-target-layouts-and-checked-launcher-roots.md)
+
+**Goal** — Every installed skill calls the same short, stable launcher, so one allow rule covers a client and each approval prompt is readable.
+
+**Acceptance criteria:**
+
+- [ ] Each installed client has one launcher whose path does not depend on the skill, checked against the packaged core exactly as the per-skill launchers are today.
+- [ ] Skills, agents and the conductor context call that launcher; install shows a single allow rule per client instead of one per skill.
+- [ ] Upgrades and uninstall replace or remove the old per-skill launchers with the existing ownership and backup rules.
+
+**Tests** — Seven-client install, upgrade and uninstall fixtures; rendered-skill snapshots; the allow-rule tests from P9-21 with one entry.
 
 ---
 

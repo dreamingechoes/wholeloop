@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-22 (P9-21).** Install now returns, for each installed client, the narrowest rule that would let it run exactly that installation's skill launchers without asking: a settings or rules snippet with its file for Claude Code, Codex, OpenCode, Gemini and Cursor, launch flags for Copilot, and none for Antigravity, which offers no known command-level rule. The rule is shown for review and never written, because adding it widens what runs without the person's approval; it is marked unverified until each client is observed accepting it. A launcher path containing the client's pattern syntax or a control character withholds the rule instead of escaping it, since no client documents an escape. One rule per skill launcher is the cost of today's per-skill launchers; a single launcher per client is P9-24.
+
 A generated package is not an installation. Client formats differ, existing settings may contain private data, and project-scoped files must work after a checkout moves. Uninstall must identify exactly which bytes belong to wholeloop while preserving edits, unrelated roles and the person's external execution history.
 
 ## Decision
