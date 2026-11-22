@@ -1,9 +1,9 @@
-# Execution isolation — why project code runs only in Docker
+# Execution isolation — why project code runs in Docker
 
-> **TL;DR** — Whenever `wholeloop` itself must run your project's code — its test suite, its services, its acceptance checks — it runs them in owned Docker containers, never on your machine. Docker is a deliberate, required dependency for those steps: it is what lets the runner trust observed results instead of a model's claims, without exposing your home directory, credentials or network. Steps that only read and write documents and the store do not need Docker.
+> **TL;DR** — Whenever `wholeloop` must run your project's code — its test suite, the builder's tests and scripts, its services, its acceptance checks — it runs them in Docker containers by default, supervised or autonomous. Docker is what lets a verdict rest on observed results without exposing your home directory, credentials or network. You can choose to run a supervised step on your machine, per run or per repository, and it is then shown as not isolated; autonomous runs never allow it. Steps that only read never touch Docker.
 
 > [!NOTE]
-> **Partial.** Owned containers, volumes and networks, the refusals below and recovery are tested on macOS and Linux. Standalone headless gate workers still inherit the caller's environment, and the supervised path still runs project code on the host until P9-16; see [Known gaps](#known-gaps). Decision: [ADR-0245](../decisions/0245-require-docker-for-project-code-execution.md).
+> **Partial.** Owned containers, volumes and networks, the refusals below and recovery are tested on macOS and Linux. Standalone headless gate workers still inherit the caller's environment, and whether a native client's builder obeys its instruction to use `wl exec` is not yet observed; see [Known gaps](#known-gaps). Decision: [ADR-0245](../decisions/0245-require-docker-for-project-code-execution.md).
 
 ---
 
@@ -37,11 +37,28 @@ flowchart LR
 
 Steps that execute project code need Docker whether you call them one at a time or let the runner chain them. The others never contact it.
 
+## Supervised steps
+
+When you run `verify-works` or `build-slice` yourself, project code runs in one **warm container per slice**: the suite through `wl verify suite`, and the builder's tests, builds and scripts through `wl exec --for <slice> -- <command>`. The container is created on first use, reused while the slice lives and removed when its worktree stops.
+
+| Property | Supervised container |
+| --- | --- |
+| Image | Chosen by you, from your local cache only; nothing is pulled |
+| Files | The slice's worktree at `/workspace`, read and written as your user ID |
+| Network | None |
+| Environment | `HOME=/tmp` on a private temporary file system; no host variable |
+| Privileges | No capabilities, no privilege escalation, bounded processes, memory and CPU |
+
+- **Docker is checked only when code is about to run**, before anything is planned. Without it the step refuses (exit 3) and names both remedies: start Docker, or choose host execution for this run.
+- **Host execution is a person's choice**: `--execution host` on `wl verify suite` for one run, or `wl setup --execution host --scope project` for the repository. It is shown before the suite starts, recorded with the round and displayed as "This machine, not isolated". Builders cannot select it; `wl exec` follows only the repository's choice. The autonomous runner refuses it.
+- **Dependencies** must already work inside the container, because it has no network. Installing Linux packages for a project needs a network-enabled setup step, which is not available yet.
+
 ## Requirements
 
 - A Docker Engine reachable through a **local Unix socket**, with permission to create containers, local volumes and bridge networks. Remote, TCP and SSH contexts are refused.
 - A **Linux** daemon, version 28 or newer; the reference engine is 29.9.2. The preflight observes the actual daemon; a version string alone is not trusted.
 - The pinned helper image already in the local cache; nothing is pulled silently. See the [Docker environments tutorial](../tutorials/delivery-docker.md).
+- For supervised steps, the image you chose for the repository, also from the local cache.
 
 ## Secrets and environment variables
 
@@ -60,7 +77,8 @@ Workspace snapshots hash the bytes of every tracked and non-ignored file to prov
 ## Known gaps
 
 - **Standalone headless gate workers** (`src/fanout/host.ts`) start the native client with the caller's complete environment. Delivery workers do not. Restricting gate workers needs each client's authentication variables declared and verified against signed-in clients, so it remains open in [manual verification](../../roadmap/manual-verification.md).
-- **Supervised verification and building** run project code on the host: `wl verify suite` spawns the suite with the caller's environment, and builder and verifier workers run tests through the client's own shell. [ADR-0257](../decisions/0257-where-project-code-runs.md) moves them into Docker, with host execution only as an explicit, recorded choice; [P9-16](../../roadmap/phase-9-user-experience.md#p9-16--project-code-runs-in-docker-unless-the-person-chooses-otherwise) implements it.
+- **Builders in native clients** are instructed to run project commands through `wl exec`, and their tool policies still include a shell. Whether each client's builder follows the instruction is a native observation in [manual verification](../../roadmap/manual-verification.md); the core cannot stop a client's own shell.
+- **No network for supervised setup.** A supervised container cannot install dependencies; repositories whose packages need a Linux install must prepare them another way or choose host execution.
 
 ## Decisions
 

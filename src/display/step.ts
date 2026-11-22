@@ -173,6 +173,20 @@ export function stepDisplay(
   ]
   const produced: string[] = []
   const next: string[] = []
+  // Where project code runs is shown before verification starts and after the suite ran.
+  const placement = (input: unknown) => {
+    const entry = record(input)
+    const chosen = { run: 'chosen for this run', repository: 'chosen for this repository' }[
+      value(entry.source)
+    ]
+    if (entry.isolation === 'host')
+      return `This machine, not isolated${chosen ? ` (${chosen})` : ''}`
+    if (entry.isolation === 'docker')
+      return `Docker container · ${value(entry.image) || 'image not chosen yet'}`
+    return ''
+  }
+  row('Project code', placement(payload.projectCode))
+  row('Ran in', placement(payload.execution))
   if (command === 'verify suite') {
     for (const finding of list(payload.findings)) {
       const entry = record(finding)

@@ -3479,6 +3479,15 @@
       "required": ["schema", "receipt"]
     },
     {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/exec@1"
+        }
+      },
+      "required": ["schema", "subject"]
+    },
+    {
       "properties": {
         "schema": {
           "const": "wholeloop/review-begin@1"

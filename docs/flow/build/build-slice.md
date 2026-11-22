@@ -152,7 +152,9 @@ Next         test it, then /wholeloop:open-pr slice-5e1a
 
 **"Where did my disk space go?"** Worktrees share Git objects, so they are light, but `wl worktree prune` clears every one whose branch is merged or abandoned.
 
-**"Can it start my application in a container?"** [Autonomous delivery](../../tutorials/delivery-environments.md) can plan and start isolated Docker environments for a run. In this supervised step, the builder runs your repository's own commands in the worktree, and anything it changes outside the repository is recorded with its undo, as described below.
+**"Where do the builder's tests run?"** In the slice's Docker container. The builder runs tests, builds and scripts through `wl exec --for <slice> -- <command>`, never through its own shell; the container sees only the worktree, has no network and stays warm until the worktree stops. If you chose host execution for this repository, `wl exec` runs on your machine and says it is not isolated; a builder cannot choose that for itself. See [verify-works](./verify-works.md#available-verification-commands) for the image and the host choice.
+
+**"Can it start my application in a container?"** [Autonomous delivery](../../tutorials/delivery-environments.md) can plan and start isolated Docker environments with services for a run. Anything a supervised build changes outside the repository is recorded with its undo, as described below.
 
 ## Core commands
 

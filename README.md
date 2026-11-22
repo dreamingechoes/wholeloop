@@ -46,7 +46,7 @@ Three things follow from that split:
 
 - **Your work survives the conversation.** Decisions and results are stored outside your repository, so a new conversation, another client or a teammate can continue where the work stopped.
 - **Your repository leads.** Each step looks for the skills, agents, rules and conventions your repository already has, and follows them.
-- **Project code never runs on your machine.** Steps that execute it, such as verification, do so in Docker containers that see no host environment and no credential.
+- **Project code runs in Docker unless you choose otherwise.** Steps that execute it, such as verification and the builder's tests, use containers that see no host environment, credential or network. Running on your machine is an explicit choice per run or per repository, shown as not isolated, and autonomous runs never allow it.
 
 ## The loop
 
@@ -95,7 +95,7 @@ A step used on its own still asks for what it needs: a missing fact becomes a qu
 | **Node.js 20** or newer | Runs the `wl` core |
 | **Git 2.36** or newer | Isolated worktrees for each change |
 | A **coding client** that already works with a model | Runs the skills; see [supported clients](#supported-clients) |
-| **Docker 28** or newer, local daemon | Only for steps that run your project's code, such as verification |
+| **Docker 28** or newer, local daemon | Only for steps that run your project's code, such as verification, unless you choose to run them on your machine |
 
 ### 2. Install the CLI
 

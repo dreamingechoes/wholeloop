@@ -19,7 +19,7 @@ export const AREAS: readonly { title: string; groups: readonly string[] }[] = [
   { title: 'Define', groups: ['research', 'frame', 'spec', 'scopes', 'challenge'] },
   {
     title: 'Build',
-    groups: ['slices', 'worktree', 'build', 'verify', 'review', 'gate', 'pr', 'fanout'],
+    groups: ['slices', 'worktree', 'build', 'exec', 'verify', 'review', 'gate', 'pr', 'fanout'],
   },
   { title: 'Rollout and learn', groups: ['launch', 'ramp', 'env', 'measure', 'learn'] },
   {

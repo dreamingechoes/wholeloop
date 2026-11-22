@@ -1,8 +1,10 @@
 // Creates, stops and prunes slice worktrees, coordinated outside the journal lock.
+
 import { existsSync, mkdirSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { isObject } from '../config/schema.js'
 import { discover } from '../discovery/tree.js'
+import { stopSandbox } from '../execution/docker.js'
 import type { FlowEngine } from '../flow/engine.js'
 import { StoreFiles } from '../state/files.js'
 import { canonicalPath, inside } from '../state/paths.js'
@@ -270,9 +272,16 @@ export class WorktreeManager {
               : { type: 'worktree.stopped', data: {} },
           )
         })
+      // The slice's warm project container lives as long as its worktree (ADR-0257). A missing
+      // or unreachable Docker means there is nothing of ours to remove, never a failed stop.
+      let container: 'removed' | 'none' = 'none'
+      try {
+        if (stopSandbox(record.path)) container = 'removed'
+      } catch {}
       return {
         schema: 'wholeloop/worktree-stop@1',
         record: this.get(subject),
+        container,
         processes:
           'No worker or dev-server processes are managed by this command; branches and files are retained.',
       }

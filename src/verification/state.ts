@@ -2,7 +2,7 @@
 import type { GatePlan } from '../gates/contracts.js'
 import { gateRuns } from '../gates/state.js'
 import type { StateEvent } from '../state/events.js'
-import type { SuitePlan, SuiteResult } from './contracts.js'
+import type { SuiteExecution, SuitePlan, SuiteResult } from './contracts.js'
 import { type SuiteStartFailure, validStartupFailure } from './start.js'
 
 /** Reject duplicate intents and inconsistent process receipts during every replay. */
@@ -29,6 +29,7 @@ function replaySuites(events: readonly StateEvent[]) {
       plan: SuitePlan
       result?: SuiteResult
       unavailable?: SuiteStartFailure
+      execution?: SuiteExecution
     }
   >()
   const agreed = new Set<string>()
@@ -50,6 +51,18 @@ function replaySuites(events: readonly StateEvent[]) {
       if (runs.has(key) || gate?.subject !== event.subject || gate.gate !== 'verify')
         throw new Error('Suite needs one prior planned verify round')
       runs.set(key, { subject: event.subject, run, round, plan })
+    }
+    if (event.type === 'verify.suite-execution') {
+      const entry = runs.get(`${event.data.run}/${event.data.round}`)
+      if (
+        !entry ||
+        entry.subject !== event.subject ||
+        entry.execution ||
+        entry.result ||
+        entry.unavailable
+      )
+        throw new Error('Suite execution must describe its unique unfinished suite intent')
+      entry.execution = event.data
     }
     if (event.type === 'verify.suite-finished') {
       const entry = runs.get(`${event.data.run}/${event.data.round}`)

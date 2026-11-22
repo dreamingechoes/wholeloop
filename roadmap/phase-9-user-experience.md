@@ -293,17 +293,19 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-16 · Project code runs in Docker unless the person chooses otherwise
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P9-03 · **Release:** 1.2.0 · **Decision:** [ADR-0257](../docs/decisions/0257-where-project-code-runs.md)
+**Status:** ✅ · **Size:** L · **Depends on:** P9-03 · **Release:** 1.2.0 · **Decision:** [ADR-0257](../docs/decisions/0257-where-project-code-runs.md)
 
 **Goal** — What the README says about where project code runs is true on every route, and steps that only read never wait for Docker.
 
 **Acceptance criteria:**
 
-- [ ] `wl verify suite` runs through the observed Docker executor on the supervised path, as the runner does.
-- [ ] Builder and verifier workers run project commands through a `wl` command that executes them in the slice's environment, kept warm for the life of the slice; their instructions never run project code through the client's own shell.
-- [ ] Host execution is an explicit choice per run or per repository, shown before the step starts, recorded in the result and displayed as not isolated; the runner refuses it.
-- [ ] Without Docker and without that choice, a step that executes code refuses before doing anything and names both remedies; research, framing, specification, scopes, slicing, review and Rollout steps never check for Docker.
-- [ ] The README, execution isolation and ADR-0245 describe the default and the choice.
+- [x] `wl verify suite` runs through the observed Docker executor on the supervised path, as the runner does.
+- [x] Builder and verifier workers run project commands through a `wl` command that executes them in the slice's environment, kept warm for the life of the slice; their instructions never run project code through the client's own shell.
+- [x] Host execution is an explicit choice per run or per repository, shown before the step starts, recorded in the result and displayed as not isolated; the runner refuses it.
+- [x] Without Docker and without that choice, a step that executes code refuses before doing anything and names both remedies; research, framing, specification, scopes, slicing, review and Rollout steps never check for Docker.
+- [x] The README, execution isolation and ADR-0245 describe the default and the choice.
+
+**Evidence** — `CHECK PASS in 698s`, 5336 tests in 359 files with the Docker rehearsal skipped; `CHECK PASS (fast) in 633s`, 4140 related tests in 266 files. `test/unit/execution/execution.test.ts` passes 12 fixture cases: default, run and repository choices; image references; container flags, reuse, restart and replacement; unowned containers; unreachable or older daemons and missing images naming both remedies; refusal before any suite intent; the recorded execution event and its Project code and Ran in lines; host choice refused at user scope; the runner refusing host execution; `wl exec` reusing one container and keeping arguments after `--`; no Docker call from read-only commands; and that only the suite, `wl exec` and worktree stop reference the container module. The gated rehearsal passed against Docker Desktop 29.9.3 on macOS arm64 with `node:22-bookworm`: the suite and a worker command reported Linux, `HOME=/tmp`, a hidden host path, an absent host variable and blocked network. Criterion 1 uses a supervised warm container rather than the runner's acceptance-mapped executor, as [ADR-0257](../docs/decisions/0257-where-project-code-runs.md) records; criterion 2 holds for the builder, the only worker role with a shell, while native obedience is in [manual verification](./manual-verification.md). A network-enabled setup step is left as proposal 0260 because it widens containment. The help recording was re-rendered for the new command.
 
 **Tests** — A fixture suite that reports its platform, through `wl verify suite` and the worker command; refusal without a daemon; the host choice recorded and displayed; the runner refusing it; no Docker check in read-only steps; a Docker rehearsal.
 
