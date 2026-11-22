@@ -136,7 +136,28 @@ export function stepDisplay(
     if (text) rows.push({ label, value: text })
   }
   if (command === 'spec check' && args[0]) row('File', args[0])
+  const cost = record(payload.cost)
+  if (typeof cost.workers === 'number') {
+    row('Workers', cost.workers)
+    row(
+      'Requested tier',
+      list(cost.modelTiers)
+        .map((entry) => `${value(record(entry).tier)} × ${value(record(entry).workers)}`)
+        .join(' · ') || 'None',
+    )
+    const estimate = record(cost.estimate)
+    row(
+      'Estimate',
+      `${value(estimate.value)} worker ${estimate.value === 1 ? 'call' : 'calls'}${typeof estimate.declaredInputBytes === 'number' ? ` · ${Math.ceil(estimate.declaredInputBytes / 1024)} KiB declared input` : ' · context not prepared'}`,
+    )
+  }
+
   const open = [
+    ...(typeof cost.workers === 'number'
+      ? [
+          'Estimate covers current assignments only; later findings, client overhead, tokens, time and price remain unknown. Requested tiers do not prove the client model.',
+        ]
+      : []),
     ...phrases(payload.questions),
     ...phrases(payload.unknowns),
     ...phrases(payload.warnings),
@@ -196,7 +217,8 @@ export function stepDisplay(
       ['angles', 'Research angles'],
       ['jobs', 'Workers'],
     ] as const) {
-      const entries = payload[key] ?? plan[key]
+      const entries =
+        key === 'jobs' && typeof cost.workers === 'number' ? undefined : (payload[key] ?? plan[key])
       if (Array.isArray(entries)) row(name, entries.length)
     }
     const sources =

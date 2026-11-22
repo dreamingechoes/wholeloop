@@ -33,6 +33,8 @@ rules:
     enforcers: [src/providers/source-access.ts#sourceCandidates, src/providers/detect.ts#detectMcpByClient, src/research/plan.ts#researchPlan, src/research/workflow.ts#ResearchWorkflow, src/cli/research.ts#researchCommand, src/config/write.ts#writeSettings, test/unit/research/source-choice.test.ts, test/unit/research/research.test.ts]
   - id: read-only-fanout-joins
     enforcers: [src/workers/schedule.ts#scheduleAssignments, src/workers/assignment.ts#workerAssignment, src/research/assignments.ts#researchAssignments, src/gates/assignments.ts#gateAssignments, harness/workflows/research.ts#runResearch, src/gates/execution.ts, test/unit/workers/schedule.test.ts, test/unit/workers/assignments.test.ts, test/unit/adapters/worker-roles.test.ts, test/unit/profile/profile.test.ts]
+  - id: fanout-cost-before-start
+    enforcers: [src/workers/cost.ts, src/research/assignments.ts, src/gates/assignments.ts, src/gates/workflow.ts, src/definition/challenge.ts, src/gates/execution.ts, harness/workflows/research.ts, src/fanout/host.ts, src/cli/fanout.ts, src/display/step.ts, test/unit/workers/cost.test.ts, test/unit/gates/gates.test.ts, test/unit/fanout/fanout.test.ts]
   - id: named-assignment-only-workers
     enforcers: [src/adapters/roles.ts#roleReferences, src/fanout/process.ts, src/fanout/host.ts, test/unit/adapters/worker-roles.test.ts, test/unit/fanout/fanout.test.ts]
   - id: worker-results-return-to-conductor

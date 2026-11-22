@@ -16,6 +16,7 @@ import { workspaceSnapshot } from '../gates/snapshot.js'
 import { gateRuns } from '../gates/state.js'
 import { measurementDigest } from '../launch/measurement.js'
 import type { ReviewContext } from '../review/contracts.js'
+import type { WorkerCost } from '../workers/cost.js'
 import type { HeadlessAdapter } from './adapters.js'
 import { stageWorkerPolicy } from './policy-files.js'
 import { workerProcess } from './process.js'
@@ -28,6 +29,7 @@ export interface HeadlessOptions {
   signal?: AbortSignal
   env?: NodeJS.ProcessEnv
   onProgress?: (progress: DisplayProgress) => void
+  onCost?: (cost: WorkerCost) => void
 }
 export interface WorkerRecord {
   schema: 'wholeloop/headless-worker@1'
@@ -77,6 +79,9 @@ export class HeadlessHost implements GateHost {
   }
   stopped() {
     return this.controller.signal.aborted
+  }
+  preview(cost: WorkerCost) {
+    this.options.onCost?.(cost)
   }
   close() {
     this.stop()

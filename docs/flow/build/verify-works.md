@@ -62,6 +62,8 @@ flowchart TD
 
 No criteria anywhere? It **asks**. Without them the result is only a test run, and the verdict says exactly that.
 
+[Cost previews](../README.md#cost-before-workers-start) show current worker calls, requested tiers and declared input size before each batch starts. The illustrative example below is abridged and omits these previews; token usage, time and price are not measured by the plan.
+
 ## Run it
 
 ![verify-works: an illustrative example session in a coding client](../../assets/terminal/session-verify-works.gif)

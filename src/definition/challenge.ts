@@ -16,6 +16,7 @@ import {
   type SlicingContext,
 } from '../slices/contract.js'
 import { checkSpec, SPEC_SECTIONS } from '../spec/contract.js'
+import { workerCost } from '../workers/cost.js'
 import { lintCriteria, parseCriteria } from './criteria.js'
 
 export const CHALLENGE_MODES = ['problem', 'spec', 'criteria', 'scopes', 'slicing'] as const
@@ -100,6 +101,7 @@ export function challengePlan(
   const coverage = [...COVERAGE[mode]]
   return {
     schema: 'wholeloop/challenge-plan@1',
+    cost: workerCost(['challenger'], [{ artifact: content, coverage }]),
     mode,
     source: { sha256: createHash('sha256').update(content).digest('hex') },
     coverage,

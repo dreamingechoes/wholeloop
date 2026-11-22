@@ -248,14 +248,16 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-13 · Cost shown before every fan-out
 
-**Status:** ⬜ · **Size:** S · **Depends on:** P9-04 · **Release:** 1.2.0
+**Status:** ✅ · **Size:** S · **Depends on:** P9-04 · **Release:** 1.2.0 · **Decision:** [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md)
 
 **Goal** — The person sees what a step will spend before it spends it.
 
 **Acceptance criteria:**
 
-- [ ] Research, framing, verify and review plans return the number of workers, the model tier and an estimate, and `display` shows it before any worker starts.
-- [ ] The estimate comes from the plan, not from a model.
+- [x] Research, framing, verify and review plans return the number of workers, the model tier and an estimate, and `display` shows it before any worker starts.
+- [x] The estimate comes from the plan, not from a model.
+
+**Evidence** — `CHECK PASS in 697s`, 5265 tests in 356 files; the fast gate passes 1720 tests in 115 files in 416s, with an 8s scope refinement. Three targeted files pass 86 tests, including fifteen cost cases, persisted gate previews, unfinished votes, all seven rendered clients and real synthetic headless processes whose cost callback precedes any process log. Estimates count worker calls and declared payload bytes; requested tiers do not claim actual client models, and tokens/time/price remain unknown. [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md) records the conservative units and exclusions. Four generated references remain current; native presentation remains in P9-21 manual verification.
 
 **Tests** — Plan tests for the counts.
 

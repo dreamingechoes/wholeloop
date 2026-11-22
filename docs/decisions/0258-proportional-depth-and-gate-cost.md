@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-22 (P9-13).** Research, framing and gate plans now expose a deterministic cost preview before worker dispatch. The estimate uses worker calls and declared input bytes; tokens, duration and price remain unknown without measurements. Requested tiers come from the bundled role metadata and never claim which model a client actually runs. These observations are additive output metadata, not changes to pinned plans, budgets or coverage.
+
 [ADR-0010](./0010-interaction-profile-never-changes-coverage.md) keeps coverage fixed: the profile changes communication and concurrency, never checks, lenses or questions. The defaults follow it at full strength for every input:
 
 - research gives every load-bearing claim three independent verifiers;
@@ -24,11 +26,16 @@ Reduce cost first without reducing coverage, then let coverage vary only by an e
 
 The setting is called rigor, not depth, because the profile already has a `depth` dial that sets vocabulary and level of detail. `standard` is the default and keeps today's coverage; `quick` and `deep` are always chosen or confirmed by the person for that run.
 
+For cost previews, count current unfinished jobs and independent examinations from the same plan that dispatches them. Exclude deterministic suite/testability execution from model-worker counts, retain submitted results/votes, and refresh the preview for each later batch. Framing's definition challenge is one challenger, regardless of communication style. Model tiers are requested classes; custom unmapped roles remain unknown. Estimate declared input bytes only after inputs are prepared, excluding later read evidence and client overhead. Do not turn bytes into guessed tokens or monetary prices. Native clients show the returned display before dispatch; shared execution hosts can observe a preview before each phase, and checked headless progress emits core-formatted cost text before launching processes. An attached preview that fails stops before work rather than silently spending.
+
 ## Alternatives rejected
 
 - **Lower the defaults silently.** It would change what a verdict means without the person knowing.
 - **Let the interaction profile choose rigor.** ADR-0010 exists so that a gentler profile never means weaker checks; rigor must be an explicit, visible choice.
 - **Name the setting depth.** It would collide with the profile's `depth` dial, which changes vocabulary, and suggest that a profile preset sets it.
+- **Guess prices, tokens or completion time from worker counts.** Client packing, tokenizers, model mappings and account rates are not measured by these plans. Worker calls and declared bytes provide an honest estimate while the remaining quantities stay unknown.
+- **Count completed or deterministic work as future model calls.** It inflates the preview and disagrees with actual dispatch. Current findings can add independent examinations, so each batch needs its own preview.
+- **Change frozen plan declarations to store presentation metadata.** Costs are derived observations; additive response fields leave historical plans and coverage unchanged.
 
 ## Consequences
 
@@ -37,5 +44,7 @@ Small questions and changes become cheap, and the cost of each check is visible 
 ## Verification
 
 Aggregation tables per severity, lens applicability tables, schema compatibility tests for any new verifier counts, and the experience check budgets (P9-20).
+
+`test/unit/workers/cost.test.ts` checks requested tiers, UTF-8 input bytes, unknown usage, framing style parity, pending research/gate work, preview ordering and all seven client renderers. Gate tests exercise actual persisted plans and unfinished votes. Headless fixtures assert that the cost callback precedes any process log and that compiled progress prints cost before the unchanged completion lines. Frozen-plan tests retain their existing schema identities.
 
 [◀ Decisions index](./README.md)

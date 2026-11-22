@@ -70,6 +70,8 @@ On its own it needs nothing but the idea: it creates the initiative and stops th
 - With `--from brief-xxxx`, it starts from the brief's claims and carries its open questions over as `TBD`s.
 - With an existing `init-xxxx` or a document URL, it picks that up and works on it instead of opening a second copy.
 
+[Cost previews](../README.md#cost-before-workers-start) show current worker calls, requested tiers and declared input size before each batch starts. The illustrative example below is abridged and omits these previews; token usage, time and price are not measured by the plan.
+
 ## Run it
 
 ![frame-problem: an illustrative example session in a coding client](../../assets/terminal/session-frame-problem.gif)
