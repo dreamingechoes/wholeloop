@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-22 · P9-18 ✅ · Documented interactions that do not exist
+
+- **Setup:** each docs, tracker and code-host choice is labelled with the access detected for the executing client: built in, set up in this client, set up in another client, command found with sign-in not checked, or not set up. The labels reuse the research source-access rules through a shared `providerAccess` helper; detection reads declared MCP server names only, and an unreadable client configuration is labelled unknown instead of guessed. Each profile carries a one-line description derived from its dials, so extension profiles read the same way. `wl setup --codehost <id>` validates the provider for draft pull requests and saves `providers.codehost`, which open-pr already reads.
+- **Corrected instead of implemented:** analytics tools stay a per-metric choice in write-spec; Define does not ask for a publication target, because publishing stays the explicit `wl share mode` selection; `next` names the next step and where it stops, while one confirmation for several steps remains the planned `--through` route. The setup, next and frame-problem sessions, their pages, the next diagram, a wrong `stops: each-step` value and the README image description now match the product.
+- **Decision:** [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md) records why. Rejected: one analytics provider per repository, which cannot express metrics living in different tools; an early Define publication default, which invites publishing before the framing is reviewed; a new setup output version, since its options were already open objects. Option descriptions render beside their labels in every question view.
+- **Documentation:** the setup skill offers the code-host choice and presents labels as detection, never a connection, for all seven clients. The three illustrative recordings were re-rendered. Counts are 122/139, with three Phase 9 tasks open.
+- **Verified:** `CHECK PASS in 686s`, 5365 tests in 361 files; `CHECK PASS (fast) in 667s`, 4285 related tests in 273 files. Two new setup cases use fixture MCP declarations and a fixture `gh` executable, and the setup command fixture now runs with a temporary home so it never reads the developer's own client settings. The setup, next and frame-problem recordings were rendered with VHS and inspected. No model, native client or hosted trial was used; native rendering of the labels stays in the per-client pass.
+
+---
+
 ## 2026-11-22 · P9-17 ✅ · Proportional depth with explicit rigor
 
 - **Severity:** inspectors of optional review lenses classify findings as blocker, should or nit. Should and nit findings become `gate.classified` events, appear in the report's dropped list with an Advisory reason, are never cross-examined, leave the cost preview and do not fail the round; the hand-back shows each as "Not blocking". Mandatory lenses and verification units refuse a lower severity at submission and in replay. Headless and runner routes keep every finding a blocker.

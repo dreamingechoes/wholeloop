@@ -78,7 +78,7 @@ export function commandText(command: string, input: unknown): string {
       for (const option of list(question.options)) {
         const choice = record(option)
         open.push(
-          `  ${text(choice.label) || text(choice.value)}${choice.value !== choice.label && choice.value !== undefined ? ` (${text(choice.value)})` : ''}`,
+          `  ${text(choice.label) || text(choice.value)}${choice.value !== choice.label && choice.value !== undefined ? ` (${text(choice.value)})` : ''}${choice.description ? ` — ${text(choice.description)}` : ''}`,
         )
       }
       if (question.freeText === true) open.push('  You can also enter your own answer.')

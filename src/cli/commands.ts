@@ -1713,6 +1713,7 @@ export const COMMANDS: readonly Command[] = [
       '--profile <id>',
       '--docs <id>',
       '--tracker <id>',
+      '--codehost <id>',
       '--models <client:tier=model,...>',
       '--execution <docker|host>',
       '--image <name>',

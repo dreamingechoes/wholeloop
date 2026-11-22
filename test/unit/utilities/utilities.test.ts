@@ -33,6 +33,9 @@ function fixture(
   const bin = resolve('dist/wl.mjs')
   const env = {
     ...process.env,
+    // Setup labels providers from MCP declarations; never read the developer's own.
+    HOME: join(dir, 'home'),
+    CODEX_HOME: join(dir, 'home/.codex'),
     XDG_CONFIG_HOME: join(dir, 'config'),
     XDG_STATE_HOME: join(dir, 'state'),
     WL_WORKSPACE: '',
@@ -170,6 +173,7 @@ describe('explicit scoped setup', () => {
         'profile',
         'docs',
         'tracker',
+        'codehost',
         'scope',
       ])
       expect(cli('setup', '--profile', 'mentor').code).toBe(2)
@@ -212,6 +216,64 @@ describe('explicit scoped setup', () => {
       expect(project.code).toBe(0)
       expect(project.payload.values.profile.preset).toBe('mentor')
       expect(readFileSync(join(dir, '.wholeloop/config.yml'), 'utf8')).toContain('preset: pair')
+    }))
+
+  it('labels provider choices by detected access and describes each profile', () =>
+    fixture((dir) => {
+      const home = join(dir, 'home'),
+        bin = join(dir, 'bin')
+      mkdirSync(home)
+      mkdirSync(bin)
+      writeFileSync(join(bin, 'gh'), '#!/bin/sh\n', { mode: 0o755 })
+      writeFileSync(join(dir, '.mcp.json'), '{"mcpServers": {"notion": {"type": "http"}}}')
+      const asked = (client: string) => {
+        const result = setup(
+          dir,
+          { client, home, env: { PATH: bin } },
+          join(dir, 'config/wholeloop/config.yml'),
+        )
+        type Option = { value: string; label: string; description?: string; evidence?: string }
+        const questions = (result.payload as { questions: { id: string; options: Option[] }[] })
+          .questions
+        return (id: string, value: string) =>
+          questions
+            .find((question) => question.id === id)
+            ?.options.find((option) => option.value === value)
+      }
+      const claude = asked('claude')
+      expect(claude('docs', 'notion')?.label).toBe('Notion · set up in this client')
+      expect(claude('docs', 'local-docs')?.label).toBe('Local documents · built in')
+      expect(claude('codehost', 'github')).toMatchObject({
+        label: 'GitHub code host · gh found; sign-in not checked',
+        evidence: expect.stringContaining('a connection and relevant source are not established'),
+      })
+      expect(claude('codehost', 'gitlab')?.label).toBe('GitLab code host · not set up')
+      expect(asked('codex')('docs', 'notion')?.label).toBe('Notion · set up in another client')
+      expect(claude('profile', 'mentor')?.description).toBe(
+        'full explanations, balanced depth, supportive challenge, one step at a time, stops after every step, explains as it goes',
+      )
+      expect(claude('profile', 'autopilot')?.description).toBe(
+        'brief answers, balanced depth, balanced challenge, parallel work, stops at decisions',
+      )
+      writeFileSync(join(dir, '.mcp.json'), '{not json')
+      expect(asked('claude')('docs', 'notion')?.label).toBe(
+        'Notion · unknown: MCP settings unreadable',
+      )
+    }))
+
+  it('remembers the chosen code host for draft pull requests', () =>
+    fixture((dir) => {
+      const userFile = join(dir, 'config.yml')
+      expect(() => setup(dir, { scope: 'user', codehost: 'notion' }, userFile)).toThrow(
+        'codehost.open-draft-pr',
+      )
+      expect(existsSync(userFile)).toBe(false)
+      const saved = setup(dir, { scope: 'project', codehost: 'gitlab' }, userFile)
+      expect(saved.payload).toMatchObject({
+        applied: true,
+        values: { providers: { codehost: 'gitlab' } },
+      })
+      expect(readFileSync(join(dir, '.wholeloop/config.yml'), 'utf8')).toContain('codehost: gitlab')
     }))
 
   it('validates every selection before committing a settings batch', () =>

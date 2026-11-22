@@ -37,6 +37,7 @@ export function utilityCommand(
         ...(value('--profile') ? { profile: value('--profile') as string } : {}),
         ...(value('--docs') ? { docs: value('--docs') as string } : {}),
         ...(value('--tracker') ? { tracker: value('--tracker') as string } : {}),
+        ...(value('--codehost') ? { codehost: value('--codehost') as string } : {}),
         ...(value('--models') ? { models: value('--models') as string } : {}),
         ...(value('--execution') ? { execution: value('--execution') as string } : {}),
         ...(value('--image') ? { image: value('--image') as string } : {}),

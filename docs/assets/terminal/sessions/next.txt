@@ -1,6 +1,7 @@
 > /wholeloop:next https://linear.app/acme/issue/ENG-482
 
-Found     ENG-482 "Filter orders by date" → no local record yet, picking it up
-Has       spec (approved in Linear) · 1 scope · no slices
-Plan      slice-work → build-slice → verify-works ⇄ review-code → stop at "test it"
-Go?       [ Go ]  [ Only slice-work ]  [ Change the plan ]
+Found     ENG-482 "Filter orders by date" → no local record yet
+Read      through Linear in this client · imported text never counts as an approval
+Owner?    > Ana López
+Adopted   init-5c1d   wl open init-5c1d
+Next      frame-problem for init-5c1d · stops at the first decision that is yours

@@ -1,7 +1,9 @@
-> /wholeloop:setup providers
+> /wholeloop:setup
 
-Docs       ( ) local markdown  (•) Notion ✓ detected  ( ) Confluence  ( ) Google Docs
-Tracker    ( ) local  ( ) GitHub Issues  (•) Linear ✓ detected  ( ) Jira
-Codehost   (•) GitHub ✓ gh signed in  ( ) GitLab
-Analytics  [x] PostHog ✓ detected  [ ] Mixpanel ✗ not connected → show install
-Remember   (•) this repo (shared via .wholeloop/config.yml)  ( ) only me
+Profile    ( ) mentor  (•) pair  ( ) sparring  ( ) autopilot
+           pair: standard detail, balanced challenge, one step at a time, stops at decisions
+Docs       ( ) Local documents · built in  (•) Notion · set up in this client
+           ( ) Confluence · not set up  ( ) Google Docs · not set up
+Tracker    ( ) Local tracker · built in  (•) Linear · set up in this client  ( ) Jira · not set up
+Code host  (•) GitHub code host · gh found; sign-in not checked  ( ) GitLab code host · not set up
+Remember   ( ) user  (•) project (shared via .wholeloop/config.yml)  ( ) this run only

@@ -2,10 +2,6 @@
 
 Frame — "Users struggle to find their past orders"
 Mode      new initiative · evidence from brief-7f3a
-Publish   docs → not configured ↓
-
-Where should the framing live?
-  (•) Only in the store for now   ( ) Notion  ✓ detected   ( ) Confluence  ✗ not connected
 Who owns this initiative?   > Ana López
 
 Problem            Users with >20 orders abandon the orders page before finding one
@@ -19,5 +15,6 @@ Stop if            fewer than 5% of active users have >20 orders
 
 Produced
   Initiative        init-41c2   wl open init-41c2
+Kept                on this machine · wl share mode --for init-41c2 to publish it
 Open questions      2
 Next                /wholeloop:write-spec init-41c2

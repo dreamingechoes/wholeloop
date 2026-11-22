@@ -45,3 +45,27 @@ export interface Profile {
   language: string
   artifact_language: string
 }
+
+const DIAL_WORDS: Record<string, Record<string, string>> = {
+  verbosity: { brief: 'brief answers', standard: 'standard detail', detailed: 'full explanations' },
+  depth: { product: 'product depth', balanced: 'balanced depth', technical: 'technical depth' },
+  challenge: {
+    supportive: 'supportive challenge',
+    balanced: 'balanced challenge',
+    adversarial: 'adversarial challenge',
+  },
+  pace: { guided: 'one step at a time', staged: 'staged steps', parallel: 'parallel work' },
+  stops: { decisions: 'stops at decisions', 'every-step': 'stops after every step' },
+  teaching: { on: 'explains as it goes' },
+}
+
+/** One line per profile, derived from its dials so an extension profile is described the same way. */
+export function profileDescription(dials: Readonly<Record<string, string>>) {
+  return Object.keys(DIAL_WORDS)
+    .flatMap((dial) => {
+      const value = dials[dial]
+      const words = value === undefined ? undefined : DIAL_WORDS[dial]?.[value]
+      return words ? [words] : []
+    })
+    .join(', ')
+}
