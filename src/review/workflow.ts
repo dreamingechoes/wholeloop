@@ -121,6 +121,7 @@ export class ReviewWorkflow {
       ...gateAssignments(result.plan, {
         results: state?.results ?? [],
         votes: state?.votes ?? [],
+        classifications: state?.classifications ?? [],
         review,
         models: workerModels(this.engine),
       }),
@@ -145,6 +146,7 @@ export class ReviewWorkflow {
       ...gateAssignments(plan, {
         results: state?.results ?? [],
         votes: state?.votes ?? [],
+        classifications: state?.classifications ?? [],
         review,
         models: workerModels(this.engine),
       }),

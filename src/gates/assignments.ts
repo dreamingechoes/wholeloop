@@ -5,7 +5,13 @@ import type { SuiteResult } from '../verification/contracts.js'
 import { workerAssignment } from '../workers/assignment.js'
 import { assignmentCost } from '../workers/cost.js'
 import type { WorkerModels } from '../workers/models.js'
-import { GATE_SCHEMAS, type GatePlan, type GateResult, type GateVote } from './contracts.js'
+import {
+  GATE_SCHEMAS,
+  type GateClassification,
+  type GatePlan,
+  type GateResult,
+  type GateVote,
+} from './contracts.js'
 
 export interface SuiteObservation {
   run: string
@@ -15,6 +21,19 @@ export interface SuiteObservation {
   output: { ref: string; stdout: string; stderr: string }[]
 }
 
+/**
+ * Optional lenses may classify a finding below blocker. Submission strips the field into its own
+ * classification event, so the stored result and the frozen gate-result@1 declaration stay
+ * unchanged; workerAssignment removes the identity from the job-local copy.
+ */
+const ADVISORY_RESULT: typeof GATE_SCHEMAS.result = (() => {
+  const schema = structuredClone(GATE_SCHEMAS.result)
+  Object.assign(schema.properties.findings.items.properties, {
+    severity: { type: 'string', enum: ['blocker', 'should', 'nit'] },
+  })
+  return schema
+})()
+
 export function gateAssignments(
   plan: GatePlan,
   observations: {
@@ -23,6 +42,7 @@ export function gateAssignments(
     review?: ReviewContext
     suite?: SuiteObservation
     models?: WorkerModels | undefined
+    classifications?: readonly GateClassification[]
   },
 ) {
   const { review, suite } = observations
@@ -77,7 +97,7 @@ export function gateAssignments(
             question: unit.asks,
             allowedSource: source,
             input: { unit, ...context(unit.id) },
-            resultSchema: GATE_SCHEMAS.result,
+            resultSchema: unit.failSafe ? GATE_SCHEMAS.result : ADVISORY_RESULT,
           },
           { unit: unit.id },
         ),
@@ -87,6 +107,8 @@ export function gateAssignments(
         const unit = plan.units.find((unit) => unit.id === result.unit)
         if (!unit) throw new Error('Finding has no planned gate unit')
         const id = `${unit.id}:${finding.id}`
+        // An advisory finding is handed to the person, never cross-examined.
+        if (observations.classifications?.some((entry) => entry.finding === id)) return []
         return Array.from({ length: plan.verifiers }, (_, index) => index + 1)
           .filter(
             (verifier) =>

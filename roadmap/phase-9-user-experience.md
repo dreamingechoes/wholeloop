@@ -311,7 +311,7 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-17 · Proportional depth and gate cost
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P9-13, P9-14 · **Release:** 1.2.0 · **Decision:** [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md)
+**Status:** 🔄 · **Size:** L · **Depends on:** P9-13, P9-14 · **Release:** 1.2.0 · **Decision:** [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md)
 
 **Goal** — A small question or change costs little, and any reduced check is recorded and visible.
 

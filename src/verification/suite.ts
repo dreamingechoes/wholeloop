@@ -354,6 +354,7 @@ export async function runSuite(
     ...gateAssignments(gate.plan, {
       results: state?.results ?? [],
       votes: state?.votes ?? [],
+      classifications: state?.classifications ?? [],
       suite: observation,
       models: workerModels(engine),
     }),

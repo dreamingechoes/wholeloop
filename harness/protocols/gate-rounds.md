@@ -6,4 +6,6 @@ Cross-examine each finding in independent slots numbered 1 through the pinned qu
 
 ⛔ `gate-deterministic-verdict`: Only the core aggregates PASS, FAIL and EXHAUSTED; missing units never count as clean results. ⛔ `gate-explicit-budget`: Never reset a failed run or extend its budget automatically; an explicit extension needs a reason. ⛔ `gate-observe-only`: A changed workspace blocks the round; preserve its files and route the recorded findings to the builder.
 
+⛔ `gate-finding-severity`: Only blockers fail a round. For an optional lens, give each finding a severity: `blocker` for a defect the change must not ship with, `should` for a worthwhile fix that can wait, `nit` for a cosmetic note. Mandatory lenses and verification units always block, so omit severity there. Advisories are not cross-examined; show every one to the person in the hand-back.
+
 A historical PASS becomes STALE after a code change. Rerun gates explicitly. The host must enforce read-only tools where available and use genuinely independent workers; slot numbers alone are not proof of isolation. Ignored files and external services require their own checks.

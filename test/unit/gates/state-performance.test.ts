@@ -97,8 +97,8 @@ describe('gate history selection', () => {
     })
     console.info('Gate history subject reads:', JSON.stringify(measurements))
     expect(measurements.map((measurement) => measurement.digest)).toEqual([
-      '589e7349bd15103296fda628024ef2281683d61f4d02db20aaa173caa0889db1',
-      '3a010ce85325cee01d488186112be8bb50303e3a1d6dda32a2b0fd2f59cc25a9',
+      '1252ea43c0da227fc7348be0d1294bdedc67bf70aee7369f79104df4c11fafa2',
+      'e76c8b01e0ec2baf64a327e7d8cf2d50aeeb362c8ec8fe6c5710102786a9e83a',
     ])
     for (const measurement of measurements)
       expect(measurement.subjectReads).toBeLessThanOrEqual(3 * measurement.size)

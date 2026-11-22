@@ -512,6 +512,8 @@ rules:
     enforcers: [src/build/contracts.ts#assertBuildGreen, src/flow/engine.ts#FlowEngine, test/unit/build/build.test.ts]
   - id: build-repo-guidance
     enforcers: [src/build/workflow.ts#BuildWorkflow, test/unit/build/build.test.ts]
+  - id: gate-finding-severity
+    enforcers: [src/gates/report.ts#gateReport, src/gates/state.ts#gateRuns, src/gates/workflow.ts#GateWorkflow, test/unit/gates/severity.test.ts]
   - id: gate-deterministic-verdict
     enforcers: [src/gates/report.ts#gateReport, src/gates/state.ts#gateRuns, test/unit/gates/gates.test.ts, test/unit/gates/report-performance.test.ts, test/unit/gates/state-performance.test.ts]
   - id: gate-explicit-budget

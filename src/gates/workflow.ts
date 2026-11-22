@@ -25,6 +25,7 @@ import { worktreeRecords } from '../worktrees/contracts.js'
 import { namedBase, repository } from '../worktrees/git.js'
 import { WorktreeManager } from '../worktrees/manager.js'
 import {
+  type GateClassification,
   type GateKind,
   type GatePlan,
   type GateResult,
@@ -56,6 +57,7 @@ const plannedCost = (
   results: readonly GateResult[] = [],
   votes: readonly GateVote[] = [],
   models?: WorkerModels,
+  classifications: readonly GateClassification[] = [],
 ) => {
   const completed = new Set(results.map(({ unit }) => unit)),
     examined = new Set(votes.map(({ finding, verifier }) => `${finding}/${verifier}`)),
@@ -65,7 +67,11 @@ const plannedCost = (
   for (const result of results)
     for (const finding of result.findings)
       for (let verifier = 1; verifier <= plan.verifiers; verifier++)
-        if (!examined.has(`${result.unit}:${finding.id}/${verifier}`)) roles.push('reviewer')
+        if (
+          !classifications.some((entry) => entry.finding === `${result.unit}:${finding.id}`) &&
+          !examined.has(`${result.unit}:${finding.id}/${verifier}`)
+        )
+          roles.push('reviewer')
   return workerCost(roles, undefined, models)
 }
 const languages = (paths: string[]) =>
@@ -318,7 +324,13 @@ export class GateWorkflow {
         return {
           schema: 'wholeloop/gate-plan@1',
           plan: previous.plan,
-          cost: plannedCost(previous.plan, previous.results, previous.votes, models),
+          cost: plannedCost(
+            previous.plan,
+            previous.results,
+            previous.votes,
+            models,
+            previous.classifications,
+          ),
           budget,
           resumed: true,
         }
@@ -326,7 +338,13 @@ export class GateWorkflow {
         return {
           schema: 'wholeloop/gate-plan@1',
           plan: previous.plan,
-          cost: plannedCost(previous.plan, previous.results, previous.votes, models),
+          cost: plannedCost(
+            previous.plan,
+            previous.results,
+            previous.votes,
+            models,
+            previous.classifications,
+          ),
           budget,
           resumed: true,
           complete: snapshot.digest === previous.plan.snapshot.digest,
@@ -374,7 +392,23 @@ export class GateWorkflow {
     })
   }
 
-  submit(subject: string, run: string, round: number, result: GateResult | GateVote) {
+  submit(subject: string, run: string, round: number, input: GateResult | GateVote) {
+    // An inspector may classify a finding below blocker; the stored result keeps the frozen
+    // gate-result@1 shape and each classification becomes its own event (ADR-0258).
+    const classifications: GateClassification[] = []
+    let result = input
+    if ('unit' in input && Array.isArray(input.findings))
+      result = {
+        ...input,
+        findings: input.findings.map((entry) => {
+          const { severity, ...finding } = entry as typeof entry & { severity?: unknown }
+          if (severity === undefined || severity === 'blocker') return finding
+          if (severity !== 'should' && severity !== 'nit')
+            throw new Error('Finding severity must be blocker, should or nit')
+          classifications.push({ finding: `${input.unit}:${finding.id}`, severity })
+          return finding
+        }),
+      }
     if ('unit' in result) validateGateResult(result)
     else validateGateVote(result)
     return this.engine.store.transaction((events, append) => {
@@ -389,9 +423,16 @@ export class GateWorkflow {
         throw new Error(
           'Workspace changed during a read-only gate round; seal it as failed before retrying',
         )
-      if ('unit' in result)
+      if ('unit' in result) {
+        if (
+          classifications.length &&
+          current.plan.units.find(({ id }) => id === result.unit)?.failSafe !== false
+        )
+          throw new Error('Findings of a mandatory lens always block; omit their severity')
         append(subject, { type: 'gate.submitted', data: { run, round, result } })
-      else append(subject, { type: 'gate.examined', data: { run, round, vote: result } })
+        for (const classification of classifications)
+          append(subject, { type: 'gate.classified', data: { run, round, ...classification } })
+      } else append(subject, { type: 'gate.examined', data: { run, round, vote: result } })
       return { schema: 'wholeloop/gate-submit@1', subject, run, round, recorded: true }
     })
   }
@@ -428,7 +469,14 @@ export class GateWorkflow {
     }
     const report =
       current.decision?.report ??
-      gateReport(current.plan, current.results, current.votes, observed, run.budget)
+      gateReport(
+        current.plan,
+        current.results,
+        current.votes,
+        observed,
+        run.budget,
+        current.classifications,
+      )
     if (!current.decision) {
       append(subject, {
         type: 'gate.decided',

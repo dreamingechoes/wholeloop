@@ -3,6 +3,7 @@ import { validate } from '../config/schema.js'
 import type { GateInputs, GateUnit } from './lenses.js'
 import planSchema from './schemas/plan-v1.json' with { type: 'json' }
 import resultSchema from './schemas/result-v1.json' with { type: 'json' }
+import severitySchema from './schemas/severity-v1.json' with { type: 'json' }
 import voteSchema from './schemas/vote-v1.json' with { type: 'json' }
 import type { WorkspaceSnapshot } from './snapshot.js'
 
@@ -38,6 +39,15 @@ export interface GateResult {
   execution?: { status: 'passed' | 'failed' }
   reason?: string
 }
+/**
+ * A finding is a blocker unless its inspector classified it lower. Only optional lenses may:
+ * a mandatory lens is fail-safe, so its findings always block (ADR-0258).
+ */
+export type GateSeverity = 'blocker' | 'should' | 'nit'
+export interface GateClassification {
+  finding: string
+  severity: Exclude<GateSeverity, 'blocker'>
+}
 export interface GateVote {
   finding: string
   verifier: number
@@ -56,6 +66,10 @@ export type GateEventData =
   | { type: 'gate.planned'; data: { plan: GatePlan } }
   | { type: 'gate.submitted'; data: { run: string; round: number; result: GateResult } }
   | { type: 'gate.examined'; data: { run: string; round: number; vote: GateVote } }
+  | {
+      type: 'gate.classified'
+      data: { run: string; round: number } & GateClassification
+    }
   | { type: 'gate.extended'; data: { run: string; budget: number; reason: string } }
   | {
       type: 'gate.decided'
@@ -63,6 +77,8 @@ export type GateEventData =
     }
 
 export const GATE_SCHEMAS = { plan: planSchema, result: resultSchema, vote: voteSchema }
+export { severitySchema }
+
 const meaningful = (value: string) => !!value.trim()
 export function validateGatePlan(value: unknown): asserts value is GatePlan {
   const problems = validate(value, planSchema, 'gate.plan')

@@ -1,5 +1,8 @@
 // Aggregates a gate round into a report; missing responses never count as refutations.
-import type { GatePlan, GateReport, GateResult, GateVote } from './contracts.js'
+import type { GateClassification, GatePlan, GateReport, GateResult, GateVote } from './contracts.js'
+
+/** Advisory findings reach the person in the hand-back; the reason names their severity. */
+export const ADVISORY = 'Advisory'
 
 /** Missing responses never become refutations, and budget exhaustion never grants approval. */
 export function gateReport(
@@ -8,6 +11,7 @@ export function gateReport(
   votes: readonly GateVote[],
   observed: string,
   budget = plan.budget,
+  classifications: readonly GateClassification[] = [],
 ): GateReport {
   const firstResults = results.length ? new Map<string, GateResult>() : undefined,
     covered = results.length ? new Set<string>() : undefined
@@ -45,6 +49,21 @@ export function gateReport(
         }
       }
       const id = `${unitId}:${finding.id}`
+      // Only an optional lens can lower a finding; replay already refuses the rest. Historical
+      // rounds have no classification, so their reports stay byte-identical.
+      const severity = failSafe
+        ? undefined
+        : classifications.find((entry) => entry.finding === id)?.severity
+      if (severity) {
+        dropped.push({
+          id,
+          unit: unitId,
+          finding,
+          refutations: 0,
+          reason: `${ADVISORY} (${severity}): reported to the person; does not fail the round`,
+        })
+        continue
+      }
       const examined = examinations.get(id),
         count = examined?.count ?? 0,
         refutations = examined?.refutations ?? 0

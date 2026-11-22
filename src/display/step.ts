@@ -225,6 +225,13 @@ export function stepDisplay(
         value(finding.title)
       if (text) open.push(text)
     }
+    // Advisory findings never fail a round; the person still reads each one in the hand-back.
+    for (const entry of list(report.dropped)) {
+      const reason = value(record(entry).reason)
+      const severity = /^Advisory \((should|nit)\)/.exec(reason)?.[1]
+      const finding = record(record(entry).finding)
+      if (severity) open.push(`Not blocking (${severity}): ${value(finding.text)}`)
+    }
     if (list(report.missing).length) row('Not checked', list(report.missing).map(value).join(' · '))
     if (payload.current === false)
       open.push('The observed work has changed; check it again before continuing.')
