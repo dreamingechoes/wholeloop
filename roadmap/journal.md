@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-22 · P9-24 ✅ · One short launcher per client
+
+- **Changed:** a user installation writes one launcher per client at `wholeloop/wl.mjs` beside the client's skills directory instead of one per skill, and every installed skill names that absolute path in its preamble (the Cursor rule too). The allow rule install shows now has one entry per client, and each approval prompt names the same short command. The launcher still only imports the packaged core, which validates the artifact.
+- **Ownership:** the receipt owns exactly that path, so upgrading a per-skill installation removes the old launchers and uninstall removes the shared one and its empty directory. A path containing a newline or backtick keeps the per-skill layout rather than being written into skill text.
+- **Decision:** [ADR-0048](../docs/decisions/0048-native-target-layouts-and-checked-launcher-roots.md) is amended. Narrowed: project installations, generated plugins and conformance overlays keep a launcher beside each skill, because those skills live in a repository or package and an absolute path would break when it moves. Rejected: a relative path from each skill, which a model would have to resolve, and a launcher on `PATH`, which the checked-root design rules out.
+- **Documentation:** getting started shows the one-rule output; the platform page and the client experience pass describe the layout. Phase 9 has no open task left; counts are 127/141.
+- **Verified:** `CHECK PASS in 700s`, 5414 tests in 364 files after rebasing on P9-25; `CHECK PASS (fast) in 494s`, 2483 related tests in 128 files. The shared launcher runs with `--with-context` for all seven clients, an upgrade from the per-skill layout removes the old launchers, uninstall removes the shared one, and project installs keep seventeen per-skill launchers. No model, native client or hosted trial was used.
+
+---
+
 ## 2026-11-22 · P9-25 ✅ · Network for supervised project setup
 
 - **Decision:** the maintainer accepted [ADR-0260](../docs/decisions/0260-network-for-supervised-project-setup.md); P9-25 implements it. Refinements recorded there: only `npm`, `pnpm`, `bun`, `uv` and `composer` commands, because each writes to one known folder; that folder is a store directory the person owns rather than a named volume, which would be owned by root while project commands run as the person's user ID; setup is read only from the committed project file. Rejected: any command as setup, and named volumes.

@@ -1,11 +1,11 @@
 // Plans native overlay files per client and scope without touching shared client settings.
-import { isAbsolute, join, relative, resolve, sep } from 'node:path'
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { stringify } from 'yaml'
 import { antigravityHook } from '../adapters/antigravity-hook.js'
 import type { RenderedFile } from '../adapters/contracts.js'
 import { cursorHook } from '../adapters/cursor-hook.js'
 import { adapterFor, generateAdapter } from '../adapters/generate.js'
-import { renderPortableSkill } from '../adapters/portable.js'
+import { pinLauncher, renderPortableSkill } from '../adapters/portable.js'
 import { markEntrypoint } from '../harness/entrypoints.js'
 import { frontmatter } from '../harness/frontmatter.js'
 import { canonicalPath } from '../state/paths.js'
@@ -20,6 +20,11 @@ export interface InstallContext {
   opencodeVersion?: string
   /** Tier mappings per client from this scope's own configuration file (P9-15). */
   models?: Readonly<Record<string, ModelMap>>
+  /**
+   * `shared` installs one launcher per client and names it in every skill (P9-24); `per-skill`
+   * keeps a launcher in each skill directory. Project scope is always per-skill.
+   */
+  launchers?: 'shared' | 'per-skill'
 }
 export interface InstalledFile extends RenderedFile {
   path: string
@@ -49,6 +54,17 @@ const slash = (value: string) => value.split(sep).join('/')
 const shell = (value: string) => `'${value.replaceAll("'", "'\\''")}'`
 export const installedName = (target: string, kind: 'skill' | 'agent', name: string) =>
   target === 'claude' ? `wl-${name}` : adapterFor(target).name(kind, name)
+/**
+ * One launcher per client for a user installation, so one allow rule covers every skill and each
+ * approval prompt names a short, stable path (P9-24). Project skills live in the repository and
+ * must keep working when the checkout moves, so they keep a launcher beside each skill.
+ */
+export function sharedLauncher(target: string, context: InstallContext) {
+  if (context.scope !== 'user' || context.launchers === 'per-skill') return undefined
+  const path = join(dirname(installLocations(target, context).skills), 'wholeloop', 'wl.mjs')
+  // The path is written into skill text; a character that could end the sentence keeps the old layout.
+  return /[\n\r`]/.test(path) ? undefined : path
+}
 export function installLocations(
   target: string,
   context: InstallContext,
@@ -156,6 +172,17 @@ export function installationPlan(
       { matcher: '.*', hooks: [{ type: 'command', command: hookCommand, timeout: 15 }] },
     ],
   }
+  const shared = sharedLauncher(target, context)
+  const launcherFile = (launcher: string) =>
+    add(
+      launcher,
+      `#!/usr/bin/env node\nawait import(new URL(${JSON.stringify(modulePath(dirname(launcher), join(artifact, 'bin/wl.mjs')))},import.meta.url))\n`,
+      0o755,
+    )
+  if (shared) {
+    exclusive.push(dirname(shared))
+    launcherFile(shared)
+  }
   for (const [path, content] of canonical) {
     const skill = /^harness\/skills\/([^/]+)\/SKILL.md$/.exec(path)?.[1]
     const agent = /^harness\/agents\/([^/]+)\.md$/.exec(path)?.[1]
@@ -167,14 +194,11 @@ export function installationPlan(
       let rendered = target === 'claude' ? renderPortableSkill(content).content : source.content
       if (target === 'claude')
         rendered = `---\n${stringify({ ...frontmatter(rendered), hooks })}---\n${rendered.replace(/^---\n[\s\S]*?\n---\n/, '')}`
-      add(join(directory, 'SKILL.md'), markEntrypoint(rendered))
-      const launcher = join(directory, 'scripts/wl.mjs')
-      const imported = modulePath(join(directory, 'scripts'), join(artifact, 'bin/wl.mjs'))
       add(
-        launcher,
-        `#!/usr/bin/env node\nawait import(new URL(${JSON.stringify(imported)},import.meta.url))\n`,
-        0o755,
+        join(directory, 'SKILL.md'),
+        markEntrypoint(shared ? pinLauncher(rendered, shared) : rendered),
       )
+      if (!shared) launcherFile(join(directory, 'scripts/wl.mjs'))
     } else if (agent && !adapterFor(target).omitAgents?.includes(agent)) {
       const source = generated.files.get(adapterFor(target).paths('agent', agent))
       if (!source) throw new Error('Generated native agent is missing')
@@ -214,7 +238,18 @@ export function installationPlan(
     )
     const rule = generated.files.get('rules/wholeloop.mdc')
     if (!rule) throw new Error('Generated Cursor rule is missing')
-    add(join(locations.rules, 'wl-wholeloop.mdc'), rule.content)
+    const sibling = 'Read the actual installed SKILL.md and locate its sibling scripts/wl.mjs.'
+    if (shared && !rule.content.includes(sibling))
+      throw new Error('Generated Cursor rule is missing its launcher sentence')
+    add(
+      join(locations.rules, 'wl-wholeloop.mdc'),
+      shared
+        ? rule.content.replace(
+            sibling,
+            `Run wholeloop through its installed launcher at ${shared}.`,
+          )
+        : rule.content,
+    )
   }
   if (target === 'antigravity' && locations.hooks) {
     add(

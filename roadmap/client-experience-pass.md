@@ -30,7 +30,7 @@ Character counts are for a home directory such as `/Users/name`.
 
 ## Gaps
 
-- **One rule per skill and long commands (new task P9-24).** Every skill carries its own launcher, so an allow rule needs seventeen entries per client and every approval prompt shows a long absolute path. One short, stable launcher per client would let a single entry cover every skill and make each prompt readable. Changing the launcher layout touches the checked launcher roots of [ADR-0048](../docs/decisions/0048-native-target-layouts-and-checked-launcher-roots.md), so it is its own task rather than part of this pass.
+- **One rule per skill and long commands (task P9-24, done).** Every skill carried its own launcher, so an allow rule needed seventeen entries per client and every approval prompt showed a long absolute path. A user installation now writes one launcher per client at `wholeloop/wl.mjs` beside the skills directory, so one rule covers every skill; project installations keep a launcher per skill so they still work when the checkout moves ([ADR-0048](../docs/decisions/0048-native-target-layouts-and-checked-launcher-roots.md)).
 - **Antigravity has no known command-level allow rule.** Each launcher call asks. This is recorded for the native pass rather than as a task, because nothing in the repository can change it until the client offers such a rule.
 - **Codex roles cannot narrow their own sandbox.** Already documented in the platform matrix and enforced by the checked headless route for gates; no new task.
 - **Unchecked by this pass:** whether each client accepts the shown rule, still asks for every other command, starts the named role with only its assignment, and renders the display text verbatim. These stay in manual verification.

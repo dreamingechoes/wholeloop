@@ -10,7 +10,7 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join, resolve } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { bundledCanonical } from '../../../src/adapters/canonical.js'
 import { generateAdapter } from '../../../src/adapters/generate.js'
@@ -20,7 +20,7 @@ import { lineCount } from '../../../src/harness/files.js'
 import { frontmatter } from '../../../src/harness/frontmatter.js'
 import { inspectInstallation } from '../../../src/installation/inspect.js'
 import { manageInstallation } from '../../../src/installation/manage.js'
-import { installLocations } from '../../../src/installation/plan.js'
+import { installLocations, sharedLauncher } from '../../../src/installation/plan.js'
 import { BUILTINS } from '../../../src/providers/builtins.js'
 import { detectMcp } from '../../../src/providers/detect.js'
 import { renderMcp } from '../../../src/providers/mcp.js'
@@ -209,7 +209,8 @@ describe('Gemini extension and native overlays', () => {
         expect(readFileSync(join(locations.skills, 'wl-next/SKILL.md'), 'utf8')).toContain(
           'plain text and stop for explicit answers',
         )
-        const launcher = join(locations.skills, 'wl-next/scripts/wl.mjs')
+        const launcher =
+          sharedLauncher('gemini', context) ?? join(locations.skills, 'wl-next/scripts/wl.mjs')
         const result = spawnSync(process.execPath, [launcher, 'adapter', 'root', '--json'], {
           cwd: root,
           encoding: 'utf8',

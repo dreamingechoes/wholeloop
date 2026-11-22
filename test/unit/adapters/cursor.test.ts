@@ -24,7 +24,7 @@ import { lineCount } from '../../../src/harness/files.js'
 import { frontmatter } from '../../../src/harness/frontmatter.js'
 import { inspectInstallation } from '../../../src/installation/inspect.js'
 import { manageInstallation } from '../../../src/installation/manage.js'
-import { installLocations } from '../../../src/installation/plan.js'
+import { installLocations, sharedLauncher } from '../../../src/installation/plan.js'
 import { canonicalPath } from '../../../src/state/paths.js'
 import { VERSION } from '../../../src/version.js'
 
@@ -168,7 +168,8 @@ describe('Cursor native contracts and managed overlays', () => {
         expect(
           frontmatter(readFileSync(join(locations.agents, 'wl-reviewer.md'), 'utf8'))?.readonly,
         ).toBe(true)
-        const launcher = join(locations.skills, 'wl-next/scripts/wl.mjs')
+        const launcher =
+          sharedLauncher('cursor', context) ?? join(locations.skills, 'wl-next/scripts/wl.mjs')
         const launched = spawnSync(process.execPath, [launcher, 'adapter', 'root', '--json'], {
           cwd: root,
           encoding: 'utf8',

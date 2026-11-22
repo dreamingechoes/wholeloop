@@ -2,7 +2,7 @@
 // asking each time. Install only shows it: writing it would widen what runs without approval.
 import { dirname, isAbsolute, join } from 'node:path'
 import { stringify } from 'smol-toml'
-import { type InstallContext, installedName, installLocations } from './plan.js'
+import { type InstallContext, installedName, installLocations, sharedLauncher } from './plan.js'
 
 export interface LauncherAccess {
   target: string
@@ -58,8 +58,8 @@ export function launcherAccess(input: {
     verified: false,
     note,
   })
-  const review =
-    'Review only; nothing was written. It allows exactly these launchers, with any arguments, and nothing else.'
+  const named = sorted.length === 1 ? 'this launcher' : 'these launchers'
+  const review = `Review only; nothing was written. It allows exactly ${named}, with any arguments, and nothing else.`
   if (target === 'claude')
     return result(
       join(base, scope === 'user' ? 'settings.json' : 'settings.local.json'),
@@ -107,7 +107,7 @@ export function launcherAccess(input: {
     return result(
       null,
       sorted.map((path) => `--allow-tool 'shell(${path})'`).join(' \\\n'),
-      'Review only; add these flags when starting the client. They allow exactly these launchers and nothing else.',
+      `Review only; add ${sorted.length === 1 ? 'this flag' : 'these flags'} when starting the client. ${sorted.length === 1 ? 'It allows' : 'They allow'} exactly ${named} and nothing else.`,
     )
   return none(UNSUPPORTED)
 }
@@ -134,14 +134,17 @@ export function installedLauncherAccess(
         : target === 'gemini'
           ? join(configured(env.GEMINI_CLI_HOME, context.home), '.gemini')
           : own
+    const shared = sharedLauncher(target, context)
     return launcherAccess({
       target,
       scope: context.scope,
       root: context.root,
       base,
-      launchers: skills.map((skill) =>
-        join(locations.skills, installedName(target, 'skill', skill), 'scripts/wl.mjs'),
-      ),
+      launchers: shared
+        ? [shared]
+        : skills.map((skill) =>
+            join(locations.skills, installedName(target, 'skill', skill), 'scripts/wl.mjs'),
+          ),
     })
   })
 }
