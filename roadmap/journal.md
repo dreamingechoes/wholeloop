@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-22 · P9-11 ✅ · Explicit measurement provider choices
+
+- **Changed:** ready specification entry groups registered providers by each source query capability, retaining current-client access labels. The canonical skill asks where each metric lives and reuses only an explicit matching preference; a requested repository choice uses the existing answer configuration. A stale preference remains unselected with a warning. All seven clients receive the same instructions.
+- **Validation:** specification checks and completion refuse invented providers and unsupported capability/operation pairs, including validated local extensions. Undetected tools warn without blocking a measurement plan. Detection never proves authentication, queries a source or writes a preference. Historical parsing and replay stay structural when an extension is later removed.
+- **Decision:** [ADR-0023](../docs/decisions/0023-structured-spec-plans-and-revision-approval.md) owns the refinement. Automatic selection, unregistered free text, refusing undetected plans and revalidating old approvals against today's registry were rejected. Existing analytics-labelled fixtures register an inherited provider instead of changing historical artifact bytes. No new task or manual evidence gap was added; counts are 115/139, with ten Phase 9 tasks open.
+- **Documentation:** the specification guide explains access labels, explicit repository memory, validation and the fictional provider fixture. Four generated references were regenerated and remained current; human layouts and recorded command output are unchanged.
+- **Verified:** `CHECK PASS in 699s`, 5222 tests in 354 files; `CHECK PASS (fast) in 225s`, 1733 related tests in 65 files. The five targeted files pass 93 tests, including 23 new cases covering all seven clients, actual compiled CLI checks, refusals before writes/completion and replay after extension removal. macOS arm64 locally; required CI supplies Linux coverage. No live source query, signed-in native pass or model quota was used.
+
+---
+
 ## 2026-11-22 · P9-22 ✅ · Streamed step inputs and combined preparation
 
 - **Changed:** small decisions, results and normalized observations accept explicit bounded --stdin against the same domain schemas as files. Legacy readers and a literal dash filename remain compatible. Empty, malformed, oversized or ambiguous input omits its content; payload and attribution rationale cannot both consume stdin. Source selection, ownership, current workspace checks and explicit decisions retain their guards.

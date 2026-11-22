@@ -49,7 +49,14 @@ import { queueSharedArtifacts } from '../sharing/contracts.js'
 import { checkSlicePlan, parseSlicePlan, slicingContext } from '../slices/contract.js'
 import { publishSlices } from '../slices/publish.js'
 import { blockingDependencies } from '../slices/routing.js'
-import { checkSpec } from '../spec/contract.js'
+import { checkSpec, parseSpec } from '../spec/contract.js'
+import {
+  checkMetricChoice,
+  checkMetricProviders,
+  metricProviderOffers,
+  metricRegistry,
+  metricSourceContext,
+} from '../spec/providers.js'
 import { specTemplate } from '../spec/template.js'
 import { itemId, replay, type StateEvent } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
@@ -183,6 +190,14 @@ export class FlowEngine {
       )
     }
     if (options.impact && name !== 'write-spec') throw new CliError('--impact is for write-spec')
+    let measurement: ReturnType<typeof metricSourceContext> | undefined
+    const measurementContext = () =>
+      (measurement ??= metricSourceContext({
+        root: this.root,
+        userFile: this.userFile,
+        home: this.home,
+        client: options.client,
+      }))
     const prepare = ((events, append) => {
       const items = replay(events)
       let subject = options.subject ? items.get(options.subject) : undefined
@@ -463,6 +478,14 @@ export class FlowEngine {
         payload: {
           ...payload,
           scratch: scratchDirectory(this.store.files.root, run),
+          ...(name === 'write-spec'
+            ? {
+                metricProviders: metricProviderOffers(
+                  measurementContext(),
+                  remembered(events, id, run, configuration),
+                ),
+              }
+            : {}),
           ...(name === 'frame-problem'
             ? {
                 inputSchemas: {
@@ -534,6 +557,13 @@ export class FlowEngine {
     ]
     if (problems.length) throw new CliError(problems.join('\n'))
     return this.store.transaction((events, append) => {
+      if (name === 'write-spec') {
+        const metrics = parseSpec(content).metrics
+        if (metrics.length) {
+          const checked = checkMetricProviders(metrics, metricRegistry(this.root, this.userFile))
+          if (checked.problems.length) throw new CliError(checked.problems.join('\n'))
+        }
+      }
       const latest = [...events]
         .reverse()
         .find(
@@ -813,7 +843,12 @@ export class FlowEngine {
       writeSetting(file, ['slots', slot], value)
       return { schema: 'wholeloop/answer@1', qid, value, scope, file }
     }
-    if (!['owner', 'input', 'impact', 'docs.destination', 'tracker.destination'].includes(qid))
+    const metric = qid.startsWith('metric:')
+    if (metric) checkMetricChoice(metricRegistry(this.root, this.userFile), qid, value)
+    if (
+      !metric &&
+      !['owner', 'input', 'impact', 'docs.destination', 'tracker.destination'].includes(qid)
+    )
       throw new CliError(`Unknown question: ${qid}`)
     if (scope === 'user' || scope === 'project') {
       if (qid === 'input' || qid === 'impact')

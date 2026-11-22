@@ -16,6 +16,7 @@ import {
 } from '../../../src/scopes/contract.js'
 import { StateStore } from '../../../src/state/store.js'
 import { next } from '../../../src/utilities/next.js'
+import { installSpecProvider } from '../../support/spec-providers.js'
 
 const spec = readFileSync(new URL('../../fixtures/spec/spec.md', import.meta.url), 'utf8')
 const main: ScopeDefinition = {
@@ -42,6 +43,7 @@ function fixture(run: (dir: string, engine: FlowEngine) => void | Promise<void>)
     join(dir, 'user/config.yml'),
     join(dir, 'home'),
   )
+  installSpecProvider(dirname(engine.userFile))
   mkdirSync(engine.root)
   return Promise.resolve()
     .then(() => run(dir, engine))
