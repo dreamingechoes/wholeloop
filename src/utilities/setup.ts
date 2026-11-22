@@ -5,6 +5,7 @@ import { EXIT } from '../cli/io.js'
 import { loadConfig, userConfigPath } from '../config/load.js'
 import { resolveConfig } from '../config/resolve.js'
 import { writeSettings } from '../config/write.js'
+import { checkImage, EXECUTION_ANSWER, IMAGE_ANSWER } from '../execution/choice.js'
 import { loadProviders, resolveProvider } from '../providers/load.js'
 import {
   builtInModel,
@@ -22,14 +23,25 @@ export function setup(
     docs?: string
     tracker?: string
     models?: string
+    execution?: string
+    image?: string
     client?: string
   },
   userFile = userConfigPath(),
 ) {
   const loaded = loadConfig({ root, userFile })
-  let models: Record<string, string> = {}
+  let answers: Record<string, string> = {}
   try {
-    if (options.models) models = parseModelChoices(options.models)
+    if (options.models) answers = parseModelChoices(options.models)
+    if (options.image) answers[IMAGE_ANSWER] = checkImage(options.image)
+    if (options.execution) {
+      if (!['docker', 'host'].includes(options.execution))
+        throw new Error('Use --execution docker or host')
+      // Host execution is a per-repository choice (ADR-0257); a user file would cover every one.
+      if (options.scope !== 'project')
+        throw new Error('Remember --execution for this repository with --scope project')
+      answers[EXECUTION_ANSWER] = options.execution
+    }
   } catch (error) {
     throw new CliError((error as Error).message)
   }
@@ -49,7 +61,7 @@ export function setup(
   if (options.docs) resolveProvider(registry, 'docs.create', options.docs)
   if (options.tracker) resolveProvider(registry, 'tracker.create-item', options.tracker)
   const requested = Boolean(
-    options.profile || options.docs || options.tracker || Object.keys(models).length,
+    options.profile || options.docs || options.tracker || Object.keys(answers).length,
   )
   if (!requested || !options.scope) {
     const question = (id: string, prompt: string, choices: string[], freeText = false) => ({
@@ -131,7 +143,7 @@ export function setup(
           },
         }
       : {}),
-    ...(Object.keys(models).length ? { answers: models } : {}),
+    ...(Object.keys(answers).length ? { answers } : {}),
   }
   const effective = resolveConfig(
     [
@@ -146,7 +158,7 @@ export function setup(
       ...(override.profile ? [{ path: ['profile'], value: override.profile }] : []),
       ...(options.docs ? [{ path: ['providers', 'docs'], value: options.docs }] : []),
       ...(options.tracker ? [{ path: ['providers', 'tracker'], value: options.tracker }] : []),
-      ...Object.entries(models).map(([key, value]) => ({ path: ['answers', key], value })),
+      ...Object.entries(answers).map(([key, value]) => ({ path: ['answers', key], value })),
     ])
   }
   return {

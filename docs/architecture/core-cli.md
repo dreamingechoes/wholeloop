@@ -255,6 +255,7 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | `wl review complete` | `wholeloop/review-complete@1` | Complete a review from its input and current gate PASS |
 | `wl verify begin [<branch\|pr>]` | `wholeloop/verify-begin@1` | Begin verification from agreed criteria or ask before mutation |
 | `wl verify suite` | `wholeloop/verify-suite@1` | Execute declared checks once in the pinned verify round |
+| `wl exec -- <command...>` | `wholeloop/exec@1` | Run a project command in the slice's container, or as the repository chose |
 | `wl verify complete` | `wholeloop/verify-complete@1` | Complete verification from its suite receipt and current gate PASS |
 | `wl build route [<input>]` | `wholeloop/build-route@1` | Route a scope slice issue URL or sentence to ready build work |
 | `wl build agree <input>` | `wholeloop/build-agree@1` | Create an ad-hoc slice from explicitly agreed testable criteria |

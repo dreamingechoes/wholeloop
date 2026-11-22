@@ -9,6 +9,7 @@
 - [Example — project file](#example--project-file)
 - [Example — user file](#example--user-file)
 - [Worker models](#worker-models)
+- [Where project code runs](#where-project-code-runs)
 - [Inspect configuration](#inspect-configuration)
 - [Autonomous delivery limits](#autonomous-delivery-limits)
 - [Key reference](#key-reference)
@@ -117,6 +118,17 @@ answers:
 - **Reinstall to apply it.** `wl install --scope user` reads only your user file and `wl install --scope project` only the project file, so a personal choice never lands in files a repository commits. `wl doctor` reports an installation older than its mapping as out of date.
 - **The cost preview names the configured model** next to each tier, labelled "configured", because the client decides whether that model is available to you. A plugin installed from a marketplace keeps the built-in choice.
 - **Coverage never changes.** A cheaper model runs the same checks; it does not remove any.
+
+## Where project code runs
+
+Supervised verification and building run project code in Docker by default. Two remembered answers change that:
+
+| Answer | Values | Scope |
+| --- | --- | --- |
+| `execution:image` | an image in your local Docker cache, such as `node:22-bookworm` | user or project |
+| `execution:project-code` | `docker` (default) or `host`, which runs on your machine without isolation | project only, so it never applies to every repository at once |
+
+Set them with `wl setup --image <name>` and `wl setup --execution host --scope project`. Autonomous runs ignore both and always use their own pinned environments.
 
 ## Inspect configuration
 

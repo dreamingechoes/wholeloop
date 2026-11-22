@@ -2,6 +2,7 @@
 import { isObject, validate } from '../config/schema.js'
 import { type Criterion, parseCriteria } from '../definition/criteria.js'
 import type { CommandAsset } from '../discovery/types.js'
+import executionSchema from './schemas/execution-v1.json' with { type: 'json' }
 import startSchema from './schemas/start-v1.json' with { type: 'json' }
 import schema from './schemas/suite-v1.json' with { type: 'json' }
 import type { SuiteStartFailure } from './start.js'
@@ -15,14 +16,31 @@ export interface SuiteResult {
   commands: { ref: string; exitCode: number; signal: string; stdout: string; stderr: string }[]
   unchanged: boolean
 }
+/** Where a supervised suite ran, written with its intent so a crash cannot lose it (ADR-0257). */
+export interface SuiteExecution {
+  run: string
+  round: number
+  isolation: 'docker' | 'host'
+  source: 'default' | 'run' | 'repository'
+  image?: string
+  imageId?: string
+}
 export type VerificationEventData =
   | { type: 'verify.agreed'; data: { criteria: Criterion[]; by: string; source: string } }
   | { type: 'verify.suite-planned'; data: { run: string; round: number; plan: SuitePlan } }
   | { type: 'verify.suite-finished'; data: { run: string; round: number; result: SuiteResult } }
   | { type: 'verify.suite-unavailable'; data: SuiteStartFailure }
+  | { type: 'verify.suite-execution'; data: SuiteExecution }
 export function validVerificationData(type: string, data: Record<string, unknown>): boolean {
   try {
     if (type === 'verify.suite-unavailable') return !validate(data, startSchema).length
+    if (type === 'verify.suite-execution')
+      return (
+        !validate(data, executionSchema).length &&
+        (data.isolation === 'docker'
+          ? typeof data.image === 'string' && typeof data.imageId === 'string'
+          : data.image === undefined && data.imageId === undefined)
+      )
     if (type === 'verify.agreed') {
       if (
         Object.keys(data).some((key) => !['criteria', 'by', 'source'].includes(key)) ||

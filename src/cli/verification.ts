@@ -2,6 +2,8 @@
 import { readFileSync } from 'node:fs'
 import { BuildWorkflow } from '../build/workflow.js'
 import { parseCriteria } from '../definition/criteria.js'
+import { chosenImage, executionChoice, NOT_ISOLATED } from '../execution/choice.js'
+import { DockerUnavailableError } from '../execution/docker.js'
 import { FlowEngine } from '../flow/engine.js'
 import { StateStore } from '../state/store.js'
 import { namedSuiteHashes, SuiteStartError } from '../verification/start.js'
@@ -25,7 +27,10 @@ export function verificationCommand(
     if (positional.length > 1) throw new CliError('Provide one branch or PR reference')
     const engine = new FlowEngine(new StateStore(), root)
     const workflow = new VerificationWorkflow(engine)
-    let payload: ReturnType<VerificationWorkflow['begin']> | { schema: string; receipt: unknown }
+    let payload:
+      | ReturnType<VerificationWorkflow['begin']>
+      | { schema: string; receipt: unknown }
+      | Record<string, unknown>
     if (command === 'verify begin') {
       const input = positional[0]
       payload = workflow.begin({
@@ -53,6 +58,8 @@ export function verificationCommand(
         receipt: workflow.complete(value('--for') ?? ''),
       }
     }
+    // Shown before the step starts: where its project code will run. Docker is not queried here.
+    if (command === 'verify begin') payload = { ...payload, projectCode: projectCode(root, engine) }
     emitStep(command, payload, io, json, positional)
     return 'status' in payload && payload.status === 'question' ? EXIT.input : EXIT.ok
   } catch (error) {
@@ -62,6 +69,13 @@ export function verificationCommand(
       EXIT.precondition,
     )
   }
+}
+
+function projectCode(root: string, engine: FlowEngine) {
+  const choice = executionChoice(root)
+  return choice.isolation === 'host'
+    ? { ...choice, note: NOT_ISOLATED }
+    : { ...choice, image: chosenImage(engine.configuration().values.answers) ?? null }
 }
 
 export async function verificationSuiteCommand(
@@ -86,9 +100,14 @@ export async function verificationSuiteCommand(
       {
         ...(value('--commands') ? { refs: JSON.parse(value('--commands') ?? '') as string[] } : {}),
         ...(value('--timeout') ? { timeoutMs: Number(value('--timeout')) } : {}),
+        ...(value('--execution') ? { execution: value('--execution') as string } : {}),
+        ...(value('--image') ? { image: value('--image') as string } : {}),
       },
     )
   } catch (error) {
+    // Refused before any intent: the round is untouched and both remedies are named.
+    if (error instanceof DockerUnavailableError)
+      throw new CliError(error.message, EXIT.precondition)
     if (!(error instanceof SuiteStartError)) throw error
     if (version === '1') throw new CliError(error.message, EXIT.precondition)
     emitStep(

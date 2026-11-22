@@ -122,6 +122,7 @@ Next      builder, round 2 of 4
 wl verify begin feature/orders --base main --owner Owner --by Owner --criteria criteria.json --json
 wl verify begin --for slice-0123abcd --json
 wl verify suite --for slice-0123abcd --run gate-0123456789abcdef --round 1 --result-version 2 --json
+wl verify suite --for slice-0123abcd --run gate-0123456789abcdef --round 1 --execution host --json
 wl gate submit --for slice-0123abcd --file criterion-result.json --json
 wl gate verdict --for slice-0123abcd --gate verify --json
 wl verify complete --for slice-0123abcd --json
@@ -134,6 +135,16 @@ wl verify complete --for slice-0123abcd --json
 - When the guidance lives in an instruction file, the host reads it and passes explicit references, for example `--commands '["package.json#test","package.json#lint"]'`. Prose is never executed.
 - Commands run with their own arguments and working directory, and stop at the first failure.
 - Each command gets 120 000 ms by default (`--timeout` accepts 100 to 600 000). A timeout, or more than 1 MiB of output, stops its whole process group.
+
+**Where it runs.** The suite runs in a Docker container by default, the same way autonomous runs do, so code a model just wrote never sees your home directory, environment, credentials or network.
+
+- **Choose the image once.** The container starts from an image already in your local Docker cache, for example `node:22-bookworm`: `wl setup --image node:22-bookworm --scope project`, or `--image` for one run. wholeloop never pulls an image; run `docker pull` yourself when it is missing.
+- **What the container gets.** Your worktree mounted at `/workspace`, your user ID, a private `/tmp` as `HOME`, no network, no capabilities and no host variables. The same container stays warm for the slice and is removed when its worktree stops.
+- **Before and after.** `verify begin` shows a **Project code** line saying where the suite will run; the result shows **Ran in** and records it with the round.
+- **Without Docker** the suite refuses before planning anything (exit 3) and names both ways forward: start Docker, or choose host execution for this run.
+- **Host execution is your explicit choice.** `--execution host` runs this round on your machine; `wl setup --execution host --scope project` makes it the repository's choice. Either way the result says "This machine, not isolated". Autonomous runs never use the host.
+
+Dependencies must already be usable inside the container, because it has no network: a repository whose packages need installing for Linux will fail there until a network-enabled setup step exists.
 
 **Once per round.** The suite runs once per round, and every verifier reads the same result.
 

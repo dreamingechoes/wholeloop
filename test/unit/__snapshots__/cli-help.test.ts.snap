@@ -27,7 +27,7 @@ More commands, by group:
   Define
     research frame spec scopes challenge
   Build
-    slices worktree build verify review gate pr fanout
+    slices worktree build exec verify review gate pr fanout
   Rollout and learn
     launch ramp env measure learn
   Items and messages

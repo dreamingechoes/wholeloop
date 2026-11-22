@@ -138,6 +138,8 @@ function setup(dir: string) {
         run,
         '--round',
         String(round),
+        '--execution',
+        'host',
         ...(version ? ['--result-version', version] : []),
         ...(json ? ['--json'] : []),
       ],
@@ -169,7 +171,9 @@ it.each([
     fixture(async ({ engine, subject, gates, plan, executable }) => {
       if (body) executable(body, mode)
       const initial = plan()
-      await expect(runSuite(engine, subject, initial.run, initial.round)).rejects.toThrow(code)
+      await expect(
+        runSuite(engine, subject, initial.run, initial.round, { execution: 'host' }),
+      ).rejects.toThrow(code)
       const events = engine.store.events(),
         failed = verificationRuns(events).at(-1)
       expect(failed?.unavailable?.cause).toMatchObject({
@@ -181,16 +185,17 @@ it.each([
       expect(events.some((event) => event.type === 'gate.decided')).toBe(false)
       expect(() => gates.verdict(subject, 'verify')).toThrow('could not start')
       executable('console.log("new plan only")')
-      await expect(runSuite(engine, subject, initial.run, initial.round)).rejects.toBeInstanceOf(
-        SuiteStartError,
-      )
+      await expect(
+        runSuite(engine, subject, initial.run, initial.round, { execution: 'host' }),
+      ).rejects.toBeInstanceOf(SuiteStartError)
       expect(engine.store.events()).toEqual(events)
       const replacement = plan()
       expect(replacement.run).not.toBe(initial.run)
       expect(replacement.round).toBe(1)
       expect(replacement.budget).toBe(initial.budget)
       expect(
-        (await runSuite(engine, subject, replacement.run, replacement.round)).result.status,
+        (await runSuite(engine, subject, replacement.run, replacement.round, { execution: 'host' }))
+          .result.status,
       ).toBe('passed')
       engine.store.rebuild()
     }),
@@ -200,12 +205,14 @@ it('carries previously spent code rounds forward across repeated infrastructure 
   fixture(async ({ engine, subject, gates, plan, executable }) => {
     executable('process.exit(7)')
     const first = plan()
-    await runSuite(engine, subject, first.run, first.round)
+    await runSuite(engine, subject, first.run, first.round, { execution: 'host' })
     gates.verdict(subject, 'verify')
     const second = plan()
     expect(second.round).toBe(2)
     executable('process.exit(127)')
-    await expect(runSuite(engine, subject, second.run, second.round)).rejects.toThrow('127')
+    await expect(
+      runSuite(engine, subject, second.run, second.round, { execution: 'host' }),
+    ).rejects.toThrow('127')
     expect(() =>
       engine.store.transaction((_events, append) =>
         append(subject, {
@@ -218,18 +225,18 @@ it('carries previously spent code rounds forward across repeated infrastructure 
     ).toThrow('remaining evaluation budget')
     const replacement = plan()
     expect(replacement.budget).toBe(first.budget - 1)
-    await expect(runSuite(engine, subject, replacement.run, replacement.round)).rejects.toThrow(
-      '127',
-    )
+    await expect(
+      runSuite(engine, subject, replacement.run, replacement.round, { execution: 'host' }),
+    ).rejects.toThrow('127')
     const next = gates.plan(subject, 'verify').plan
     expect(next.budget).toBe(replacement.budget)
     expect(() => gates.plan(subject, 'verify', { rounds: 3 })).toThrow('extension')
     executable('process.exit(7)')
-    await runSuite(engine, subject, next.run, next.round)
+    await runSuite(engine, subject, next.run, next.round, { execution: 'host' })
     gates.verdict(subject, 'verify')
     const last = gates.plan(subject, 'verify').plan
     expect(last.round).toBe(2)
-    await runSuite(engine, subject, last.run, last.round)
+    await runSuite(engine, subject, last.run, last.round, { execution: 'host' })
     expect(gates.verdict(subject, 'verify').verdict).toBe('EXHAUSTED')
     expect(() => gates.plan(subject, 'verify')).toThrow('budget exhausted')
     engine.store.rebuild()
@@ -239,7 +246,7 @@ it('does not forgive a startup-labelled process that changes the workspace', asy
   fixture(async ({ engine, subject, gates, plan, executable }) => {
     executable('require("node:fs").writeFileSync("unexpected.txt", "changed"); process.exit(126)')
     const initial = plan(),
-      result = await runSuite(engine, subject, initial.run, initial.round)
+      result = await runSuite(engine, subject, initial.run, initial.round, { execution: 'host' })
     expect(result.result).toMatchObject({ status: 'failed', unchanged: false })
     expect(gateRuns(engine.store.events()).at(-1)?.unavailable).toBeUndefined()
     expect(gates.verdict(subject, 'verify').verdict).not.toBe('PASS')
@@ -258,13 +265,13 @@ it('refuses discounting a round after criterion work was submitted', async () =>
       findings: [],
     })
     executable('process.exit(127)')
-    await expect(runSuite(engine, subject, initial.run, initial.round)).rejects.toThrow(
-      'unexamined',
-    )
+    await expect(
+      runSuite(engine, subject, initial.run, initial.round, { execution: 'host' }),
+    ).rejects.toThrow('unexamined')
     expect(gateRuns(engine.store.events()).at(-1)?.unavailable).toBeUndefined()
-    await expect(runSuite(engine, subject, initial.run, initial.round)).rejects.toThrow(
-      'running or interrupted',
-    )
+    await expect(
+      runSuite(engine, subject, initial.run, initial.round, { execution: 'host' }),
+    ).rejects.toThrow('running or interrupted')
   }))
 
 it('names hashes in v2 and returns a bounded transient failure tail without persisting output', async () =>
@@ -273,7 +280,7 @@ it('names hashes in v2 and returns a bounded transient failure tail without pers
       'console.log("x".repeat(5000)); console.error("specific failing assertion"); process.exit(7)',
     )
     const initial = plan(),
-      result = await runSuite(engine, subject, initial.run, initial.round),
+      result = await runSuite(engine, subject, initial.run, initial.round, { execution: 'host' }),
       v2 = suiteResultV2(result)
     expect(v2.schema).toBe('wholeloop/verify-suite@2')
     expect(v2.result.commands[0]).toMatchObject({
@@ -287,7 +294,9 @@ it('names hashes in v2 and returns a bounded transient failure tail without pers
     expect(evidence.length).toBeLessThan(2200)
     expect(stepDisplay('verify suite', v2).text).toContain('specific failing assertion')
     expect(JSON.stringify(engine.store.events())).not.toContain('specific failing assertion')
-    const cached = suiteResultV2(await runSuite(engine, subject, initial.run, initial.round))
+    const cached = suiteResultV2(
+      await runSuite(engine, subject, initial.run, initial.round, { execution: 'host' }),
+    )
     expect(cached.output).toEqual([])
     expect(JSON.stringify(cached.findings)).not.toContain('specific failing assertion')
   }))

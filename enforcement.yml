@@ -494,6 +494,10 @@ rules:
     enforcers: [src/verification/suite.ts#runSuite, src/verification/state.ts#verificationRuns, test/unit/verification/verification.test.ts, src/verification/state.ts#replayVerification, test/unit/gates/state-performance.test.ts]
   - id: verify-startup-budget
     enforcers: [src/verification/start.ts, src/verification/suite.ts#runSuite, src/verification/state.ts, src/gates/state.ts, src/gates/workflow.ts, test/unit/verification/start.test.ts]
+  - id: verify-project-code-in-docker
+    enforcers: [src/execution/choice.ts#executionChoice, src/execution/docker.ts#ensureSandbox, src/verification/suite.ts#runSuite, src/cli/verification.ts, test/unit/execution/execution.test.ts]
+  - id: build-project-code-in-docker
+    enforcers: [src/cli/exec.ts#execCommand, src/execution/docker.ts#sandboxArgv, test/unit/execution/execution.test.ts]
   - id: verify-readable-output
     enforcers: [src/verification/start.ts#suiteOutputTail, src/verification/suite.ts#suiteResultV2, src/cli/verification.ts, src/display/step.ts, test/unit/verification/start.test.ts]
   - id: verify-agreed-criteria

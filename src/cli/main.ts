@@ -28,6 +28,7 @@ import { environmentCommand } from './environment.js'
 import { CliError } from './errors.js'
 import { evalCommand, gateEvalCommand } from './eval.js'
 import { evaluationFixturesCommand } from './evaluation-fixtures.js'
+import { execCommand } from './exec.js'
 import { extensionCommand } from './extensions.js'
 import { fanoutCommand } from './fanout.js'
 import { flagReadCommand } from './flag-read.js'
@@ -107,15 +108,21 @@ function help(args: readonly string[]): string {
 }
 
 export function run(argv: readonly string[], io: Io, root = process.cwd()): number {
-  const json = argv.includes('--json')
-  const args = argv.filter((arg) => arg !== '--json')
+  // Words after -- belong to a passed-through project command (wl exec), never to wl itself.
+  const split = argv.indexOf('--')
+  const head = split === -1 ? argv : argv.slice(0, split)
+  const json = head.includes('--json')
+  const args = [
+    ...head.filter((arg) => arg !== '--json'),
+    ...(split === -1 ? [] : argv.slice(split)),
+  ]
   let presentationArgs: readonly string[] = []
   try {
     if (args.length === 1 && ['--version', '-v'].includes(args[0] ?? '')) {
       io.out(json ? JSON.stringify({ schema: 'wholeloop/version@1', version: VERSION }) : VERSION)
       return EXIT.ok
     }
-    if (!args.length || args.includes('--help') || args.includes('-h')) {
+    if (!args.length || head.includes('--help') || head.includes('-h')) {
       io.out(
         json
           ? JSON.stringify({ schema: 'wholeloop/help@1', version: VERSION, commands: COMMANDS })
@@ -188,6 +195,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
         throw new CliError('This command requires the asynchronous dispatcher')
       if (command.path === 'install' || command.path === 'uninstall')
         return installationCommand(command.path, parsed, root, json, io)
+      if (command.path === 'exec') return execCommand(parsed, root, json, io)
       if (command.path === 'doctor') return doctorCommand(parsed, root, json, io)
       if (command.path === 'adapter root') return adapterRoot(json, io)
       if (command.path === 'adapter build-native')

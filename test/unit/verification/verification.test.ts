@@ -116,9 +116,10 @@ describe('real once-per-round suite execution', () => {
       if (!('plan' in next)) throw new Error('Expected a replacement verification plan')
       expect(next.plan.run).not.toBe(initial.plan.run)
       expect(next.plan.budget).toBe(initial.plan.budget)
-      expect((await runSuite(engine, subject, next.plan.run, next.plan.round)).result.status).toBe(
-        'passed',
-      )
+      expect(
+        (await runSuite(engine, subject, next.plan.run, next.plan.round, { execution: 'host' }))
+          .result.status,
+      ).toBe('passed')
       engine.store.rebuild()
     }))
 
@@ -157,7 +158,7 @@ describe('real once-per-round suite execution', () => {
     fixture(async ({ workflow, engine }) => {
       const { subject, plan } = planned(workflow)
       expect(subject).toBeTruthy()
-      const first = await runSuite(engine, subject ?? '', plan.run, 1)
+      const first = await runSuite(engine, subject ?? '', plan.run, 1, { execution: 'host' })
       expect(first.result.status).toBe('passed')
       expect(first.output[0]?.stdout).toContain('fixture: check passed')
       expect(first.jobs.length).toBeGreaterThan(0)
@@ -170,7 +171,7 @@ describe('real once-per-round suite execution', () => {
         true,
       )
       expect(readFileSync(join(plan.repository, 'suite-count.txt'), 'utf8')).toBe('1')
-      const repeated = await runSuite(engine, subject ?? '', plan.run, 1)
+      const repeated = await runSuite(engine, subject ?? '', plan.run, 1, { execution: 'host' })
       expect(repeated.cached).toBe(true)
       expect(repeated.output).toEqual([])
       expect(repeated.jobs[0]?.input.suite).toMatchObject({
@@ -203,8 +204,8 @@ describe('real once-per-round suite execution', () => {
     fixture(async ({ workflow, engine }) => {
       const { subject, plan } = planned(workflow)
       const results = await Promise.allSettled([
-        runSuite(engine, subject ?? '', plan.run, 1),
-        runSuite(engine, subject ?? '', plan.run, 1),
+        runSuite(engine, subject ?? '', plan.run, 1, { execution: 'host' }),
+        runSuite(engine, subject ?? '', plan.run, 1, { execution: 'host' }),
       ])
       expect(results.filter((result) => result.status === 'fulfilled')).toHaveLength(1)
       expect(results.filter((result) => result.status === 'rejected')).toHaveLength(1)
@@ -235,9 +236,9 @@ describe('real once-per-round suite execution', () => {
           },
         }),
       )
-      await expect(runSuite(engine, subject ?? '', plan.run, 1)).rejects.toThrow(
-        'running or interrupted',
-      )
+      await expect(
+        runSuite(engine, subject ?? '', plan.run, 1, { execution: 'host' }),
+      ).rejects.toThrow('running or interrupted')
     }))
 
   it.each(['failure', 'timeout', 'mutation'])(
@@ -262,6 +263,7 @@ describe('real once-per-round suite execution', () => {
         const next = gates.plan(subject ?? '', 'verify').plan
         const result = await runSuite(engine, subject ?? '', next.run, next.round, {
           timeoutMs: mode === 'timeout' ? 200 : 120000,
+          execution: 'host',
         })
         expect(result.result.status).toBe('failed')
         expect(suiteGateResult(result.result).findings).toHaveLength(1)
@@ -373,6 +375,8 @@ describe('verification criteria and changed-test coverage', () => {
         started.plan.run,
         '--round',
         '1',
+        '--execution',
+        'host',
       )
       expect(suite.result.status).toBe('passed')
       expect(
@@ -427,6 +431,7 @@ describe('shared verification host workflow', () => {
           },
         },
         'sequential',
+        { execution: 'host' },
       )
       expect(result.status).toBe('PASS')
       expect('receipt' in result).toBe(true)
@@ -435,12 +440,17 @@ describe('shared verification host workflow', () => {
   it('marks a cached suite as historical after workspace changes and rejects changing its pinned commands', async () =>
     fixture(async ({ engine, workflow }) => {
       const { subject, plan } = planned(workflow)
-      await runSuite(engine, subject ?? '', plan.run, 1)
+      await runSuite(engine, subject ?? '', plan.run, 1, { execution: 'host' })
       await expect(
-        runSuite(engine, subject ?? '', plan.run, 1, { refs: ['package.json#test'] }),
+        runSuite(engine, subject ?? '', plan.run, 1, {
+          refs: ['package.json#test'],
+          execution: 'host',
+        }),
       ).rejects.toThrow('already pinned')
       writeFileSync(join(plan.repository, 'new-code.ts'), 'Changed after execution\n')
-      expect((await runSuite(engine, subject ?? '', plan.run, 1)).current).toBe(false)
+      expect(
+        (await runSuite(engine, subject ?? '', plan.run, 1, { execution: 'host' })).current,
+      ).toBe(false)
     }))
 })
 
@@ -452,7 +462,7 @@ describe('observed suite failures remain mandatory', () => {
       const gates = new GateWorkflow(engine)
       gates.verdict(subject ?? '', 'verify')
       const next = gates.plan(subject ?? '', 'verify').plan
-      await runSuite(engine, subject ?? '', next.run, next.round)
+      await runSuite(engine, subject ?? '', next.run, next.round, { execution: 'host' })
       for (const unit of next.units.filter((unit) => unit.id !== 'suite'))
         gates.submit(subject ?? '', next.run, next.round, {
           unit: unit.id,

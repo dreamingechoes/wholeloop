@@ -6,6 +6,16 @@ import { StringDecoder } from 'node:string_decoder'
 import { isObject } from '../config/schema.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { discover } from '../discovery/tree.js'
+import { chosenImage, executionChoice, NOT_ISOLATED } from '../execution/choice.js'
+import {
+  type DockerCall,
+  DockerUnavailableError,
+  dockerCli,
+  dockerEnvironment,
+  ensureSandbox,
+  sandboxArgv,
+  stopSandbox,
+} from '../execution/docker.js'
 import type { FlowEngine } from '../flow/engine.js'
 import { gateAssignments } from '../gates/assignments.js'
 import type { GatePlan, GateResult } from '../gates/contracts.js'
@@ -14,7 +24,7 @@ import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
 import { canonicalPath, inside } from '../state/paths.js'
 import { workerModels } from '../workers/models.js'
-import type { SuitePlan, SuiteResult } from './contracts.js'
+import type { SuiteExecution, SuitePlan, SuiteResult } from './contracts.js'
 import {
   namedSuiteHashes,
   SuiteStartError,
@@ -22,6 +32,7 @@ import {
   startupCode,
   suiteOutputTail,
 } from './start.js'
+import { verificationRuns } from './state.js'
 
 export function suitePlan(
   engine: FlowEngine,
@@ -75,7 +86,12 @@ export function suitePlan(
   return { commands, timeoutMs }
 }
 
-function execute(root: string, command: SuitePlan['commands'][number], timeoutMs: number) {
+function execute(
+  root: string,
+  command: SuitePlan['commands'][number],
+  timeoutMs: number,
+  env?: NodeJS.ProcessEnv,
+) {
   return new Promise<{
     receipt: SuiteResult['commands'][number]
     output: { ref: string; stdout: string; stderr: string }
@@ -98,6 +114,7 @@ function execute(root: string, command: SuitePlan['commands'][number], timeoutMs
     try {
       child = spawn(command.argv[0] ?? '', command.argv.slice(1), {
         cwd: join(root, command.cwd),
+        ...(env ? { env } : {}),
         detached: true,
         stdio: ['ignore', 'pipe', 'pipe'],
       })
@@ -215,7 +232,16 @@ export async function runSuite(
   subject: string,
   run: string,
   round: number,
-  options: { refs?: string[]; timeoutMs?: number; executor?: SuiteExecutor } = {},
+  options: {
+    refs?: string[]
+    timeoutMs?: number
+    /** The autonomous runner's own observed Docker executor, or a test double. */
+    executor?: SuiteExecutor
+    /** A person's per-run choice, `docker` or `host`; never accepted with an executor. */
+    execution?: string
+    image?: string
+    docker?: DockerCall
+  } = {},
 ) {
   const active = gateRuns(engine.store.events()).find(
     (entry) => entry.subject === subject && entry.run === run,
@@ -225,6 +251,12 @@ export async function runSuite(
   if (gate?.plan.gate !== 'verify' || gate.plan.round !== round || gate.decision)
     throw new Error('Run the suite in the current unsealed verify round')
   const plan = suitePlan(engine, gate.plan, options.refs, options.timeoutMs)
+  const intended = verificationRuns(engine.store.events()).some(
+    (entry) => entry.run === run && entry.round === round,
+  )
+  // Where code runs is settled, and Docker reached, before any intent is written (ADR-0257).
+  // An existing intent is either cached or refused below, so it needs no placement.
+  const placement = intended ? undefined : suitePlacement(engine, options, gate.plan.repository)
   const cached = engine.store.transaction((events, append) => {
     const matching = events.filter(
       (event) =>
@@ -250,6 +282,8 @@ export async function runSuite(
     if (workspaceSnapshot(gate.plan.repository).digest !== gate.plan.snapshot.digest)
       throw new Error('Workspace changed before suite execution')
     append(subject, { type: 'verify.suite-planned', data: { run, round, plan } })
+    if (placement?.record)
+      append(subject, { type: 'verify.suite-execution', data: { run, round, ...placement.record } })
     return undefined
   })
   let result = cached
@@ -258,7 +292,7 @@ export async function runSuite(
     const commands: SuiteResult['commands'] = []
     let cause: SuiteStartFailure['cause'] | undefined
     for (const command of plan.commands) {
-      const completed = await (options.executor ?? execute)(
+      const completed = await (placement?.executor ?? execute)(
         gate.plan.repository,
         command,
         plan.timeoutMs,
@@ -304,6 +338,9 @@ export async function runSuite(
     )
   const current = workspaceSnapshot(gate.plan.repository).digest === gate.plan.snapshot.digest
   const observation = { run, round, current, result, output }
+  const execution = verificationRuns(engine.store.events()).find(
+    (entry) => entry.run === run && entry.round === round,
+  )?.execution
   return {
     schema: 'wholeloop/verify-suite@1',
     subject,
@@ -313,6 +350,7 @@ export async function runSuite(
     current,
     result,
     output,
+    ...(execution ? { execution: executionView(execution) } : {}),
     ...gateAssignments(gate.plan, {
       results: state?.results ?? [],
       votes: state?.votes ?? [],
@@ -320,6 +358,59 @@ export async function runSuite(
       models: workerModels(engine),
     }),
   }
+}
+
+/**
+ * The runner passes its own owned Docker executor and records its environment separately; a host
+ * choice there is refused. Supervised calls resolve Docker or an explicit host choice.
+ */
+function suitePlacement(
+  engine: FlowEngine,
+  options: Parameters<typeof runSuite>[4],
+  workspace: string,
+): { executor: SuiteExecutor; record?: Omit<SuiteExecution, 'run' | 'round'> } {
+  if (options?.executor) {
+    if (options.execution !== undefined || options.image !== undefined)
+      throw new Error(
+        'The autonomous runner always runs project code in its own Docker environment',
+      )
+    return { executor: options.executor }
+  }
+  const choice = executionChoice(engine.root, options?.execution)
+  if (choice.isolation === 'host') return { executor: execute, record: choice }
+  const image = chosenImage(engine.configuration().values.answers, options?.image)
+  if (!image)
+    throw new DockerUnavailableError(
+      "Choose the container image that runs this repository's code: pass --image <name>, or remember it with wl setup --image <name> --scope project. Or choose host execution for this run with --execution host.",
+    )
+  const call = options?.docker ?? dockerCli
+  const sandbox = ensureSandbox(workspace, image, call)
+  return {
+    record: { ...choice, image: sandbox.image, imageId: sandbox.imageId },
+    executor: async (root, command, timeoutMs) => {
+      const completed = await execute(
+        root,
+        { ...command, cwd: '.', argv: sandboxArgv(sandbox, command.cwd, command.argv) },
+        timeoutMs,
+        dockerEnvironment(),
+      )
+      // The client process was killed; the command inside the container must stop too.
+      if (completed.receipt.signal) stopSandbox(workspace, call)
+      return completed
+    },
+  }
+}
+
+/** Person-facing placement: Docker with its image, or the host stated as not isolated. */
+export function executionView(execution: SuiteExecution) {
+  return execution.isolation === 'docker'
+    ? {
+        isolation: 'docker' as const,
+        source: execution.source,
+        image: execution.image,
+        imageId: execution.imageId,
+      }
+    : { isolation: 'host' as const, source: execution.source, note: NOT_ISOLATED }
 }
 
 /** Version two names hashes explicitly; the original response and durable readers stay intact. */

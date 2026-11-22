@@ -25,6 +25,7 @@ Work from left to right: each part depends on the ones before it. These checks s
 | Status says closed after you put an idea on hold | [Closed outcomes](#on-hold-is-reported-as-closed) |
 | A terminal command stops instead of drafting or building | [Core versus skill](#next-returned-json-but-did-not-run-the-whole-flow) |
 | A script reports a nonzero exit | [Exit codes](#understand-exit-codes) |
+| Verification or a builder says Docker is not reachable | [Docker for supervised steps](#docker-is-not-reachable-for-verification-or-building) |
 | An autonomous delivery run stopped or its environment is stale | [Autonomous delivery](#autonomous-delivery-experimental) |
 
 Examples use the `wl` command that `npm install --global wholeloop` provides. From a source build, use `node /absolute/path/to/dist/wl.mjs` in its place ([development guide](./contributing/development.md#use-the-source-build)).
@@ -142,6 +143,16 @@ Do not run the same idea again to get around the decision; that creates a duplic
 The terminal core never drafts anything or calls a model. `wl next` starts or resumes a [step contract](./glossary.md#terms), returns its preflight and questions, and stops. To have the work done, ask your coding client for the installed `wl-next` skill; it continues until a decision needs you.
 
 In the same way, `questions: []` in a framing preflight means the core has the inputs it needs to start. It does not mean the eight framing questions have been answered. [Core tour](./tutorials/local-core.md#4-start-again-with-an-owner) · [Utilities](./flow/utilities.md).
+
+## Docker is not reachable for verification or building
+
+**Exit 3** before anything is planned means the step that runs your project's code could not reach Docker, or has no image to run it in. The round is not spent.
+
+- **Start Docker** (Docker Desktop, or the daemon on Linux) and run the step again. `docker version` should print a Linux server, version 28 or newer.
+- **Choose an image** when the message asks for one: `wl setup --image node:22-bookworm --scope project`. The image must already be in your local cache; `docker pull node:22-bookworm` fetches it, because wholeloop never pulls for you.
+- **Or choose your machine** for this run with `--execution host`, or for the repository with `wl setup --execution host --scope project`. The result then says it was not isolated: the code sees your home directory, environment and network.
+
+A container named `wl-exec-…` that wholeloop did not create is left alone; remove or rename it yourself. `wl exec --for <slice> --stop` removes the slice's own container.
 
 ## Understand exit codes
 

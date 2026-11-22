@@ -30,6 +30,12 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 - [ ] P9-15: for each of the seven clients, install with one tier mapped to a model the account can use (`wl setup --models <client>:standard=<model> --scope user`, then `wl install --target <client> --scope user`) and observe that a verifier or reviewer actually runs on that model, and that an unavailable model name gives the client's own error rather than a silent fallback. Record whether Copilot and Gemini honour the `model` header of a custom agent. Rendering, scoped installation, doctor and preview fixtures pass for all seven clients; they do not establish that a client loads the field or which model it then runs.
 
+- [ ] P9-16: during the P9-21 native passes, observe in each of the seven clients that the builder runs tests, builds and scripts through `wl exec --for <slice> -- <command>` and not through the client's own shell, and that a builder never passes a host choice. The instruction is rendered for all seven clients; the core cannot stop a client's own shell.
+
+- [ ] P9-16: run the Docker rehearsal on a Linux host with Docker 28 or newer and `node:22-bookworm` cached: `WHOLELOOP_DOCKER_REHEARSAL=1 npx vitest run test/unit/execution`. It passed on macOS arm64 with Docker Desktop 29.9.3 on 2026-11-22: the suite and a worker command reported Linux, `HOME=/tmp`, a hidden host path, an absent host variable and blocked network. Required CI does not run it.
+
+- [ ] P9-16: decide proposal 0260 (`docs/decisions/0260-network-for-supervised-project-setup.md`), a network-enabled setup command for supervised containers. Until then a supervised container has no network, so repositories whose dependencies need a Linux install cannot run their suite in it without host execution.
+
 ### P9-20 baseline capture
 
 - [ ] On P9-20 revision `2927dc0d329ed60ef931ff2c5174066a334378a9`, before the UX fixes, run the six-step evaluation on Codex and Claude Code using dedicated signed-in homes; retain native traces, client versions and the source revision outside repositories. No live experience run has been performed. See [evaluation instructions](../test/evals/experience/README.md).

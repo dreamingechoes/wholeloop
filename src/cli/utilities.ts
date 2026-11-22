@@ -38,6 +38,8 @@ export function utilityCommand(
         ...(value('--docs') ? { docs: value('--docs') as string } : {}),
         ...(value('--tracker') ? { tracker: value('--tracker') as string } : {}),
         ...(value('--models') ? { models: value('--models') as string } : {}),
+        ...(value('--execution') ? { execution: value('--execution') as string } : {}),
+        ...(value('--image') ? { image: value('--image') as string } : {}),
         ...(guidanceClient() ? { client: guidanceClient() as string } : {}),
       })
     else {

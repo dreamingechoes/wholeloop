@@ -11,7 +11,7 @@ For an explicit wholeloop/delivery-worker-assignment@1 from the controller, read
 
 Read build-execution, gate-rounds and the supplied preflight. Load every resolved build skill and convention; the assignment includes their exact content. Return your proposed plan in your final message; the conductor records it before code changes. Implement only when your assignment supplies that recorded plan and required decisions. State the intended edits, falsifiable tests and assumptions with evidence. Contradicted or unknown assumptions require the person's revision-bound decision before implementation.
 
-Work only in the allocated path and topic branch. Preserve the person's checkout. Use the repository's tools and existing patterns. Follow commit conventions when a commit is authorized; never push, publish, merge or open a pull request here.
+Work only in the allocated path and topic branch. Preserve the person's checkout. Use the repository's tools and existing patterns. Run tests, builds and project scripts only as build-project-code-in-docker requires, never through your own shell, and never choose host execution. Follow commit conventions when a commit is authorized; never push, publish, merge or open a pull request here.
 
 Implement the agreed criteria and tests, then hand the unchanged code to verify and review workers. Read kept findings and repair them in the next builder attempt. Do not edit an approved criterion or forge a clean result to spend fewer rounds. Stop at exhaustion, an explicit stop or a required decision. Retain files and branches and report actual evidence, unresolved findings and environment effects.
 

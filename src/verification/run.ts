@@ -18,6 +18,8 @@ export async function runVerification(
   options: VerifyOptions,
   host: VerificationHost,
   mode: 'native' | 'sequential' = 'native',
+  /** A person's explicit per-run placement; the default is Docker (ADR-0257). */
+  suite: { execution?: string; image?: string } = {},
 ) {
   if (host.stopped()) return { status: 'stopped' }
   const workflow = new VerificationWorkflow(engine)
@@ -32,11 +34,11 @@ export async function runVerification(
         'Verifier changed the original checkout; preserve its files and inspect the host',
       )
   }
-  const suite = await runSuite(context, subject, begun.plan.run, begun.plan.round)
-  host.observeSuite?.(suite)
+  const observed = await runSuite(context, subject, begun.plan.run, begun.plan.round, suite)
+  host.observeSuite?.(observed)
   checkPersonal()
   if (host.stopped()) return { status: 'stopped', subject }
-  if (suite.current)
+  if (observed.current)
     await inspectGateRound(context, begun.plan, host, mode === 'sequential', checkPersonal)
   if (host.stopped()) return { status: 'stopped', subject }
   const verdict = new GateWorkflow(context).verdict(subject, 'verify')

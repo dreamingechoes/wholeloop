@@ -5,6 +5,7 @@
 For instruction-file guidance, select explicit declared command references. Share the returned suite output with checkers; do not execute the suite again to recover missing output. Stop on a failed or interrupted run and inspect its reported state.
 
 - ⛔ `verify-startup-budget` — known spawn failures and exit 126/127 stop before workers or a code verdict. Keep the intent; a new plan retains only unused evaluation budget, with earlier code failures still spent. Changed workspaces, submitted criterion work and ambiguous interruptions never earn this discount. Environment repair retains its existing owner and authority.
+- ⛔ `verify-project-code-in-docker` — the suite runs in a Docker container by default. Pass --execution host only when the person chose host execution for this run, after showing that it runs on this machine, not isolated; a repository choice needs no flag. Show the Project code line before the suite and the Ran in line after it. Without Docker the suite refuses before planning anything; relay both remedies and never retry on the host by yourself.
 - ⛔ `verify-readable-output` — canonical suite calls select result version 2, which names output hashes and shows bounded transient failure excerpts. Never persist process output or invent a tail for a cached hash-only receipt.
 
 Constant lint recognizes a limited JavaScript assertion vocabulary and skips quoted fixtures/comments. It does not prove whole-test failure reachability or execute a mutation engine. Missing observations remain the semantic verifier's responsibility.

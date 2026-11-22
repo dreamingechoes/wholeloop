@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-22 (P9-16).** The supervised suite and worker commands now run in a warm per-slice container, and host execution is an explicit run or repository choice recorded with the round; [ADR-0257](./0257-where-project-code-runs.md) lists the conservative refinements.
+
 **Amended 2026-11-21 ([ADR-0257](./0257-where-project-code-runs.md)).** The supervised path did not follow this record: `wl verify suite` ran the suite on the host, and builder and verifier workers ran project commands through the client's own shell. Project code now runs in Docker on every route, including the commands workers run, and a person may choose host execution explicitly for a supervised step; the autonomous runner never allows it.
 
 The runner exists so that a person can trust its verdicts, whether they call one step or let it chain the whole route. Verdicts about behaviour need the runner to execute the project's suite, services and acceptance checks itself, and that code was usually just written by a model. Executing it on the host would expose the person's home directory, shell environment, credentials and network, and would leave no owned record of what ran. Docker environments already provide containment, pinned inputs, owned resources and recovery ([ADR-0102](./0102-inert-environment-recipes-and-pinned-setup-origins.md), [ADR-0104](./0104-owned-environment-lifecycle-and-private-cancellation.md)), but nothing stated that they are the only way project code may run.
